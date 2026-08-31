@@ -91,6 +91,16 @@ See `examples/EventHook.VB.Example`. Context-menu paste is observed via the clip
 - `dotnet test tests/EventHook.IntegrationTests`
 - Docs: `dotnet tool restore` then `dotnet tool run docfx metadata docfx.json` and `dotnet tool run docfx build docfx.json`
 
+### Release branches
+
+| Branch | NuGet | Notes |
+|---|---|---|
+| `develop` | (no publish) | CI build + tests + DocFX |
+| `beta` | `EventHook` **2.0.0-beta** | Merge `develop` → `beta` to publish prerelease |
+| `stable` / tag `v2.*` | `EventHook` **2.0.0** | Stable release + GitHub Pages docs |
+
+Publishing uses NuGet Trusted Publishing (`NUGET_USER` on the `nuget-publish` environment), same pattern as titanium-web-proxy.
+
 ## Version 2.0 notes
 
 Breaking: targets `net10.0-windows` only (no longer .NET Framework 4.5).

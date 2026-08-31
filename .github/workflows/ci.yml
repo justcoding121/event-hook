@@ -5,7 +5,7 @@ on:
     branches: [develop, master, main, stable, beta]
     tags: ['v2.*']
   pull_request:
-    branches: [develop, master, main]
+    branches: [develop, master, main, beta, stable]
 
 jobs:
   build:
@@ -45,17 +45,6 @@ jobs:
           dotnet tool run docfx metadata docfx.json
           dotnet tool run docfx build docfx.json
 
-      - name: Pack
-        run: dotnet pack src/EventHook/EventHook.csproj -c Release --no-build -o artifacts
-
-      - name: Upload packages
-        uses: actions/upload-artifact@v4
-        with:
-          name: nuget-packages
-          path: |
-            artifacts/*.nupkg
-            artifacts/*.snupkg
-
       - name: Upload docs site
         uses: actions/upload-artifact@v4
         with:
@@ -63,8 +52,9 @@ jobs:
           path: _site
 
   publish:
+    name: Publish NuGet package
     needs: build
-    if: startsWith(github.ref, 'refs/tags/v2') || github.ref == 'refs/heads/stable'
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/stable' || startsWith(github.ref, 'refs/tags/v2'))
     runs-on: windows-latest
     environment: nuget-publish
     permissions:
@@ -72,23 +62,38 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup .NET 10
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
 
-      - name: Download packages
-        uses: actions/download-artifact@v4
-        with:
-          name: nuget-packages
-          path: artifacts
+      - name: Pack Beta
+        if: github.ref == 'refs/heads/beta'
+        run: dotnet pack src/EventHook/EventHook.csproj -c Release --version-suffix beta -o artifacts
 
-      - name: Download docs
-        uses: actions/download-artifact@v4
-        with:
-          name: docs-site
-          path: _site
+      - name: Pack Stable
+        if: github.ref == 'refs/heads/stable' || startsWith(github.ref, 'refs/tags/v2')
+        run: dotnet pack src/EventHook/EventHook.csproj -c Release -o artifacts
+
+      - name: Resolve package version
+        id: package
+        shell: pwsh
+        run: |
+          $package = Get-ChildItem artifacts -Filter EventHook.*.nupkg | Where-Object { $_.Name -notlike '*.symbols.*' } | Select-Object -First 1
+          if (-not $package) { throw "No NuGet package was produced." }
+          if ($package.BaseName -notmatch '^EventHook\.(.+)$') {
+            throw "Unexpected package name: $($package.Name)"
+          }
+          $version = $Matches[1]
+          "name=$($package.Name)" >> $env:GITHUB_OUTPUT
+          "path=$($package.FullName)" >> $env:GITHUB_OUTPUT
+          "version=$version" >> $env:GITHUB_OUTPUT
+          "tag=v$version" >> $env:GITHUB_OUTPUT
+          "prerelease=$(if ($version -match '-beta') { 'true' } else { 'false' })" >> $env:GITHUB_OUTPUT
+          Write-Host "Package $($package.Name) version=$version"
 
       - name: NuGet login
         id: login
@@ -96,14 +101,44 @@ jobs:
         with:
           user: ${{ secrets.NUGET_USER }}
 
-      - name: Push NuGet
+      - name: Publish package
+        run: dotnet nuget push "${{ steps.package.outputs.path }}" --source "nuget" --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --skip-duplicate
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: pwsh
         run: |
-          Get-ChildItem artifacts -Filter *.nupkg | ForEach-Object {
-            dotnet nuget push $_.FullName --source "nuget" --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --skip-duplicate
+          $tag = "${{ steps.package.outputs.tag }}"
+          $version = "${{ steps.package.outputs.version }}"
+          $package = "${{ steps.package.outputs.path }}"
+          $prerelease = "${{ steps.package.outputs.prerelease }}" -eq "true"
+
+          if (gh release view $tag 2>$null) {
+            Write-Host "Release $tag already exists; uploading package asset if missing."
+            gh release upload $tag $package --clobber
+          }
+          else {
+            $args = @(
+              "release", "create", $tag,
+              $package,
+              "--title", "EventHook $version",
+              "--generate-notes",
+              "--target", $env:GITHUB_SHA
+            )
+            if ($prerelease) { $args += "--prerelease" }
+            gh @args
           }
 
+      - name: Download docs site
+        if: github.ref == 'refs/heads/stable' || startsWith(github.ref, 'refs/tags/v2')
+        uses: actions/download-artifact@v4
+        with:
+          name: docs-site
+          path: _site
+
       - name: Deploy GitHub Pages
+        if: github.ref == 'refs/heads/stable' || startsWith(github.ref, 'refs/tags/v2')
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
