@@ -52,7 +52,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: nuget-packages
-          path: artifacts/*.nupkg
+          path: |
+            artifacts/*.nupkg
+            artifacts/*.snupkg
 
       - name: Upload docs site
         uses: actions/upload-artifact@v4
@@ -64,9 +66,9 @@ jobs:
     needs: build
     if: startsWith(github.ref, 'refs/tags/v2') || github.ref == 'refs/heads/stable'
     runs-on: windows-latest
+    environment: nuget-publish
     permissions:
       contents: write
-      pages: write
       id-token: write
     steps:
       - uses: actions/checkout@v4
@@ -88,8 +90,18 @@ jobs:
           name: docs-site
           path: _site
 
+      - name: NuGet login
+        id: login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
       - name: Push NuGet
-        run: dotnet nuget push artifacts/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+        shell: pwsh
+        run: |
+          Get-ChildItem artifacts -Filter *.nupkg | ForEach-Object {
+            dotnet nuget push $_.FullName --source "nuget" --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --skip-duplicate
+          }
 
       - name: Deploy GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
