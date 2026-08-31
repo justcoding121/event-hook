@@ -57,6 +57,9 @@ _ReSharper*/
 *.dotCover
 coverage*.json
 coverage*.xml
+coverage/
+.sonar/
+.coverage/
 
 # NuGet
 *.nupkg
@@ -74,11 +77,9 @@ publish/
 *.pubxml
 *.publishproj
 
-# DocFX generated output
+# DocFX intermediate output (built site is committed under docs/ like TWP)
 _site/
-docs/obj/
-docs/api/**
-!docs/api/index.md
+.github/obj/
 
 # Others
 *.cache
