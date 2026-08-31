@@ -6,28 +6,28 @@
           "files": [ "src/EventHook/EventHook.csproj" ]
         }
       ],
-      "dest": "docs-src/api"
+      "dest": "docs/api"
     }
   ],
   "build": {
     "content": [
       {
         "files": [ "**/*.{md,yml}" ],
-        "src": "docs-src"
+        "src": "docs"
       },
       {
         "files": [ "toc.yml", "index.md" ],
-        "src": "docs-src"
+        "src": "docs"
       },
       {
         "files": [ "api/**.yml", "api/index.md" ],
-        "src": "docs-src"
+        "src": "docs"
       }
     ],
     "resource": [
       {
         "files": [ "images/**" ],
-        "src": "docs-src"
+        "src": "docs"
       }
     ],
     "output": "_site",

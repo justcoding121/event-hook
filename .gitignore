@@ -76,8 +76,9 @@ publish/
 
 # DocFX generated output
 _site/
-docs-src/obj/
-docs-src/api/
+docs/obj/
+docs/api/**
+!docs/api/index.md
 
 # Others
 *.cache
