@@ -1,0 +1,147 @@
+{
+  "api/EventHook.ApplicationEventArgs.html": {
+    "href": "api/EventHook.ApplicationEventArgs.html",
+    "title": "Class ApplicationEventArgs | EventHook",
+    "summary": "Class ApplicationEventArgs Namespace EventHook Assembly EventHook.dll public class ApplicationEventArgs : EventArgs Inheritance object EventArgs ApplicationEventArgs Inherited Members EventArgs.Empty object.Equals(object) object.Equals(object, object) object.GetHashCode() object.GetType() object.MemberwiseClone() object.ReferenceEquals(object, object) object.ToString() Properties ApplicationData public WindowData ApplicationData { get; set; } Property Value WindowData Event public ApplicationEvents Event { get; set; } Property Value ApplicationEvents"
+  },
+  "api/EventHook.ApplicationEvents.html": {
+    "href": "api/EventHook.ApplicationEvents.html",
+    "title": "Enum ApplicationEvents | EventHook",
+    "summary": "Enum ApplicationEvents Namespace EventHook Assembly EventHook.dll public enum ApplicationEvents Fields Activated = 2 Closed = 1 Launched = 0"
+  },
+  "api/EventHook.ApplicationWatcher.html": {
+    "href": "api/EventHook.ApplicationWatcher.html",
+    "title": "Class ApplicationWatcher | EventHook",
+    "summary": "Class ApplicationWatcher Namespace EventHook Assembly EventHook.dll Watches top-level application windows and common dialogs (including MessageBox). public class ApplicationWatcher : IDisposable Inheritance object ApplicationWatcher Implements IDisposable Inherited Members object.Equals(object) object.Equals(object, object) object.GetHashCode() object.GetType() object.MemberwiseClone() object.ReferenceEquals(object, object) object.ToString() Methods Dispose() Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources. public void Dispose() Start() public void Start() Stop() public void Stop() Events OnApplicationWindowChange public event EventHandler<ApplicationEventArgs> OnApplicationWindowChange Event Type EventHandler<ApplicationEventArgs>"
+  },
+  "api/EventHook.ClipboardContentTypes.html": {
+    "href": "api/EventHook.ClipboardContentTypes.html",
+    "title": "Enum ClipboardContentTypes | EventHook",
+    "summary": "Enum ClipboardContentTypes Namespace EventHook Assembly EventHook.dll Type of clipboard content. public enum ClipboardContentTypes Fields Csv = 3 FileDrop = 6 Html = 2 Image = 5 Other = 7 PlainText = 0 RichText = 1 UnicodeText = 4"
+  },
+  "api/EventHook.ClipboardEventArgs.html": {
+    "href": "api/EventHook.ClipboardEventArgs.html",
+    "title": "Class ClipboardEventArgs | EventHook",
+    "summary": "Class ClipboardEventArgs Namespace EventHook Assembly EventHook.dll public class ClipboardEventArgs : EventArgs Inheritance object EventArgs ClipboardEventArgs Inherited Members EventArgs.Empty object.Equals(object) object.Equals(object, object) object.GetHashCode() object.GetType() object.MemberwiseClone() object.ReferenceEquals(object, object) object.ToString() Properties Data public object Data { get; set; } Property Value object DataFormat public ClipboardContentTypes DataFormat { get; set; } Property Value ClipboardContentTypes"
+  },
+  "api/EventHook.ClipboardWatcher.html": {
+    "href": "api/EventHook.ClipboardWatcher.html",
+    "title": "Class ClipboardWatcher | EventHook",
+    "summary": "Class ClipboardWatcher Namespace EventHook Assembly EventHook.dll Clipboard watcher including text, images, and file drops. Context-menu paste is visible here because it changes clipboard contents globally; WM_PASTE itself is application-local and is not hooked. public class ClipboardWatcher : IDisposable Inheritance object ClipboardWatcher Implements IDisposable Inherited Members object.Equals(object) object.Equals(object, object) object.GetHashCode() object.GetType() object.MemberwiseClone() object.ReferenceEquals(object, object) object.ToString() Methods Dispose() Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources. public void Dispose() Start() public void Start() Stop() public void Stop() Events OnClipboardModified public event EventHandler<ClipboardEventArgs> OnClipboardModified Event Type EventHandler<ClipboardEventArgs>"
+  },
+  "api/EventHook.EventHookFactory.html": {
+    "href": "api/EventHook.EventHookFactory.html",
+    "title": "Class EventHookFactory | EventHook",
+    "summary": "Class EventHookFactory Namespace EventHook Assembly EventHook.dll Factory for watchers that share one message pump / synchronization context. Dispose only after all watchers are stopped. public class EventHookFactory : IDisposable Inheritance object EventHookFactory Implements IDisposable Inherited Members object.Equals(object) object.Equals(object, object) object.GetHashCode() object.GetType() object.MemberwiseClone() object.ReferenceEquals(object, object) object.ToString() Constructors EventHookFactory() Create a factory that owns a background STA message pump when no UI thread is present. public EventHookFactory() EventHookFactory(nint?) Create a factory that uses an existing window handle for shell/hotkey messages (hosted scenarios). public EventHookFactory(nint? messagePumpHandle) Parameters messagePumpHandle nint? Methods Dispose() Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources. public void Dispose() GetApplicationWatcher() public ApplicationWatcher GetApplicationWatcher() Returns ApplicationWatcher GetClipboardWatcher() public ClipboardWatcher GetClipboardWatcher() Returns ClipboardWatcher GetHotkeyWatcher() public HotkeyWatcher GetHotkeyWatcher() Returns HotkeyWatcher GetKeyboardWatcher() public KeyboardWatcher GetKeyboardWatcher() Returns KeyboardWatcher GetMouseWatcher() public MouseWatcher GetMouseWatcher() Returns MouseWatcher GetPrintWatcher() public PrintWatcher GetPrintWatcher() Returns PrintWatcher"
+  },
+  "api/EventHook.Helpers.AppWindowFilter.html": {
+    "href": "api/EventHook.Helpers.AppWindowFilter.html",
+    "title": "Class AppWindowFilter | EventHook",
+    "summary": "Class AppWindowFilter Namespace EventHook.Helpers Assembly EventHook.dll Shared rules for deciding whether an HWND is an application or dialog window of interest. public static class AppWindowFilter Inheritance object AppWindowFilter Inherited Members object.Equals(object) object.Equals(object, object) object.GetHashCode() object.GetType() object.MemberwiseClone() object.ReferenceEquals(object, object) object.ToString() Properties CustomFilter Optional caller-supplied filter. Return true to keep the window, false to ignore it. Evaluated after built-in rules pass. public static Func<nint, bool> CustomFilter { get; set; } Property Value Func<nint, bool> IncludeDialogs When true (default), MessageBox / common dialog class windows are included. public static bool IncludeDialogs { get; set; } Property Value bool IncludeWindowsWithoutSysMenu When true (default), windows without WS_SYSMENU are still considered if they are visible top-level windows or standard dialogs (#32770). Set false to restore the legacy strict filter. public static bool IncludeWindowsWithoutSysMenu { get; set; } Property Value bool"
+  },
+  "api/EventHook.Helpers.MouseMessageFilter.html": {
+    "href": "api/EventHook.Helpers.MouseMessageFilter.html",
+    "title": "Class MouseMessageFilter | EventHook",
+    "summary": "Class MouseMessageFilter Namespace EventHook.Helpers Assembly EventHook.dll Helpers for filtering low-level mouse messages. public static class MouseMessageFilter Inheritance object MouseMessageFilter Inherited Members object.Equals(object) object.Equals(object, object) object.GetHashCode() object.GetType() object.MemberwiseClone() object.ReferenceEquals(object, object) object.ToString() Methods ShouldRaise(MouseMessages, bool) Returns false when includeMouseMove is false and the message is WM_MOUSEMOVE. public static bool ShouldRaise(MouseMessages message, bool includeMouseMove) Parameters message MouseMessages includeMouseMove bool Returns bool"
+  },
+  "api/EventHook.Helpers.html": {
+    "href": "api/EventHook.Helpers.html",
+    "title": "Namespace EventHook.Helpers | EventHook",
+    "summary": "Namespace EventHook.Helpers Classes AppWindowFilter Shared rules for deciding whether an HWND is an application or dialog window of interest. MouseMessageFilter Helpers for filtering low-level mouse messages."
+  },
+  "api/EventHook.Hooks.MouseMessages.html": {
+    "href": "api/EventHook.Hooks.MouseMessages.html",
+    "title": "Enum MouseMessages | EventHook",
+    "summary": "Enum MouseMessages Namespace EventHook.Hooks Assembly EventHook.dll The mouse messages. public enum MouseMessages Fields WM_LBUTTONDOWN = 513 WM_LBUTTONUP = 514 WM_MOUSEMOVE = 512 WM_MOUSEWHEEL = 522 WM_RBUTTONDOWN = 516 WM_RBUTTONUP = 517 WM_WHEELBUTTONDOWN = 519 WM_WHEELBUTTONUP = 520 WM_XBUTTONDOWN = 523 WM_XBUTTONUP = 524"
+  },
+  "api/EventHook.Hooks.Point.html": {
+    "href": "api/EventHook.Hooks.Point.html",
+    "title": "Struct Point | EventHook",
+    "summary": "Struct Point Namespace EventHook.Hooks Assembly EventHook.dll The point co-ordinate. public struct Point Inherited Members ValueType.Equals(object) ValueType.GetHashCode() ValueType.ToString() object.Equals(object, object) object.GetType() object.ReferenceEquals(object, object) Fields x public readonly int x Field Value int y public readonly int y Field Value int"
+  },
+  "api/EventHook.Hooks.WindowEventArgs.html": {
+    "href": "api/EventHook.Hooks.WindowEventArgs.html",
+    "title": "Class WindowEventArgs | EventHook",
+    "summary": "Class WindowEventArgs Namespace EventHook.Hooks Assembly EventHook.dll The window event arguments. public class WindowEventArgs Inheritance object WindowEventArgs Inherited Members object.Equals(object) object.Equals(object, object) object.GetHashCode() object.GetType() object.MemberwiseClone() object.ReferenceEquals(object, object) object.ToString() Constructors WindowEventArgs(nint) public WindowEventArgs(nint handle) Parameters handle nint Properties Handle public nint Handle { get; } Property Value nint"
+  },
+  "api/EventHook.Hooks.WindowHookEx.html": {
+    "href": "api/EventHook.Hooks.WindowHookEx.html",
+    "title": "Class WindowHookEx | EventHook",
+    "summary": "Class WindowHookEx Namespace EventHook.Hooks Assembly EventHook.dll Track events across all windows public sealed class WindowHookEx : IDisposable Inheritance object WindowHookEx Implements IDisposable Inherited Members object.Equals(object) object.Equals(object, object) object.GetHashCode() object.GetType() object.ReferenceEquals(object, object) object.ToString() Constructors WindowHookEx() Must be called from UI thread public WindowHookEx() Methods Dispose() Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources. public void Dispose() ~WindowHookEx() protected ~WindowHookEx() Events Activated Occurs when a window is about to be activated public event EventHandler<WindowEventArgs> Activated Event Type EventHandler<WindowEventArgs> Minimized Occurs when a window is about to be minimized public event EventHandler<WindowEventArgs> Minimized Event Type EventHandler<WindowEventArgs> TextChanged Occurs when window's text is changed public event EventHandler<WindowEventArgs> TextChanged Event Type EventHandler<WindowEventArgs> Unminimized Occurs when a window is about to be restored from minimized state public event EventHandler<WindowEventArgs> Unminimized Event Type EventHandler<WindowEventArgs>"
+  },
+  "api/EventHook.Hooks.html": {
+    "href": "api/EventHook.Hooks.html",
+    "title": "Namespace EventHook.Hooks | EventHook",
+    "summary": "Namespace EventHook.Hooks Classes WindowEventArgs The window event arguments. WindowHookEx Track events across all windows Structs Point The point co-ordinate. Enums MouseMessages The mouse messages."
+  },
+  "api/EventHook.HotkeyEventArgs.html": {
+    "href": "api/EventHook.HotkeyEventArgs.html",
+    "title": "Class HotkeyEventArgs | EventHook",
+    "summary": "Class HotkeyEventArgs Namespace EventHook Assembly EventHook.dll Arguments for a registered hotkey press. public class HotkeyEventArgs : EventArgs Inheritance object EventArgs HotkeyEventArgs Inherited Members EventArgs.Empty object.Equals(object) object.Equals(object, object) object.GetHashCode() object.GetType() object.MemberwiseClone() object.ReferenceEquals(object, object) object.ToString() Properties Id public object Id { get; set; } Property Value object Keys public Keys Keys { get; set; } Property Value Keys"
+  },
+  "api/EventHook.HotkeyWatcher.html": {
+    "href": "api/EventHook.HotkeyWatcher.html",
+    "title": "Class HotkeyWatcher | EventHook",
+    "summary": "Class HotkeyWatcher Namespace EventHook Assembly EventHook.dll Global hotkey watcher using RegisterHotKey / WM_HOTKEY on the shared message pump. public class HotkeyWatcher : IDisposable Inheritance object HotkeyWatcher Implements IDisposable Inherited Members object.Equals(object) object.Equals(object, object) object.GetHashCode() object.GetType() object.MemberwiseClone() object.ReferenceEquals(object, object) object.ToString() Methods Dispose() Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources. public void Dispose() Register(object, Keys) Register a hotkey. The same id is returned in OnHotkeyPressed. public void Register(object id, Keys keys) Parameters id object keys Keys Register<T>(T, Keys) Register a hotkey with a typed identifier. public void Register<T>(T id, Keys keys) Parameters id T keys Keys Type Parameters T Start() public void Start() Stop() public void Stop() Unregister(object) Unregister by the same id used in Register(object, Keys). public void Unregister(object id) Parameters id object Events OnHotkeyPressed public event EventHandler<HotkeyEventArgs> OnHotkeyPressed Event Type EventHandler<HotkeyEventArgs>"
+  },
+  "api/EventHook.KeyData.html": {
+    "href": "api/EventHook.KeyData.html",
+    "title": "Class KeyData | EventHook",
+    "summary": "Class KeyData Namespace EventHook Assembly EventHook.dll public class KeyData Inheritance object KeyData Inherited Members object.Equals(object) object.Equals(object, object) object.GetHashCode() object.GetType() object.MemberwiseClone() object.ReferenceEquals(object, object) object.ToString() Fields EventType public KeyEvent EventType Field Value KeyEvent Keyname public string Keyname Field Value string UnicodeCharacter public string UnicodeCharacter Field Value string"
+  },
+  "api/EventHook.KeyEvent.html": {
+    "href": "api/EventHook.KeyEvent.html",
+    "title": "Enum KeyEvent | EventHook",
+    "summary": "Enum KeyEvent Namespace EventHook Assembly EventHook.dll public enum KeyEvent Fields down = 0 up = 1"
+  },
+  "api/EventHook.KeyInputEventArgs.html": {
+    "href": "api/EventHook.KeyInputEventArgs.html",
+    "title": "Class KeyInputEventArgs | EventHook",
+    "summary": "Class KeyInputEventArgs Namespace EventHook Assembly EventHook.dll public class KeyInputEventArgs : EventArgs Inheritance object EventArgs KeyInputEventArgs Inherited Members EventArgs.Empty object.Equals(object) object.Equals(object, object) object.GetHashCode() object.GetType() object.MemberwiseClone() object.ReferenceEquals(object, object) object.ToString() Properties KeyData public KeyData KeyData { get; set; } Property Value KeyData"
+  },
+  "api/EventHook.KeyboardWatcher.html": {
+    "href": "api/EventHook.KeyboardWatcher.html",
+    "title": "Class KeyboardWatcher | EventHook",
+    "summary": "Class KeyboardWatcher Namespace EventHook Assembly EventHook.dll Low-level keyboard watcher. Always calls CallNextHookEx so layout shortcuts (e.g. Shift+Alt) keep working. Global hooks typically do not receive input inside remote desktop sessions. public class KeyboardWatcher : IDisposable Inheritance object KeyboardWatcher Implements IDisposable Inherited Members object.Equals(object) object.Equals(object, object) object.GetHashCode() object.GetType() object.MemberwiseClone() object.ReferenceEquals(object, object) object.ToString() Methods Dispose() Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources. public void Dispose() Start() public void Start() Stop() public void Stop() Events OnKeyInput public event EventHandler<KeyInputEventArgs> OnKeyInput Event Type EventHandler<KeyInputEventArgs>"
+  },
+  "api/EventHook.MouseEventArgs.html": {
+    "href": "api/EventHook.MouseEventArgs.html",
+    "title": "Class MouseEventArgs | EventHook",
+    "summary": "Class MouseEventArgs Namespace EventHook Assembly EventHook.dll public class MouseEventArgs : EventArgs Inheritance object EventArgs MouseEventArgs Inherited Members EventArgs.Empty object.Equals(object) object.Equals(object, object) object.GetHashCode() object.GetType() object.MemberwiseClone() object.ReferenceEquals(object, object) object.ToString() Properties Message public MouseMessages Message { get; set; } Property Value MouseMessages MouseData public uint MouseData { get; set; } Property Value uint Point public Point Point { get; set; } Property Value Point"
+  },
+  "api/EventHook.MouseWatcher.html": {
+    "href": "api/EventHook.MouseWatcher.html",
+    "title": "Class MouseWatcher | EventHook",
+    "summary": "Class MouseWatcher Namespace EventHook Assembly EventHook.dll Low-level mouse watcher with optional mouse-move filtering. public class MouseWatcher : IDisposable Inheritance object MouseWatcher Implements IDisposable Inherited Members object.Equals(object) object.Equals(object, object) object.GetHashCode() object.GetType() object.MemberwiseClone() object.ReferenceEquals(object, object) object.ToString() Properties IncludeMouseMove When false, WM_MOUSEMOVE events are not raised (buttons/wheel still are). Default true. public bool IncludeMouseMove { get; set; } Property Value bool Methods Dispose() Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources. public void Dispose() Start() public void Start() Stop() public void Stop() Events OnMouseInput public event EventHandler<MouseEventArgs> OnMouseInput Event Type EventHandler<MouseEventArgs>"
+  },
+  "api/EventHook.PrintEventArgs.html": {
+    "href": "api/EventHook.PrintEventArgs.html",
+    "title": "Class PrintEventArgs | EventHook",
+    "summary": "Class PrintEventArgs Namespace EventHook Assembly EventHook.dll public class PrintEventArgs : EventArgs Inheritance object EventArgs PrintEventArgs Inherited Members EventArgs.Empty object.Equals(object) object.Equals(object, object) object.GetHashCode() object.GetType() object.MemberwiseClone() object.ReferenceEquals(object, object) object.ToString() Properties EventData public PrintEventData EventData { get; set; } Property Value PrintEventData"
+  },
+  "api/EventHook.PrintEventData.html": {
+    "href": "api/EventHook.PrintEventData.html",
+    "title": "Class PrintEventData | EventHook",
+    "summary": "Class PrintEventData Namespace EventHook Assembly EventHook.dll public class PrintEventData Inheritance object PrintEventData Inherited Members object.Equals(object) object.Equals(object, object) object.GetHashCode() object.GetType() object.MemberwiseClone() object.ReferenceEquals(object, object) object.ToString() Properties EventDateTime public DateTime EventDateTime { get; set; } Property Value DateTime JobName public string JobName { get; set; } Property Value string JobSize public int? JobSize { get; set; } Property Value int? Pages public int? Pages { get; set; } Property Value int? PrinterName public string PrinterName { get; set; } Property Value string"
+  },
+  "api/EventHook.PrintWatcher.html": {
+    "href": "api/EventHook.PrintWatcher.html",
+    "title": "Class PrintWatcher | EventHook",
+    "summary": "Class PrintWatcher Namespace EventHook Assembly EventHook.dll Watches local print queues including virtual printers such as Microsoft Print to PDF. public class PrintWatcher : IDisposable Inheritance object PrintWatcher Implements IDisposable Inherited Members object.Equals(object) object.Equals(object, object) object.GetHashCode() object.GetType() object.MemberwiseClone() object.ReferenceEquals(object, object) object.ToString() Methods Dispose() Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources. public void Dispose() Start() public void Start() Stop() public void Stop() Events OnPrintEvent public event EventHandler<PrintEventArgs> OnPrintEvent Event Type EventHandler<PrintEventArgs>"
+  },
+  "api/EventHook.WindowData.html": {
+    "href": "api/EventHook.WindowData.html",
+    "title": "Class WindowData | EventHook",
+    "summary": "Class WindowData Namespace EventHook Assembly EventHook.dll public class WindowData Inheritance object WindowData Inherited Members object.Equals(object) object.Equals(object, object) object.GetHashCode() object.GetType() object.MemberwiseClone() object.ReferenceEquals(object, object) object.ToString() Fields EventType public int EventType Field Value int HWnd public nint HWnd Field Value nint Properties AppName public string AppName { get; set; } Property Value string AppPath public string AppPath { get; set; } Property Value string AppTitle public string AppTitle { get; set; } Property Value string"
+  },
+  "api/EventHook.html": {
+    "href": "api/EventHook.html",
+    "title": "Namespace EventHook | EventHook",
+    "summary": "Namespace EventHook Classes ApplicationEventArgs ApplicationWatcher Watches top-level application windows and common dialogs (including MessageBox). ClipboardEventArgs ClipboardWatcher Clipboard watcher including text, images, and file drops. Context-menu paste is visible here because it changes clipboard contents globally; WM_PASTE itself is application-local and is not hooked. EventHookFactory Factory for watchers that share one message pump / synchronization context. Dispose only after all watchers are stopped. HotkeyEventArgs Arguments for a registered hotkey press. HotkeyWatcher Global hotkey watcher using RegisterHotKey / WM_HOTKEY on the shared message pump. KeyData KeyInputEventArgs KeyboardWatcher Low-level keyboard watcher. Always calls CallNextHookEx so layout shortcuts (e.g. Shift+Alt) keep working. Global hooks typically do not receive input inside remote desktop sessions. MouseEventArgs MouseWatcher Low-level mouse watcher with optional mouse-move filtering. PrintEventArgs PrintEventData PrintWatcher Watches local print queues including virtual printers such as Microsoft Print to PDF. WindowData Enums ApplicationEvents ClipboardContentTypes Type of clipboard content. KeyEvent"
+  },
+  "index.html": {
+    "href": "index.html",
+    "title": "EventHook | EventHook",
+    "summary": "EventHook A .NET 10 Windows library for global keyboard, mouse, clipboard, application, print, and hotkey events. Install dotnet add package EventHook Quick start using (var factory = new EventHookFactory()) { var keyboard = factory.GetKeyboardWatcher(); keyboard.Start(); keyboard.OnKeyInput += (_, e) => Console.WriteLine(e.KeyData.Keyname); } See the GitHub README for full samples."
+  }
+}

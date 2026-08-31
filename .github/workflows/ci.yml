@@ -4,14 +4,21 @@ on:
   push:
     branches: [develop, master, main, stable, beta]
     tags: ['v2.*']
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
   pull_request:
     branches: [develop, master, main, beta, stable]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
 
 jobs:
   build:
     runs-on: windows-latest
     permissions:
-      contents: read
+      # write: Publish Documentation (EndBug/add-and-commit) pushes DocFX output to develop.
+      contents: write
       pull-requests: write
       checks: write
     env:
@@ -51,7 +58,7 @@ jobs:
           /d:sonar.token="$env:SONAR_TOKEN"
           /d:sonar.host.url="https://sonarcloud.io"
           /d:sonar.cs.vscoveragexml.reportsPaths="coverage/coverage.xml"
-          /d:sonar.exclusions="**/docs/**,**/docs-src/**,**/examples/**,**/_site/**,**/.github/**"
+          /d:sonar.exclusions="**/docs/**,**/examples/**,**/_site/**,**/.github/**"
 
       - name: Build for SonarCloud analysis
         if: env.SONAR_TOKEN != ''
@@ -87,18 +94,30 @@ jobs:
           if-no-files-found: ignore
 
       - name: Install DocFX
-        run: dotnet tool restore
-
-      - name: Build docs
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+        shell: pwsh
         run: |
-          dotnet tool run docfx metadata docfx.json
-          dotnet tool run docfx build docfx.json
+          dotnet tool restore
+          dotnet tool install --global docfx --version 2.78.3
+          Add-Content -Path $env:GITHUB_PATH -Value "$env:USERPROFILE\.dotnet\tools"
 
-      - name: Upload docs site
-        uses: actions/upload-artifact@v4
+      - name: Update Documentation
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+        shell: pwsh
+        run: |
+          if (Test-Path docs) { Remove-Item -Recurse -Force docs }
+          docfx .github/docfx.json
+
+      - name: Publish Documentation
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+        uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5 # v9
         with:
-          name: docs-site
-          path: _site
+          default_author: github_actions
+          message: Update documentation
+          committer_name: GitHub Actions
+          committer_email: actions@github.com
+          add: 'docs'
+          pull: '--rebase --autostash'
 
   publish:
     name: Publish NuGet package
@@ -178,18 +197,3 @@ jobs:
             if ($prerelease) { $args += "--prerelease" }
             gh @args
           }
-
-      - name: Download docs site
-        if: github.ref == 'refs/heads/stable' || startsWith(github.ref, 'refs/tags/v2')
-        uses: actions/download-artifact@v4
-        with:
-          name: docs-site
-          path: _site
-
-      - name: Deploy GitHub Pages
-        if: github.ref == 'refs/heads/stable' || startsWith(github.ref, 'refs/tags/v2')
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./_site
-          destination_dir: docs

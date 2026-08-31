@@ -21,7 +21,7 @@ A .NET library to subscribe to Windows global user actions: keyboard, mouse, cli
 
 **Requires:** .NET 10 on Windows (`net10.0-windows`). AnyCPU — works on x86, x64, and ARM64 Windows when P/Invoke pointer sizes are correct (v2 fixes these).
 
-* [API Documentation](https://justcoding121.github.io/windows-user-action-hook/docs/)
+* [API Documentation](docs/api/EventHook.html) (generated DocFX site on `develop`)
 
 ## Install
 
@@ -103,7 +103,7 @@ See `examples/EventHook.VB.Example`. Context-menu paste is observed via the clip
 - `dotnet build src/EventHook.sln -c Release`
 - `dotnet test tests/EventHook.Tests`
 - `dotnet test tests/EventHook.IntegrationTests`
-- Docs: `dotnet tool restore` then `dotnet tool run docfx metadata docfx.json` and `dotnet tool run docfx build docfx.json`
+- Docs: `dotnet tool restore` then `docfx .github/docfx.json` (writes API HTML under `docs/`, same as titanium-web-proxy)
 
 ### Release branches
 
