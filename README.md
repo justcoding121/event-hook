@@ -96,8 +96,8 @@ See `examples/EventHook.VB.Example`. Context-menu paste is observed via the clip
 | Branch | NuGet | Notes |
 |---|---|---|
 | `develop` | (no publish) | CI build + tests + DocFX |
-| `beta` | `EventHook` **2.0.0-beta** | Merge `develop` → `beta` to publish prerelease |
-| `stable` / tag `v2.*` | `EventHook` **2.0.0** | Stable release + GitHub Pages docs |
+| `beta` | `{VersionPrefix}-beta` from [EventHook.csproj](src/EventHook/EventHook.csproj) | Merge `develop` → `beta` to publish prerelease |
+| `stable` / tag `v*` | `{VersionPrefix}` from csproj | Stable release + GitHub Pages docs |
 
 Publishing uses NuGet Trusted Publishing (`NUGET_USER` on the `nuget-publish` environment), same pattern as titanium-web-proxy.
 

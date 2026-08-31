@@ -72,11 +72,11 @@ jobs:
 
       - name: Pack Beta
         if: github.ref == 'refs/heads/beta'
-        run: dotnet pack src/EventHook/EventHook.csproj -c Release -p:PackageVersion=2.0.0-beta -o artifacts
+        run: dotnet pack src/EventHook/EventHook.csproj -c Release --version-suffix beta -o artifacts
 
       - name: Pack Stable
         if: github.ref == 'refs/heads/stable' || startsWith(github.ref, 'refs/tags/v2')
-        run: dotnet pack src/EventHook/EventHook.csproj -c Release -p:PackageVersion=2.0.0 -o artifacts
+        run: dotnet pack src/EventHook/EventHook.csproj -c Release -o artifacts
 
       - name: Resolve package version
         id: package
