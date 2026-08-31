@@ -6,9 +6,6 @@ using EventHook.Hooks;
 
 namespace EventHook
 {
-    /// <summary>
-    ///     Event argument to pass data through user callbacks.
-    /// </summary>
     public class MouseEventArgs : EventArgs
     {
         public MouseMessages Message { get; set; }
@@ -17,109 +14,120 @@ namespace EventHook
     }
 
     /// <summary>
-    ///     Wraps low level mouse hook.
-    ///     Uses a producer-consumer pattern to improve performance and to avoid operating system forcing unhook on delayed
-    ///     user callbacks.
+    /// Low-level mouse watcher with optional mouse-move filtering.
     /// </summary>
-    public class MouseWatcher
+    public class MouseWatcher : IDisposable
     {
         private readonly object accesslock = new object();
-
         private readonly SyncFactory factory;
-
         private MouseHook mouseHook;
         private AsyncConcurrentQueue<object> mouseQueue;
         private CancellationTokenSource taskCancellationTokenSource;
+        private bool isRunning;
+        private bool disposed;
+
+        /// <summary>
+        /// When false, WM_MOUSEMOVE events are not raised (buttons/wheel still are). Default true.
+        /// </summary>
+        public bool IncludeMouseMove { get; set; } = true;
 
         internal MouseWatcher(SyncFactory factory)
         {
             this.factory = factory;
         }
 
-        private bool isRunning { get; set; }
         public event EventHandler<MouseEventArgs> OnMouseInput;
 
-        /// <summary>
-        ///     Start watching mouse events
-        /// </summary>
         public void Start()
-        {
-            lock (accesslock)
-            {
-                if (!isRunning)
-                {
-                    taskCancellationTokenSource = new CancellationTokenSource();
-                    mouseQueue = new AsyncConcurrentQueue<object>(taskCancellationTokenSource.Token);
-                    //This needs to run on UI thread context
-                    //So use task factory with the shared UI message pump thread
-                    Task.Factory.StartNew(() =>
-                        {
-                            mouseHook = new MouseHook();
-                            mouseHook.MouseAction += MListener;
-                            mouseHook.Start();
-                        },
-                        CancellationToken.None,
-                        TaskCreationOptions.None,
-                        factory.GetTaskScheduler()).Wait();
-
-                    Task.Factory.StartNew(() => ConsumeKeyAsync());
-
-                    isRunning = true;
-                }
-            }
-        }
-
-        /// <summary>
-        ///     Stop watching mouse events
-        /// </summary>
-        public void Stop()
         {
             lock (accesslock)
             {
                 if (isRunning)
                 {
-                    if (mouseHook != null)
-                    {
-                        //This needs to run on UI thread context
-                        //So use task factory with the shared UI message pump thread
-                        Task.Factory.StartNew(() =>
-                            {
-                                mouseHook.MouseAction -= MListener;
-                                mouseHook.Stop();
-                                mouseHook = null;
-                            },
-                            CancellationToken.None,
-                            TaskCreationOptions.None,
-                            factory.GetTaskScheduler());
-                    }
-
-                    mouseQueue.Enqueue(false);
-                    isRunning = false;
-                    taskCancellationTokenSource.Cancel();
+                    return;
                 }
+
+                taskCancellationTokenSource = new CancellationTokenSource();
+                mouseQueue = new AsyncConcurrentQueue<object>(taskCancellationTokenSource.Token);
+
+                factory.RunOnPump(() =>
+                {
+                    mouseHook = new MouseHook();
+                    mouseHook.MouseAction += MListener;
+                    mouseHook.Start();
+                });
+
+                Task.Factory.StartNew(ConsumeAsync);
+                isRunning = true;
             }
         }
 
-        /// <summary>
-        ///     Add mouse event to our producer queue
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void MListener(object sender, RawMouseEventArgs e)
+        public void Stop()
         {
-            mouseQueue.Enqueue(e);
+            lock (accesslock)
+            {
+                if (!isRunning)
+                {
+                    return;
+                }
+
+                factory.RunOnPump(() =>
+                {
+                    if (mouseHook != null)
+                    {
+                        mouseHook.MouseAction -= MListener;
+                        mouseHook.Stop();
+                        mouseHook = null;
+                    }
+                });
+
+                mouseQueue.Enqueue(false);
+                isRunning = false;
+                taskCancellationTokenSource.Cancel();
+            }
         }
 
-        /// <summary>
-        ///     Consume mouse events in our producer queue asynchronously
-        /// </summary>
-        /// <returns></returns>
-        private async Task ConsumeKeyAsync()
+        public void Dispose()
+        {
+            if (disposed)
+            {
+                return;
+            }
+
+            disposed = true;
+            Stop();
+        }
+
+        private void MListener(object sender, RawMouseEventArgs e)
+        {
+            try
+            {
+                if (!MouseMessageFilter.ShouldRaise(e.Message, IncludeMouseMove))
+                {
+                    return;
+                }
+
+                mouseQueue?.Enqueue(e);
+            }
+            catch
+            {
+                // never throw from hook callback
+            }
+        }
+
+        private async Task ConsumeAsync()
         {
             while (isRunning)
             {
-                //blocking here until a key is added to the queue
-                var item = await mouseQueue.DequeueAsync();
+                object item;
+                try
+                {
+                    item = await mouseQueue.DequeueAsync();
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
 
                 if (item is null)
                 {
@@ -131,17 +139,17 @@ namespace EventHook
                     break;
                 }
 
-                KListener_KeyDown(item as RawMouseEventArgs);
+                try
+                {
+                    var kd = (RawMouseEventArgs)item;
+                    OnMouseInput?.Invoke(this,
+                        new MouseEventArgs { Message = kd.Message, Point = kd.Point, MouseData = kd.MouseData });
+                }
+                catch
+                {
+                    // swallow
+                }
             }
-        }
-
-        /// <summary>
-        ///     Invoke user callbacks with the argument
-        /// </summary>
-        /// <param name="kd"></param>
-        private void KListener_KeyDown(RawMouseEventArgs kd)
-        {
-            OnMouseInput?.Invoke(null, new MouseEventArgs { Message = kd.Message, Point = kd.Point, MouseData = kd.MouseData });
         }
     }
 }

@@ -4,12 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using EventHook.Helpers;
 using EventHook.Hooks;
+using EventHook.Hooks.Library;
 
 namespace EventHook
 {
-    /// <summary>
-    ///     An enum for the type of application event.
-    /// </summary>
     public enum ApplicationEvents
     {
         Launched,
@@ -17,22 +15,15 @@ namespace EventHook
         Activated
     }
 
-    /// <summary>
-    ///     An object that holds information on application event.
-    /// </summary>
     public class WindowData
     {
         public int EventType;
         public IntPtr HWnd;
-
         public string AppPath { get; set; }
         public string AppName { get; set; }
         public string AppTitle { get; set; }
     }
 
-    /// <summary>
-    ///     An event argument object send to user.
-    /// </summary>
     public class ApplicationEventArgs : EventArgs
     {
         public WindowData ApplicationData { get; set; }
@@ -40,34 +31,27 @@ namespace EventHook
     }
 
     /// <summary>
-    ///     A wrapper around shell hook to hook application window change events.
-    ///     Uses a producer-consumer pattern to improve performance and to avoid operating system forcing unhook on delayed
-    ///     user callbacks.
+    /// Watches top-level application windows and common dialogs (including MessageBox).
     /// </summary>
-    public class ApplicationWatcher
+    public class ApplicationWatcher : IDisposable
     {
+        private const uint EVENT_SYSTEM_DIALOGSTART = 0x0010;
+        private const uint EVENT_SYSTEM_DIALOGEND = 0x0011;
+        private const uint WINEVENT_OUTOFCONTEXT = 0;
+
         private readonly object accesslock = new object();
-
         private readonly SyncFactory factory;
-
         private Dictionary<IntPtr, WindowData> activeWindows;
         private AsyncConcurrentQueue<object> appQueue;
         private bool isRunning;
-
-        /// <summary>
-        ///     Add window handle to active windows collection
-        /// </summary>
+        private bool disposed;
         private bool lastEventWasLaunched;
-
-        /// <summary>
-        ///     A handle to keep track of last window launched
-        /// </summary>
         private IntPtr lastHwndLaunched;
-
-        private DateTime prevTimeApp;
         private CancellationTokenSource taskCancellationTokenSource;
-
         private WindowHook windowHook;
+        private IntPtr dialogStartHook = IntPtr.Zero;
+        private IntPtr dialogEndHook = IntPtr.Zero;
+        private WinEventProc dialogProc;
 
         internal ApplicationWatcher(SyncFactory factory)
         {
@@ -76,117 +60,147 @@ namespace EventHook
 
         public event EventHandler<ApplicationEventArgs> OnApplicationWindowChange;
 
-        /// <summary>
-        ///     Start to watch
-        /// </summary>
         public void Start()
-        {
-            lock (accesslock)
-            {
-                if (!isRunning)
-                {
-                    activeWindows = new Dictionary<IntPtr, WindowData>();
-                    prevTimeApp = DateTime.Now;
-
-                    taskCancellationTokenSource = new CancellationTokenSource();
-                    appQueue = new AsyncConcurrentQueue<object>(taskCancellationTokenSource.Token);
-
-                    //This needs to run on UI thread context
-                    //So use task factory with the shared UI message pump thread
-                    Task.Factory.StartNew(() =>
-                        {
-                            windowHook = new WindowHook(factory);
-                            windowHook.WindowCreated += WindowCreated;
-                            windowHook.WindowDestroyed += WindowDestroyed;
-                            windowHook.WindowActivated += WindowActivated;
-                        },
-                        CancellationToken.None,
-                        TaskCreationOptions.None,
-                        factory.GetTaskScheduler()).Wait();
-
-                    lastEventWasLaunched = false;
-                    lastHwndLaunched = IntPtr.Zero;
-
-                    Task.Factory.StartNew(() => AppConsumer());
-                    isRunning = true;
-                }
-            }
-        }
-
-        /// <summary>
-        ///     Quit watching
-        /// </summary>
-        public void Stop()
         {
             lock (accesslock)
             {
                 if (isRunning)
                 {
-                    //This needs to run on UI thread context
-                    //So use task factory with the shared UI message pump thread
-                    Task.Factory.StartNew(() =>
-                        {
-                            windowHook.WindowCreated -= WindowCreated;
-                            windowHook.WindowDestroyed -= WindowDestroyed;
-                            windowHook.WindowActivated -= WindowActivated;
-                            windowHook.Destroy();
-                        },
-                        CancellationToken.None,
-                        TaskCreationOptions.None,
-                        factory.GetTaskScheduler());
-
-                    appQueue.Enqueue(false);
-                    isRunning = false;
-                    taskCancellationTokenSource.Cancel();
+                    return;
                 }
+
+                activeWindows = new Dictionary<IntPtr, WindowData>();
+                taskCancellationTokenSource = new CancellationTokenSource();
+                appQueue = new AsyncConcurrentQueue<object>(taskCancellationTokenSource.Token);
+
+                factory.RunOnPump(() =>
+                {
+                    windowHook = new WindowHook(factory);
+                    windowHook.WindowCreated += WindowCreated;
+                    windowHook.WindowDestroyed += WindowDestroyed;
+                    windowHook.WindowActivated += WindowActivated;
+
+                    dialogProc = OnDialogWinEvent;
+                    dialogStartHook = User32.SetWinEventHook(EVENT_SYSTEM_DIALOGSTART, EVENT_SYSTEM_DIALOGSTART,
+                        IntPtr.Zero, dialogProc, 0, 0, WINEVENT_OUTOFCONTEXT);
+                    dialogEndHook = User32.SetWinEventHook(EVENT_SYSTEM_DIALOGEND, EVENT_SYSTEM_DIALOGEND,
+                        IntPtr.Zero, dialogProc, 0, 0, WINEVENT_OUTOFCONTEXT);
+                });
+
+                lastEventWasLaunched = false;
+                lastHwndLaunched = IntPtr.Zero;
+                Task.Factory.StartNew(AppConsumer);
+                isRunning = true;
             }
         }
 
-        /// <summary>
-        ///     A windows was created on desktop
-        /// </summary>
-        /// <param name="shellObject"></param>
-        /// <param name="hWnd"></param>
-        private void WindowCreated(ShellHook shellObject, IntPtr hWnd)
+        public void Stop()
         {
-            appQueue.Enqueue(new WindowData { HWnd = hWnd, EventType = 0 });
+            lock (accesslock)
+            {
+                if (!isRunning)
+                {
+                    return;
+                }
+
+                factory.RunOnPump(() =>
+                {
+                    if (windowHook != null)
+                    {
+                        windowHook.WindowCreated -= WindowCreated;
+                        windowHook.WindowDestroyed -= WindowDestroyed;
+                        windowHook.WindowActivated -= WindowActivated;
+                        windowHook.Destroy();
+                        windowHook = null;
+                    }
+
+                    if (dialogStartHook != IntPtr.Zero)
+                    {
+                        User32.UnhookWinEvent(dialogStartHook);
+                        dialogStartHook = IntPtr.Zero;
+                    }
+
+                    if (dialogEndHook != IntPtr.Zero)
+                    {
+                        User32.UnhookWinEvent(dialogEndHook);
+                        dialogEndHook = IntPtr.Zero;
+                    }
+
+                    dialogProc = null;
+                });
+
+                appQueue.Enqueue(false);
+                isRunning = false;
+                taskCancellationTokenSource.Cancel();
+            }
         }
 
-        /// <summary>
-        ///     An existing desktop window was destroyed
-        /// </summary>
-        /// <param name="shellObject"></param>
-        /// <param name="hWnd"></param>
-        private void WindowDestroyed(ShellHook shellObject, IntPtr hWnd)
+        public void Dispose()
         {
-            appQueue.Enqueue(new WindowData { HWnd = hWnd, EventType = 2 });
+            if (disposed)
+            {
+                return;
+            }
+
+            disposed = true;
+            Stop();
         }
 
-        /// <summary>
-        ///     A windows was brought to foreground
-        /// </summary>
-        /// <param name="shellObject"></param>
-        /// <param name="hWnd"></param>
-        private void WindowActivated(ShellHook shellObject, IntPtr hWnd)
+        private void OnDialogWinEvent(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild,
+            uint dwEventThread, uint dwmsEventTime)
         {
-            appQueue.Enqueue(new WindowData { HWnd = hWnd, EventType = 1 });
+            try
+            {
+                if (hwnd == IntPtr.Zero || idObject != 0)
+                {
+                    return;
+                }
+
+                if (!AppWindowFilter.IsAppWindow(hwnd) && !AppWindowFilter.IncludeDialogs)
+                {
+                    return;
+                }
+
+                // Dialogs often lack WS_SYSMENU; still raise when IncludeDialogs is on.
+                if (eventType == EVENT_SYSTEM_DIALOGSTART)
+                {
+                    appQueue?.Enqueue(new WindowData { HWnd = hwnd, EventType = 0 });
+                }
+                else if (eventType == EVENT_SYSTEM_DIALOGEND)
+                {
+                    appQueue?.Enqueue(new WindowData { HWnd = hwnd, EventType = 2 });
+                }
+            }
+            catch
+            {
+                // never throw from win event
+            }
         }
 
-        /// <summary>
-        ///     This is used to avoid blocking low level hooks
-        ///     Otherwise if user takes long time to return the message
-        ///     OS will unsubscribe the hook
-        ///     Producer-consumer
-        /// </summary>
-        /// <returns></returns>
+        private void WindowCreated(ShellHook shellObject, IntPtr hWnd) =>
+            appQueue?.Enqueue(new WindowData { HWnd = hWnd, EventType = 0 });
+
+        private void WindowDestroyed(ShellHook shellObject, IntPtr hWnd) =>
+            appQueue?.Enqueue(new WindowData { HWnd = hWnd, EventType = 2 });
+
+        private void WindowActivated(ShellHook shellObject, IntPtr hWnd) =>
+            appQueue?.Enqueue(new WindowData { HWnd = hWnd, EventType = 1 });
+
         private async Task AppConsumer()
         {
             while (isRunning)
             {
-                //blocking here until a key is added to the queue
-                var item = await appQueue.DequeueAsync();
-               
-                if(item is null)
+                object item;
+                try
+                {
+                    item = await appQueue.DequeueAsync();
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+
+                if (item is null)
                 {
                     continue;
                 }
@@ -200,32 +214,31 @@ namespace EventHook
                 switch (wnd.EventType)
                 {
                     case 0:
-                        WindowCreated(wnd);
+                        OnWindowCreated(wnd);
                         break;
                     case 1:
-                        WindowActivated(wnd);
+                        OnWindowActivated(wnd);
                         break;
                     case 2:
-                        WindowDestroyed(wnd);
+                        OnWindowDestroyed(wnd);
                         break;
                 }
             }
         }
 
-        /// <summary>
-        ///     A window got created
-        /// </summary>
-        /// <param name="wnd"></param>
-        private void WindowCreated(WindowData wnd)
+        private void OnWindowCreated(WindowData wnd)
         {
-            activeWindows.Add(wnd.HWnd, wnd);
-            ApplicationStatus(wnd, ApplicationEvents.Launched);
+            if (!activeWindows.ContainsKey(wnd.HWnd))
+            {
+                activeWindows.Add(wnd.HWnd, wnd);
+            }
 
+            ApplicationStatus(wnd, ApplicationEvents.Launched);
             lastEventWasLaunched = true;
             lastHwndLaunched = wnd.HWnd;
         }
 
-        private void WindowActivated(WindowData wnd)
+        private void OnWindowActivated(WindowData wnd)
         {
             if (activeWindows.ContainsKey(wnd.HWnd))
             {
@@ -234,43 +247,48 @@ namespace EventHook
                     ApplicationStatus(activeWindows[wnd.HWnd], ApplicationEvents.Activated);
                 }
             }
+            else if (AppWindowFilter.IsAppWindow(wnd.HWnd))
+            {
+                // Window became relevant after creation (visibility) — treat as launched then activated.
+                OnWindowCreated(wnd);
+            }
 
             lastEventWasLaunched = false;
         }
 
-        /// <summary>
-        ///     Remove handle from active window collection
-        /// </summary>
-        /// <param name="wnd"></param>
-        private void WindowDestroyed(WindowData wnd)
+        private void OnWindowDestroyed(WindowData wnd)
         {
             if (activeWindows.ContainsKey(wnd.HWnd))
             {
                 ApplicationStatus(activeWindows[wnd.HWnd], ApplicationEvents.Closed);
                 activeWindows.Remove(wnd.HWnd);
             }
+            else
+            {
+                // Still notify for dialogs tracked only via WinEvent
+                ApplicationStatus(wnd, ApplicationEvents.Closed);
+            }
 
             lastEventWasLaunched = false;
         }
 
-
-        /// <summary>
-        ///     invoke user call back
-        /// </summary>
-        /// <param name="wnd"></param>
-        /// <param name="appEvent"></param>
         private void ApplicationStatus(WindowData wnd, ApplicationEvents appEvent)
         {
-            var timeStamp = DateTime.Now;
+            try
+            {
+                wnd.AppTitle = appEvent == ApplicationEvents.Closed ? wnd.AppTitle : WindowHelper.GetWindowText(wnd.HWnd);
+                wnd.AppPath = appEvent == ApplicationEvents.Closed ? wnd.AppPath : WindowHelper.GetAppPath(wnd.HWnd);
+                wnd.AppName = appEvent == ApplicationEvents.Closed
+                    ? wnd.AppName
+                    : WindowHelper.GetAppDescription(wnd.AppPath);
 
-            wnd.AppTitle = appEvent == ApplicationEvents.Closed ? wnd.AppTitle : WindowHelper.GetWindowText(wnd.HWnd);
-            wnd.AppPath = appEvent == ApplicationEvents.Closed ? wnd.AppPath : WindowHelper.GetAppPath(wnd.HWnd);
-            wnd.AppName = appEvent == ApplicationEvents.Closed
-                ? wnd.AppName
-                : WindowHelper.GetAppDescription(wnd.AppPath);
-
-            OnApplicationWindowChange?.Invoke(null,
-                new ApplicationEventArgs { ApplicationData = wnd, Event = appEvent });
+                OnApplicationWindowChange?.Invoke(this,
+                    new ApplicationEventArgs { ApplicationData = wnd, Event = appEvent });
+            }
+            catch
+            {
+                // swallow
+            }
         }
     }
 }

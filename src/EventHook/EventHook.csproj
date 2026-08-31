@@ -1,118 +1,45 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3847A7F4-3F6B-4626-AF4C-8FDFBA6165F2}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <LangVersion>latest</LangVersion>
     <RootNamespace>EventHook</RootNamespace>
     <AssemblyName>EventHook</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
-    <TargetFrameworkProfile />
-    <NuGetToolsPath>..\..\.nuget</NuGetToolsPath>
-    <PackageInstallDir>..</PackageInstallDir>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NET45</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;NET45</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <Version>2.0.0</Version>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <FileVersion>2.0.0.0</FileVersion>
+    <PackageId>EventHook</PackageId>
+    <Title>EventHook</Title>
+    <Authors>justcoding121</Authors>
+    <Company>justcoding121</Company>
+    <Description>Subscribe to Windows global user actions: keyboard, mouse, clipboard, application windows, print, and hotkeys.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/justcoding121/windows-user-action-hook</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/justcoding121/windows-user-action-hook</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>windows;hooks;keyboard;mouse;clipboard;hotkey;print</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
     <AssemblyOriginatorKeyFile>StrongNameKey.snk</AssemblyOriginatorKeyFile>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Microsoft.Office.Interop.Outlook, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Net" />
-    <Reference Include="System.Printing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="UIAutomationClient" />
-    <Reference Include="UIAutomationProvider" />
-    <Reference Include="UIAutomationTypes" />
-    <Reference Include="WindowsBase" />
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="ApplicationWatcher.cs" />
-    <Compile Include="ClipboardWatcher.cs" />
-    <Compile Include="EventHookFactory.cs" />
-    <Compile Include="Helpers\AsyncConcurrentQueue.cs" />
-    <Compile Include="Helpers\SyncFactory.cs" />
-    <Compile Include="Hooks\WindowHookEx.cs" />
-    <Compile Include="KeyboardWatcher.cs" />
-    <Compile Include="MouseWatcher.cs" />
-    <Compile Include="PrintWatcher.cs" />
-    <Compile Include="Hooks\WindowHook.cs" />
-    <Compile Include="Helpers\WindowHelper.cs" />
-    <Compile Include="Hooks\ClipBoardHook.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Hooks\KeyboardHook.cs" />
-    <Compile Include="Hooks\MouseHook.cs" />
-    <Compile Include="Hooks\PrintQueueHook.cs" />
-    <Compile Include="Hooks\ShellHook.cs" />
-    <Compile Include="Hooks\Library\Enum.cs" />
-    <Compile Include="Hooks\Library\Msgs.cs" />
-    <Compile Include="Hooks\Library\PrintSpoolAPI.cs" />
-    <Compile Include="Hooks\Library\Procs.cs" />
-    <Compile Include="Hooks\Library\Structs.cs" />
-    <Compile Include="Hooks\Library\User32.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <InternalsVisibleTo Include="EventHook.Tests, PublicKey=002400000480000094000000060200000024000052534131000400000100010079b321ed64dd41b5c5d69b50bc0eb8d6d0f8ebae75cc04b8654fc269d6257a957e4760b5f5180dae3bbaf0f591af1f697c1e371e515146f323df33b7d5454f875e1c3dc8c57635b52c325e537cdce870fd37bfb96fb2af0f5d14d67e5fcdf9428628d8194cc2d2d5470697636350d41a542b1f0b42d794b87bd9db0057b747c2" />
+    <InternalsVisibleTo Include="EventHook.IntegrationTests, PublicKey=002400000480000094000000060200000024000052534131000400000100010079b321ed64dd41b5c5d69b50bc0eb8d6d0f8ebae75cc04b8654fc269d6257a957e4760b5f5180dae3bbaf0f591af1f697c1e371e515146f323df33b7d5454f875e1c3dc8c57635b52c325e537cdce870fd37bfb96fb2af0f5d14d67e5fcdf9428628d8194cc2d2d5470697636350d41a542b1f0b42d794b87bd9db0057b747c2" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="StrongNameKey.snk" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\..\.nuget\NuGet.targets" Condition="Exists('..\..\.nuget\NuGet.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\..\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\.nuget\NuGet.targets'))" />
-  </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

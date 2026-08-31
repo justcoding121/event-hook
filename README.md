@@ -1,84 +1,98 @@
-## Windows User Action Hook
+# Windows User Action Hook (EventHook)
 
-### Note: This Project is no longer maintained. 
+[![CI](https://github.com/justcoding121/windows-user-action-hook/actions/workflows/ci.yml/badge.svg)](https://github.com/justcoding121/windows-user-action-hook/actions/workflows/ci.yml)
+[![NuGet](https://img.shields.io/nuget/v/EventHook.svg)](https://www.nuget.org/packages/EventHook)
 
-A one stop library for global windows user actions such mouse, keyboard, clipboard, &amp; print events
+A .NET library to subscribe to Windows global user actions: keyboard, mouse, clipboard, application windows, print jobs, and hotkeys.
 
-<a href="https://ci.appveyor.com/project/justcoding121/windows-user-action-hook">![Build Status](https://ci.appveyor.com/api/projects/status/htea647ukrgg4qcl?svg=true)</a>
+**Requires:** .NET 10 on Windows (`net10.0-windows`). AnyCPU — works on x86, x64, and ARM64 Windows when P/Invoke pointer sizes are correct (v2 fixes these).
 
-Kindly report only issues/bugs here . For programming help or questions use [StackOverflow](http://stackoverflow.com/questions/tagged/windows-user-action-hook) with the tag EventHook or Windows-User-Action-Hook.
+* [API Documentation](https://justcoding121.github.io/windows-user-action-hook/docs/)
 
-* [API Documentation](https://justcoding121.github.io/windows-user-action-hook/docs/api/EventHook.html)
+## Install
 
-### Supported Events
+```bash
+dotnet add package EventHook
+```
 
-* Keyboard events
-* Mouse events
-* clipboard events
-* application events
-* print events
-
-### Development enviroment
-
-* Visual Studio 2017
-
-### Usage
-
-Install by [nuget](https://www.nuget.org/packages/EventHook)
-
-    Install-Package EventHook
-
-### Sample Code:
+## Sample
 
 ```csharp
+using System;
+using System.Windows.Forms;
+
 using (var eventHookFactory = new EventHookFactory())
 {
     var keyboardWatcher = eventHookFactory.GetKeyboardWatcher();
     keyboardWatcher.Start();
     keyboardWatcher.OnKeyInput += (s, e) =>
-    {
-        Console.WriteLine(string.Format("Key {0} event of key {1}", e.KeyData.EventType, e.KeyData.Keyname));
-    };
+        Console.WriteLine($"Key {e.KeyData.EventType} of {e.KeyData.Keyname}");
 
     var mouseWatcher = eventHookFactory.GetMouseWatcher();
+    mouseWatcher.IncludeMouseMove = false; // #28
     mouseWatcher.Start();
     mouseWatcher.OnMouseInput += (s, e) =>
-    {
-        Console.WriteLine(string.Format("Mouse event {0} at point {1},{2}", e.Message.ToString(), e.Point.x, e.Point.y));
-    };
+        Console.WriteLine($"Mouse {e.Message} at {e.Point.x},{e.Point.y}");
 
     var clipboardWatcher = eventHookFactory.GetClipboardWatcher();
     clipboardWatcher.Start();
     clipboardWatcher.OnClipboardModified += (s, e) =>
-    {
-        Console.WriteLine(string.Format("Clipboard updated with data '{0}' of format {1}", e.Data, e.DataFormat.ToString()));
-    };
-
+        Console.WriteLine($"Clipboard {e.DataFormat}: {e.Data}");
 
     var applicationWatcher = eventHookFactory.GetApplicationWatcher();
     applicationWatcher.Start();
     applicationWatcher.OnApplicationWindowChange += (s, e) =>
-    {
-        Console.WriteLine(string.Format("Application window of '{0}' with the title '{1}' was {2}", e.ApplicationData.AppName, e.ApplicationData.AppTitle, e.Event));
-    };
+        Console.WriteLine($"{e.ApplicationData.AppName} was {e.Event}");
 
     var printWatcher = eventHookFactory.GetPrintWatcher();
     printWatcher.Start();
     printWatcher.OnPrintEvent += (s, e) =>
-    {
-        Console.WriteLine(string.Format("Printer '{0}' currently printing {1} pages.", e.EventData.PrinterName, e.EventData.Pages));
-    };
+        Console.WriteLine($"Printer {e.EventData.PrinterName} pages={e.EventData.Pages}");
 
-    //waiting here to keep this thread running           
-    Console.Read();
+    var hotkeyWatcher = eventHookFactory.GetHotkeyWatcher();
+    hotkeyWatcher.Start();
+    hotkeyWatcher.Register("demo", Keys.Control | Keys.Alt | Keys.H);
+    hotkeyWatcher.OnHotkeyPressed += (s, e) =>
+        Console.WriteLine($"Hotkey {e.Id} ({e.Keys})");
 
-    //stop watching
-    keyboardWatcher.Stop();
-    mouseWatcher.Stop();
-    clipboardWatcher.Stop();
-    applicationWatcher.Stop();
-    printWatcher.Stop();
+    Console.ReadLine();
 }
 ```
 
-![alt tag](https://raw.githubusercontent.com/justcoding121/Windows-User-Action-Hook/develop/examples/EventHook.ConsoleApp.Example/Capture.PNG)
+### Application window filter
+
+```csharp
+EventHook.Helpers.AppWindowFilter.IncludeWindowsWithoutSysMenu = true; // games without WS_SYSMENU
+EventHook.Helpers.AppWindowFilter.IncludeDialogs = true;               // MessageBox / #32770
+EventHook.Helpers.AppWindowFilter.CustomFilter = hwnd => true;         // optional
+```
+
+### Hosted apps (COM / Office add-ins)
+
+Prefer constructing the factory on an STA UI thread, or pass an existing message-pump HWND:
+
+```csharp
+using var factory = new EventHookFactory(hostMainWindowHandle);
+```
+
+### VB.NET
+
+See `examples/EventHook.VB.Example`. Context-menu paste is observed via the clipboard watcher (global); `WM_PASTE` itself is application-local.
+
+### Print to PDF
+
+`PrintWatcher` enumerates local and connected queues, including virtual printers such as **Microsoft Print to PDF**. Print a document to that queue to verify `OnPrintEvent`.
+
+## Development
+
+- Visual Studio 2022 / .NET 10 SDK
+- `dotnet build src/EventHook.sln -c Release`
+- `dotnet test tests/EventHook.Tests`
+- `dotnet test tests/EventHook.IntegrationTests`
+- Docs: `dotnet tool restore` then `dotnet tool run docfx metadata docfx.json` and `dotnet tool run docfx build docfx.json`
+
+## Version 2.0 notes
+
+Breaking: targets `net10.0-windows` only (no longer .NET Framework 4.5).
+
+Highlights: HotkeyWatcher, mouse-move filter, clipboard images/files, dialog/MsgBox tracking, PDF/virtual printers, x64/ARM64 P/Invoke fixes, reliable Stop/Dispose, GitHub Actions CI + DocFX.

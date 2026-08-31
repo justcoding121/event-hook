@@ -1,10 +1,8 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 
-/// <summary>
-/// http://stackoverflow.com/questions/11607133/global-mouse-event-handler
-/// </summary>
+// http://stackoverflow.com/questions/11607133/global-mouse-event-handler
 namespace EventHook.Hooks
 {
     internal class RawMouseEventArgs : EventArgs

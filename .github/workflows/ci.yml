@@ -1,0 +1,99 @@
+name: CI
+
+on:
+  push:
+    branches: [develop, master, main, stable, beta]
+    tags: ['v2.*']
+  pull_request:
+    branches: [develop, master, main]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore src/EventHook.sln
+
+      - name: Build
+        run: dotnet build src/EventHook.sln -c Release --no-restore
+
+      - name: Unit tests
+        run: dotnet test tests/EventHook.Tests/EventHook.Tests.csproj -c Release --no-build --logger trx --results-directory TestResults
+
+      - name: Integration tests
+        run: dotnet test tests/EventHook.IntegrationTests/EventHook.IntegrationTests.csproj -c Release --no-build --logger trx --results-directory TestResults
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults
+
+      - name: Install DocFX
+        run: dotnet tool restore
+
+      - name: Build docs
+        run: |
+          dotnet tool run docfx metadata docfx.json
+          dotnet tool run docfx build docfx.json
+
+      - name: Pack
+        run: dotnet pack src/EventHook/EventHook.csproj -c Release --no-build -o artifacts
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-packages
+          path: artifacts/*.nupkg
+
+      - name: Upload docs site
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-site
+          path: _site
+
+  publish:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v2') || github.ref == 'refs/heads/stable'
+    runs-on: windows-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Download packages
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-packages
+          path: artifacts
+
+      - name: Download docs
+        uses: actions/download-artifact@v4
+        with:
+          name: docs-site
+          path: _site
+
+      - name: Push NuGet
+        run: dotnet nuget push artifacts/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+      - name: Deploy GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
+          destination_dir: docs

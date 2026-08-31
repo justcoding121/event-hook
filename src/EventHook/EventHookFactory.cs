@@ -4,63 +4,51 @@ using EventHook.Helpers;
 namespace EventHook
 {
     /// <summary>
-    /// A factory class core to the management of various watchers 
-    /// that all shares the same synchronization objects.
-    /// Use this class to get instances of differant watchers.
-    /// This factory instance should be disposed only after all watchers it have been unsubscribed.
+    /// Factory for watchers that share one message pump / synchronization context.
+    /// Dispose only after all watchers are stopped.
     /// </summary>
     public class EventHookFactory : IDisposable
     {
-        private readonly SyncFactory syncFactory = new SyncFactory();
+        private readonly SyncFactory syncFactory;
+        private bool disposed;
+
+        /// <summary>
+        /// Create a factory that owns a background STA message pump when no UI thread is present.
+        /// </summary>
+        public EventHookFactory()
+            : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Create a factory that uses an existing window handle for shell/hotkey messages (hosted scenarios).
+        /// </summary>
+        public EventHookFactory(IntPtr? messagePumpHandle)
+        {
+            syncFactory = new SyncFactory(messagePumpHandle);
+        }
 
         public void Dispose()
         {
+            if (disposed)
+            {
+                return;
+            }
+
+            disposed = true;
             syncFactory.Dispose();
         }
 
-        /// <summary>
-        /// Get an instance of application watcher.
-        /// </summary>
-        /// <returns></returns>
-        public ApplicationWatcher GetApplicationWatcher()
-        {
-            return new ApplicationWatcher(syncFactory);
-        }
+        public ApplicationWatcher GetApplicationWatcher() => new ApplicationWatcher(syncFactory);
 
-        /// <summary>
-        /// Get an instance of keystroke watcher.
-        /// </summary>
-        /// <returns></returns>
-        public KeyboardWatcher GetKeyboardWatcher()
-        {
-            return new KeyboardWatcher(syncFactory);
-        }
+        public KeyboardWatcher GetKeyboardWatcher() => new KeyboardWatcher(syncFactory);
 
-        /// <summary>
-        /// Get an instance of mouse watcher.
-        /// </summary>
-        /// <returns></returns>
-        public MouseWatcher GetMouseWatcher()
-        {
-            return new MouseWatcher(syncFactory);
-        }
+        public MouseWatcher GetMouseWatcher() => new MouseWatcher(syncFactory);
 
-        /// <summary>
-        /// Get an instance of clipboard watcher.
-        /// </summary>
-        /// <returns></returns>
-        public ClipboardWatcher GetClipboardWatcher()
-        {
-            return new ClipboardWatcher(syncFactory);
-        }
+        public ClipboardWatcher GetClipboardWatcher() => new ClipboardWatcher(syncFactory);
 
-        /// <summary>
-        /// Get an instance of print watcher.
-        /// </summary>
-        /// <returns></returns>
-        public PrintWatcher GetPrintWatcher()
-        {
-            return new PrintWatcher(syncFactory);
-        }
+        public PrintWatcher GetPrintWatcher() => new PrintWatcher(syncFactory);
+
+        public HotkeyWatcher GetHotkeyWatcher() => new HotkeyWatcher(syncFactory);
     }
 }

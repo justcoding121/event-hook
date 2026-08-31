@@ -92,7 +92,7 @@ namespace EventHook.Hooks
             {
                 if (_printerHandle != IntPtr.Zero)
                 {
-                    ClosePrinter((int)_printerHandle);
+                    ClosePrinter(_printerHandle);
                     _printerHandle = IntPtr.Zero;
                 }
             }
@@ -205,8 +205,7 @@ namespace EventHook.Hooks
             SetLastError = true,
             ExactSpelling = true,
             CallingConvention = CallingConvention.StdCall)]
-        internal static extern bool ClosePrinter
-            (int hPrinter);
+        internal static extern bool ClosePrinter(IntPtr hPrinter);
 
         [DllImport("winspool.drv",
             EntryPoint = "FindFirstPrinterChangeNotification",

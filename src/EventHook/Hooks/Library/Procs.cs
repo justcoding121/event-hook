@@ -33,4 +33,7 @@ namespace EventHook.Hooks.Library
     internal delegate IntPtr WndProc(IntPtr hWnd, uint message, IntPtr wParam, IntPtr lParam);
 
     internal delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
+
+    internal delegate void WinEventProc(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild,
+        uint dwEventThread, uint dwmsEventTime);
 }
