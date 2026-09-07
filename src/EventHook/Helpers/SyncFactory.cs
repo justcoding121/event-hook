@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -8,136 +7,162 @@ using System.Windows.Threading;
 namespace EventHook.Helpers
 {
     /// <summary>
-    ///     A class to create a dummy message pump if we don't have one
-    ///     A message pump is required for most of our hooks to succeed
+    /// Creates or reuses a message pump required by Win32 hooks.
+    /// Prefers an existing UI Dispatcher / SynchronizationContext to avoid ContextSwitchDeadlock in hosted apps.
     /// </summary>
-    internal class SyncFactory : IDisposable
+    internal sealed class SyncFactory : IDisposable
     {
         private readonly Lazy<MessageHandler> messageHandler;
-
         private readonly Lazy<TaskScheduler> scheduler;
+        private readonly IntPtr? providedHandle;
         private bool hasUIThread;
+        private bool disposed;
 
-        internal SyncFactory()
+        internal SyncFactory(IntPtr? messagePumpHandle = null)
         {
+            providedHandle = messagePumpHandle;
+
             scheduler = new Lazy<TaskScheduler>(() =>
             {
-                //if the calling thread is a UI thread then return its synchronization context
-                //no need to create a message pump
                 var dispatcher = Dispatcher.FromThread(Thread.CurrentThread);
-                if (dispatcher != null)
+                if (dispatcher != null && SynchronizationContext.Current != null)
                 {
-                    if (SynchronizationContext.Current != null)
-                    {
-                        hasUIThread = true;
-                        return TaskScheduler.FromCurrentSynchronizationContext();
-                    }
+                    hasUIThread = true;
+                    return TaskScheduler.FromCurrentSynchronizationContext();
+                }
+
+                if (SynchronizationContext.Current is WindowsFormsSynchronizationContext)
+                {
+                    hasUIThread = true;
+                    return TaskScheduler.FromCurrentSynchronizationContext();
                 }
 
                 TaskScheduler current = null;
+                var ready = new ManualResetEventSlim(false);
 
-                //if current task scheduler is null, create a message pump 
-                //http://stackoverflow.com/questions/2443867/message-pump-in-net-windows-service
-                //use async for performance gain!
-                new Task(() =>
+                var thread = new Thread(() =>
                 {
-                    Dispatcher.CurrentDispatcher.BeginInvoke(
-                        new Action(() =>
-                        {
-                            Volatile.Write(ref current, TaskScheduler.FromCurrentSynchronizationContext());
-                        }), DispatcherPriority.Normal);
+                    Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
+                    {
+                        current = TaskScheduler.FromCurrentSynchronizationContext();
+                        ready.Set();
+                    }), DispatcherPriority.Normal);
                     Dispatcher.Run();
-                }).Start();
-
-                //we called dispatcher begin invoke to get the Message Pump Sync Context
-                //we check every 10ms until synchronization context is copied
-                while (Volatile.Read(ref current) == null)
+                })
                 {
-                    Thread.Sleep(10);
+                    IsBackground = true,
+                    Name = "EventHook.MessagePump"
+                };
+                thread.SetApartmentState(ApartmentState.STA);
+                thread.Start();
+
+                if (!ready.Wait(TimeSpan.FromSeconds(10)))
+                {
+                    throw new TimeoutException("Timed out creating EventHook message pump.");
                 }
 
-                return Volatile.Read(ref current);
+                return current;
             });
 
             messageHandler = new Lazy<MessageHandler>(() =>
             {
                 MessageHandler msgHandler = null;
-                //get the mesage handler dummy window created using the UI sync context
-                new Task(e => { Volatile.Write(ref msgHandler, new MessageHandler()); }, GetTaskScheduler()).Start();
+                var ready = new ManualResetEventSlim(false);
 
-                //wait here until the window is created on UI thread
-                while (Volatile.Read(ref msgHandler) == null)
+                Task.Factory.StartNew(() =>
+                    {
+                        msgHandler = new MessageHandler();
+                        ready.Set();
+                    },
+                    CancellationToken.None,
+                    TaskCreationOptions.None,
+                    GetTaskScheduler());
+
+                if (!ready.Wait(TimeSpan.FromSeconds(10)))
                 {
-                    Thread.Sleep(10);
+                    throw new TimeoutException("Timed out creating EventHook message window.");
                 }
 
-                ;
-
-                return Volatile.Read(ref msgHandler);
+                return msgHandler;
             });
 
-            Initialize();
+            GetTaskScheduler();
+            if (providedHandle == null || providedHandle == IntPtr.Zero)
+            {
+                _ = messageHandler.Value;
+            }
         }
 
         public void Dispose()
         {
-            if (messageHandler?.Value != null)
+            if (disposed)
             {
-                messageHandler.Value.DestroyHandle();
+                return;
+            }
+
+            disposed = true;
+
+            try
+            {
+                if (messageHandler.IsValueCreated)
+                {
+                    Task.Factory.StartNew(() =>
+                        {
+                            messageHandler.Value.DestroyHandle();
+                            if (!hasUIThread)
+                            {
+                                Dispatcher.CurrentDispatcher.BeginInvokeShutdown(DispatcherPriority.Normal);
+                            }
+                        },
+                        CancellationToken.None,
+                        TaskCreationOptions.None,
+                        GetTaskScheduler()).Wait(TimeSpan.FromSeconds(5));
+                }
+            }
+            catch
+            {
+                // best-effort shutdown
             }
         }
 
-        /// <summary>
-        ///     Initialize the required message pump for all the hooks
-        /// </summary>
-        private void Initialize()
+        internal TaskScheduler GetTaskScheduler() => scheduler.Value;
+
+        internal MessageHandler GetMessageHandler()
         {
-            GetTaskScheduler();
-            GetHandle();
+            if (providedHandle != null && providedHandle != IntPtr.Zero)
+            {
+                return null;
+            }
+
+            return messageHandler.Value;
         }
 
-        /// <summary>
-        ///     Get the UI task scheduler
-        /// </summary>
-        /// <returns></returns>
-        internal TaskScheduler GetTaskScheduler()
-        {
-            return scheduler.Value;
-        }
-
-        /// <summary>
-        ///     Get the handle of the window we created on the UI thread
-        /// </summary>
-        /// <returns></returns>
         internal IntPtr GetHandle()
         {
-            var handle = IntPtr.Zero;
-
-            if (hasUIThread)
+            if (providedHandle != null && providedHandle != IntPtr.Zero)
             {
-                try
-                {
-                    handle = Process.GetCurrentProcess().MainWindowHandle;
-
-                    if (handle != IntPtr.Zero)
-                    {
-                        return handle;
-                    }
-                }
-                catch
-                {
-                }
+                return providedHandle.Value;
             }
 
+            // Always use the dedicated message window so hotkeys/shell hooks receive messages
+            // on the same HWND we own (avoids relying on process MainWindowHandle).
             return messageHandler.Value.Handle;
+        }
+
+        internal void RunOnPump(Action action)
+        {
+            Task.Factory.StartNew(action, CancellationToken.None, TaskCreationOptions.None, GetTaskScheduler())
+                .Wait();
         }
     }
 
     /// <summary>
-    ///     A dummy class to create a dummy invisible window object
+    /// Invisible NativeWindow used as a hook / hotkey message target.
     /// </summary>
     internal class MessageHandler : NativeWindow
     {
+        internal event Action<Message> MessageReceived;
+
         internal MessageHandler()
         {
             CreateHandle(new CreateParams());
@@ -145,7 +170,18 @@ namespace EventHook.Helpers
 
         protected override void WndProc(ref Message msg)
         {
+            MessageReceived?.Invoke(msg);
             base.WndProc(ref msg);
         }
+    }
+
+    internal static class HotkeyNative
+    {
+        internal const int WM_HOTKEY = 0x0312;
+        internal const uint MOD_ALT = 0x0001;
+        internal const uint MOD_CONTROL = 0x0002;
+        internal const uint MOD_SHIFT = 0x0004;
+        internal const uint MOD_WIN = 0x0008;
+        internal const uint MOD_NOREPEAT = 0x4000;
     }
 }

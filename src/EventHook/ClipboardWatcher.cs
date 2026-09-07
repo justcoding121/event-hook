@@ -8,7 +8,7 @@ using EventHook.Hooks;
 namespace EventHook
 {
     /// <summary>
-    ///     Type of clipboard content.
+    /// Type of clipboard content.
     /// </summary>
     public enum ClipboardContentTypes
     {
@@ -16,12 +16,12 @@ namespace EventHook
         RichText = 1,
         Html = 2,
         Csv = 3,
-        UnicodeText = 4
+        UnicodeText = 4,
+        Image = 5,
+        FileDrop = 6,
+        Other = 7
     }
 
-    /// <summary>
-    ///     An argument send to user.
-    /// </summary>
     public class ClipboardEventArgs : EventArgs
     {
         public object Data { get; set; }
@@ -29,20 +29,19 @@ namespace EventHook
     }
 
     /// <summary>
-    ///     Wraps around clipboardHook.
-    ///     Uses a producer-consumer pattern to improve performance and to avoid operating system forcing unhook on delayed
-    ///     user callbacks.
+    /// Clipboard watcher including text, images, and file drops.
+    /// Context-menu paste is visible here because it changes clipboard contents globally;
+    /// WM_PASTE itself is application-local and is not hooked.
     /// </summary>
-    public class ClipboardWatcher
+    public class ClipboardWatcher : IDisposable
     {
         private readonly object accesslock = new object();
-
         private readonly SyncFactory factory;
-
         private ClipBoardHook clip;
         private AsyncConcurrentQueue<object> clipQueue;
-        public bool isRunning;
         private CancellationTokenSource taskCancellationTokenSource;
+        private bool isRunning;
+        private bool disposed;
 
         internal ClipboardWatcher(SyncFactory factory)
         {
@@ -51,87 +50,92 @@ namespace EventHook
 
         public event EventHandler<ClipboardEventArgs> OnClipboardModified;
 
-        /// <summary>
-        ///     Start watching
-        /// </summary>
         public void Start()
-        {
-            lock (accesslock)
-            {
-                if (!isRunning)
-                {
-                    taskCancellationTokenSource = new CancellationTokenSource();
-                    clipQueue = new AsyncConcurrentQueue<object>(taskCancellationTokenSource.Token);
-
-                    //This needs to run on UI thread context
-                    //So use task factory with the shared UI message pump thread
-                    Task.Factory.StartNew(() =>
-                        {
-                            clip = new ClipBoardHook();
-                            clip.RegisterClipboardViewer();
-                            clip.ClipBoardChanged += ClipboardHandler;
-                        },
-                        CancellationToken.None,
-                        TaskCreationOptions.None,
-                        factory.GetTaskScheduler()).Wait();
-
-                    Task.Factory.StartNew(() => ClipConsumerAsync());
-
-                    isRunning = true;
-                }
-            }
-        }
-
-        /// <summary>
-        ///     Stop watching
-        /// </summary>
-        public void Stop()
         {
             lock (accesslock)
             {
                 if (isRunning)
                 {
-                    if (clip != null)
-                    {
-                        //This needs to run on UI thread context
-                        //So use task factory with the shared UI message pump thread
-                        Task.Factory.StartNew(() =>
-                            {
-                                clip.ClipBoardChanged -= ClipboardHandler;
-                                clip.UnregisterClipboardViewer();
-                                clip.Dispose();
-                            },
-                            CancellationToken.None,
-                            TaskCreationOptions.None,
-                            factory.GetTaskScheduler());
-                    }
-
-                    isRunning = false;
-                    clipQueue.Enqueue(false);
-                    taskCancellationTokenSource.Cancel();
+                    return;
                 }
+
+                taskCancellationTokenSource = new CancellationTokenSource();
+                clipQueue = new AsyncConcurrentQueue<object>(taskCancellationTokenSource.Token);
+
+                factory.RunOnPump(() =>
+                {
+                    clip = new ClipBoardHook();
+                    clip.RegisterClipboardViewer();
+                    clip.ClipBoardChanged += ClipboardHandler;
+                });
+
+                Task.Factory.StartNew(ClipConsumerAsync);
+                isRunning = true;
             }
         }
 
-        /// <summary>
-        ///     Add event to producer queue
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ClipboardHandler(object sender, EventArgs e)
+        public void Stop()
         {
-            clipQueue.Enqueue(sender);
+            lock (accesslock)
+            {
+                if (!isRunning)
+                {
+                    return;
+                }
+
+                factory.RunOnPump(() =>
+                {
+                    if (clip != null)
+                    {
+                        clip.ClipBoardChanged -= ClipboardHandler;
+                        clip.UnregisterClipboardViewer();
+                        clip.Dispose();
+                        clip = null;
+                    }
+                });
+
+                isRunning = false;
+                clipQueue.Enqueue(false);
+                taskCancellationTokenSource.Cancel();
+            }
         }
 
-        /// <summary>
-        ///     Consume event from producer queue asynchronously
-        /// </summary>
-        /// <returns></returns>
+        public void Dispose()
+        {
+            if (disposed)
+            {
+                return;
+            }
+
+            disposed = true;
+            Stop();
+        }
+
+        private void ClipboardHandler(object sender, EventArgs e)
+        {
+            try
+            {
+                clipQueue?.Enqueue(sender);
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
         private async Task ClipConsumerAsync()
         {
             while (isRunning)
             {
-                var item = await clipQueue.DequeueAsync();
+                object item;
+                try
+                {
+                    item = await clipQueue.DequeueAsync();
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
 
                 if (item is null)
                 {
@@ -143,67 +147,96 @@ namespace EventHook
                     break;
                 }
 
-                ClipboardHandler(item);
+                RaiseClipboard((IDataObject)item);
             }
         }
 
-        /// <summary>
-        ///     Actual handler to invoke user call backs
-        /// </summary>
-        /// <param name="sender"></param>
-        private void ClipboardHandler(object sender)
+        internal static bool TryClassify(IDataObject iData, out ClipboardContentTypes format, out object data)
         {
-            IDataObject iData = (DataObject)sender;
+            format = ClipboardContentTypes.Other;
+            data = null;
 
-            var format = default(ClipboardContentTypes);
+            try
+            {
+                if (iData.GetDataPresent(DataFormats.FileDrop))
+                {
+                    format = ClipboardContentTypes.FileDrop;
+                    data = iData.GetData(DataFormats.FileDrop);
+                    return true;
+                }
 
-            object data = null;
+                if (iData.GetDataPresent(DataFormats.Bitmap))
+                {
+                    format = ClipboardContentTypes.Image;
+                    data = iData.GetData(DataFormats.Bitmap);
+                    return true;
+                }
 
-            bool validDataType = false;
-            if (iData.GetDataPresent(DataFormats.Text))
-            {
-                format = ClipboardContentTypes.PlainText;
-                data = iData.GetData(DataFormats.Text);
-                validDataType = true;
+                if (iData.GetDataPresent(DataFormats.UnicodeText))
+                {
+                    format = ClipboardContentTypes.UnicodeText;
+                    data = iData.GetData(DataFormats.UnicodeText);
+                    return true;
+                }
+
+                if (iData.GetDataPresent(DataFormats.Text))
+                {
+                    format = ClipboardContentTypes.PlainText;
+                    data = iData.GetData(DataFormats.Text);
+                    return true;
+                }
+
+                if (iData.GetDataPresent(DataFormats.Rtf))
+                {
+                    format = ClipboardContentTypes.RichText;
+                    data = iData.GetData(DataFormats.Rtf);
+                    return true;
+                }
+
+                if (iData.GetDataPresent(DataFormats.CommaSeparatedValue))
+                {
+                    format = ClipboardContentTypes.Csv;
+                    data = iData.GetData(DataFormats.CommaSeparatedValue);
+                    return true;
+                }
+
+                if (iData.GetDataPresent(DataFormats.Html))
+                {
+                    format = ClipboardContentTypes.Html;
+                    data = iData.GetData(DataFormats.Html);
+                    return true;
+                }
+
+                if (iData.GetDataPresent(DataFormats.StringFormat))
+                {
+                    format = ClipboardContentTypes.PlainText;
+                    data = iData.GetData(DataFormats.StringFormat);
+                    return true;
+                }
             }
-            else if (iData.GetDataPresent(DataFormats.Rtf))
+            catch
             {
-                format = ClipboardContentTypes.RichText;
-                data = iData.GetData(DataFormats.Rtf);
-                validDataType = true;
-            }
-            else if (iData.GetDataPresent(DataFormats.CommaSeparatedValue))
-            {
-                format = ClipboardContentTypes.Csv;
-                data = iData.GetData(DataFormats.CommaSeparatedValue);
-                validDataType = true;
-            }
-            else if (iData.GetDataPresent(DataFormats.Html))
-            {
-                format = ClipboardContentTypes.Html;
-                data = iData.GetData(DataFormats.Html);
-                validDataType = true;
+                return false;
             }
 
-            else if (iData.GetDataPresent(DataFormats.StringFormat))
-            {
-                format = ClipboardContentTypes.PlainText;
-                data = iData.GetData(DataFormats.StringFormat);
-                validDataType = true;
-            }
-            else if (iData.GetDataPresent(DataFormats.UnicodeText))
-            {
-                format = ClipboardContentTypes.UnicodeText;
-                data = iData.GetData(DataFormats.UnicodeText);
-                validDataType = true;
-            }
+            return false;
+        }
 
-            if (!validDataType)
+        private void RaiseClipboard(IDataObject iData)
+        {
+            if (!TryClassify(iData, out var format, out var data))
             {
                 return;
             }
 
-            OnClipboardModified?.Invoke(null, new ClipboardEventArgs { Data = data, DataFormat = format });
+            try
+            {
+                OnClipboardModified?.Invoke(this, new ClipboardEventArgs { Data = data, DataFormat = format });
+            }
+            catch
+            {
+                // swallow
+            }
         }
     }
 }

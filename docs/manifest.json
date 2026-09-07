@@ -1,0 +1,447 @@
+{
+  "source_base_path": "D:/a/windows-user-action-hook/windows-user-action-hook/.github",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "Resource",
+      "output": {
+        "resource": {
+          "relative_path": "index.json"
+        }
+      }
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.ApplicationEventArgs.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.ApplicationEventArgs.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.ApplicationEventArgs",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.ApplicationEvents.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.ApplicationEvents.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.ApplicationEvents",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.ApplicationWatcher.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.ApplicationWatcher.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.ApplicationWatcher",
+      "Summary": "<p sourcefile=\"obj/api/EventHook.ApplicationWatcher.yml\" sourcestartlinenumber=\"1\">Watches top-level application windows and common dialogs (including MessageBox).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.ClipboardContentTypes.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.ClipboardContentTypes.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.ClipboardContentTypes",
+      "Summary": "<p sourcefile=\"obj/api/EventHook.ClipboardContentTypes.yml\" sourcestartlinenumber=\"1\">Type of clipboard content.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.ClipboardEventArgs.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.ClipboardEventArgs.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.ClipboardEventArgs",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.ClipboardWatcher.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.ClipboardWatcher.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.ClipboardWatcher",
+      "Summary": "<p sourcefile=\"obj/api/EventHook.ClipboardWatcher.yml\" sourcestartlinenumber=\"1\">Clipboard watcher including text, images, and file drops.\nContext-menu paste is visible here because it changes clipboard contents globally;\nWM_PASTE itself is application-local and is not hooked.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.EventHookFactory.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.EventHookFactory.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.EventHookFactory",
+      "Summary": "<p sourcefile=\"obj/api/EventHook.EventHookFactory.yml\" sourcestartlinenumber=\"1\">Factory for watchers that share one message pump / synchronization context.\nDispose only after all watchers are stopped.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.Helpers.AppWindowFilter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.Helpers.AppWindowFilter.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.Helpers.AppWindowFilter",
+      "Summary": "<p sourcefile=\"obj/api/EventHook.Helpers.AppWindowFilter.yml\" sourcestartlinenumber=\"1\">Shared rules for deciding whether an HWND is an application or dialog window of interest.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.Helpers.MouseMessageFilter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.Helpers.MouseMessageFilter.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.Helpers.MouseMessageFilter",
+      "Summary": "<p sourcefile=\"obj/api/EventHook.Helpers.MouseMessageFilter.yml\" sourcestartlinenumber=\"1\">Helpers for filtering low-level mouse messages.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.Helpers.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.Helpers.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.Helpers",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.Hooks.MouseMessages.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.Hooks.MouseMessages.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.Hooks.MouseMessages",
+      "Summary": "<p sourcefile=\"obj/api/EventHook.Hooks.MouseMessages.yml\" sourcestartlinenumber=\"1\">The mouse messages.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.Hooks.Point.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.Hooks.Point.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.Hooks.Point",
+      "Summary": "<p sourcefile=\"obj/api/EventHook.Hooks.Point.yml\" sourcestartlinenumber=\"1\">The point co-ordinate.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.Hooks.WindowEventArgs.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.Hooks.WindowEventArgs.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.Hooks.WindowEventArgs",
+      "Summary": "<p sourcefile=\"obj/api/EventHook.Hooks.WindowEventArgs.yml\" sourcestartlinenumber=\"1\">The window event arguments.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.Hooks.WindowHookEx.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.Hooks.WindowHookEx.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.Hooks.WindowHookEx",
+      "Summary": "<p sourcefile=\"obj/api/EventHook.Hooks.WindowHookEx.yml\" sourcestartlinenumber=\"1\">Track events across all windows</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.Hooks.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.Hooks.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.Hooks",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.HotkeyEventArgs.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.HotkeyEventArgs.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.HotkeyEventArgs",
+      "Summary": "<p sourcefile=\"obj/api/EventHook.HotkeyEventArgs.yml\" sourcestartlinenumber=\"1\">Arguments for a registered hotkey press.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.HotkeyWatcher.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.HotkeyWatcher.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.HotkeyWatcher",
+      "Summary": "<p sourcefile=\"obj/api/EventHook.HotkeyWatcher.yml\" sourcestartlinenumber=\"1\">Global hotkey watcher using RegisterHotKey / WM_HOTKEY on the shared message pump.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.KeyData.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.KeyData.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.KeyData",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.KeyEvent.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.KeyEvent.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.KeyEvent",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.KeyInputEventArgs.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.KeyInputEventArgs.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.KeyInputEventArgs",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.KeyboardWatcher.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.KeyboardWatcher.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.KeyboardWatcher",
+      "Summary": "<p sourcefile=\"obj/api/EventHook.KeyboardWatcher.yml\" sourcestartlinenumber=\"1\">Low-level keyboard watcher. Always calls CallNextHookEx so layout shortcuts (e.g. Shift+Alt) keep working.\nGlobal hooks typically do not receive input inside remote desktop sessions.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.MouseEventArgs.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.MouseEventArgs.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.MouseEventArgs",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.MouseWatcher.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.MouseWatcher.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.MouseWatcher",
+      "Summary": "<p sourcefile=\"obj/api/EventHook.MouseWatcher.yml\" sourcestartlinenumber=\"1\">Low-level mouse watcher with optional mouse-move filtering.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.PrintEventArgs.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.PrintEventArgs.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.PrintEventArgs",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.PrintEventData.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.PrintEventData.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.PrintEventData",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.PrintWatcher.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.PrintWatcher.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.PrintWatcher",
+      "Summary": "<p sourcefile=\"obj/api/EventHook.PrintWatcher.yml\" sourcestartlinenumber=\"1\">Watches local print queues including virtual printers such as Microsoft Print to PDF.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.WindowData.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.WindowData.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.WindowData",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook",
+      "Summary": null
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "obj/api/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/toc.html"
+        },
+        ".json": {
+          "relative_path": "api/toc.json"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "toc.html"
+        },
+        ".json": {
+          "relative_path": "toc.json"
+        }
+      },
+      "version": ""
+    }
+  ],
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}

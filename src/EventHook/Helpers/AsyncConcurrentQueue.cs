@@ -1,71 +1,43 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace EventHook.Helpers
 {
     /// <summary>
-    ///     A concurrent queue facilitating async dequeue with minimal locking
-    ///     Assumes single/multi-threaded producer and a single-threaded consumer
+    /// Concurrent queue with async dequeue for a single consumer.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     internal class AsyncConcurrentQueue<T>
     {
-        /// <summary>
-        ///     Backing queue
-        /// </summary>
         private readonly ConcurrentQueue<T> queue = new ConcurrentQueue<T>();
+        private readonly SemaphoreSlim signal = new SemaphoreSlim(0);
+        private readonly CancellationToken cancellationToken;
 
-        /// <summary>
-        ///     Wake up any pending dequeue task
-        /// </summary>
-        private TaskCompletionSource<bool> dequeueTask;
-        private SemaphoreSlim @dequeueTaskLock = new SemaphoreSlim(1);
-        private CancellationToken taskCancellationToken;
-
-        internal AsyncConcurrentQueue(CancellationToken taskCancellationToken)
+        internal AsyncConcurrentQueue(CancellationToken cancellationToken)
         {
-            this.taskCancellationToken = taskCancellationToken;
+            this.cancellationToken = cancellationToken;
         }
 
-        /// <summary>
-        ///     Supports multi-threaded producers
-        /// </summary>
-        /// <param name="value"></param>
         internal void Enqueue(T value)
         {
             queue.Enqueue(value);
-
-            //signal 
-            dequeueTaskLock.Wait();
-            dequeueTask?.TrySetResult(true);
-            dequeueTaskLock.Release();
-
+            signal.Release();
         }
 
-        /// <summary>
-        ///     Assumes a single-threaded consumer!
-        /// </summary>
-        /// <returns></returns>
         internal async Task<T> DequeueAsync()
         {
-            T result;
-            queue.TryDequeue(out result);
-
-            if (result != null)
+            while (true)
             {
-                return result;
+                cancellationToken.ThrowIfCancellationRequested();
+
+                if (queue.TryDequeue(out var result))
+                {
+                    return result;
+                }
+
+                await signal.WaitAsync(cancellationToken).ConfigureAwait(false);
             }
-
-            await dequeueTaskLock.WaitAsync();
-            dequeueTask = new TaskCompletionSource<bool>();
-            dequeueTaskLock.Release();
-
-            taskCancellationToken.Register(() => dequeueTask.TrySetCanceled());
-            await dequeueTask.Task;
-            
-            queue.TryDequeue(out result);
-            return result;
         }
     }
 }

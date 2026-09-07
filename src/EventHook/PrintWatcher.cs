@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Printing;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,9 +9,6 @@ using EventHook.Hooks.Library;
 
 namespace EventHook
 {
-    /// <summary>
-    ///     An object holding key information on a particular print event.
-    /// </summary>
     public class PrintEventData
     {
         public DateTime EventDateTime { get; set; }
@@ -21,118 +18,121 @@ namespace EventHook
         public int? JobSize { get; set; }
     }
 
-    /// <summary>
-    ///     An argument passed along user call backs.
-    /// </summary>
     public class PrintEventArgs : EventArgs
     {
         public PrintEventData EventData { get; set; }
     }
 
     /// <summary>
-    ///     A class that wraps around printServer object.
+    /// Watches local print queues including virtual printers such as Microsoft Print to PDF.
     /// </summary>
-    public class PrintWatcher
+    public class PrintWatcher : IDisposable
     {
         private readonly object accesslock = new object();
-
         private readonly SyncFactory factory;
-
-        private ArrayList printers;
-        private PrintServer printServer;
+        private List<PrintQueueHook> printers;
+        private bool isRunning;
+        private bool disposed;
 
         internal PrintWatcher(SyncFactory factory)
         {
             this.factory = factory;
         }
 
-        private bool isRunning { get; set; }
         public event EventHandler<PrintEventArgs> OnPrintEvent;
 
-        /// <summary>
-        ///     Start watching print events
-        /// </summary>
         public void Start()
-        {
-            lock (accesslock)
-            {
-                if (!isRunning)
-                {
-                    Task.Factory.StartNew(() =>
-                        {
-                            isRunning = true;
-                            printers = new ArrayList();
-                            printServer = new PrintServer();
-                            foreach (var pq in printServer.GetPrintQueues())
-                            {
-                                var pqm = new PrintQueueHook(pq.Name);
-                                pqm.OnJobStatusChange += pqm_OnJobStatusChange;
-                                pqm.Start();
-                                printers.Add(pqm);
-                            }
-                        },
-                        CancellationToken.None,
-                        TaskCreationOptions.None,
-                        factory.GetTaskScheduler()).Wait();
-                }
-            }
-        }
-
-        /// <summary>
-        ///     Stop watching print events
-        /// </summary>
-        public void Stop()
         {
             lock (accesslock)
             {
                 if (isRunning)
                 {
-                    Task.Factory.StartNew(() =>
-                        {
-                            if (printers != null)
-                            {
-                                foreach (PrintQueueHook pqm in printers)
-                                {
-                                    pqm.OnJobStatusChange -= pqm_OnJobStatusChange;
-
-                                    try
-                                    {
-                                        pqm.Stop();
-                                    }
-                                    catch
-                                    {
-                                        //ignored intentionally
-                                        //Not sure why but it throws error
-                                        //not a bug deal since we a stopping it anyway
-                                    }
-                                }
-
-                                printers.Clear();
-                            }
-
-                            printers = null;
-                            isRunning = false;
-                        },
-                        CancellationToken.None,
-                        TaskCreationOptions.None,
-                        factory.GetTaskScheduler());
+                    return;
                 }
+
+                factory.RunOnPump(() =>
+                {
+                    printers = new List<PrintQueueHook>();
+                    using var printServer = new PrintServer();
+                    foreach (var pq in printServer.GetPrintQueues(new[]
+                             {
+                                 EnumeratedPrintQueueTypes.Local,
+                                 EnumeratedPrintQueueTypes.Connections
+                             }))
+                    {
+                        try
+                        {
+                            var pqm = new PrintQueueHook(pq.Name);
+                            pqm.OnJobStatusChange += OnJobStatusChange;
+                            pqm.Start();
+                            printers.Add(pqm);
+                        }
+                        catch
+                        {
+                            // skip queues that cannot be opened
+                        }
+                    }
+
+                    isRunning = true;
+                });
             }
         }
 
-        /// <summary>
-        ///     Invoke user callback as soon as a relevent event is fired
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void pqm_OnJobStatusChange(object sender, PrintJobChangeEventArgs e)
+        public void Stop()
         {
-            if ((e.JobStatus & JOBSTATUS.JOB_STATUS_SPOOLING) == JOBSTATUS.JOB_STATUS_SPOOLING
-                && e.JobInfo != null)
+            lock (accesslock)
             {
-                var hWnd = WindowHelper.GetActiveWindowHandle();
-                string appTitle = WindowHelper.GetWindowText(hWnd);
-                string appName = WindowHelper.GetAppDescription(WindowHelper.GetAppPath(hWnd));
+                if (!isRunning)
+                {
+                    return;
+                }
+
+                factory.RunOnPump(() =>
+                {
+                    if (printers != null)
+                    {
+                        foreach (var pqm in printers)
+                        {
+                            pqm.OnJobStatusChange -= OnJobStatusChange;
+                            try
+                            {
+                                pqm.Stop();
+                            }
+                            catch
+                            {
+                                // ignored
+                            }
+                        }
+
+                        printers.Clear();
+                    }
+
+                    printers = null;
+                    isRunning = false;
+                });
+            }
+        }
+
+        public void Dispose()
+        {
+            if (disposed)
+            {
+                return;
+            }
+
+            disposed = true;
+            Stop();
+        }
+
+        private void OnJobStatusChange(object sender, PrintJobChangeEventArgs e)
+        {
+            try
+            {
+                if ((e.JobStatus & JOBSTATUS.JOB_STATUS_SPOOLING) != JOBSTATUS.JOB_STATUS_SPOOLING ||
+                    e.JobInfo == null)
+                {
+                    return;
+                }
 
                 var printEvent = new PrintEventData
                 {
@@ -143,7 +143,21 @@ namespace EventHook
                     PrinterName = ((PrintQueueHook)sender).SpoolerName
                 };
 
-                Task.Run(() => OnPrintEvent?.Invoke(null, new PrintEventArgs { EventData = printEvent }));
+                Task.Run(() =>
+                {
+                    try
+                    {
+                        OnPrintEvent?.Invoke(this, new PrintEventArgs { EventData = printEvent });
+                    }
+                    catch
+                    {
+                        // swallow
+                    }
+                });
+            }
+            catch
+            {
+                // never throw from spool callback
             }
         }
     }

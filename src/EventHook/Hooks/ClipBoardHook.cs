@@ -3,9 +3,7 @@ using System.Threading;
 using System.Windows.Forms;
 using EventHook.Hooks.Library;
 
-/// <summary>
-/// https://github.com/MrksKwsnck/Wlipper
-/// </summary>
+// https://github.com/MrksKwsnck/Wlipper
 namespace EventHook.Hooks
 {
     internal class ClipBoardHook : Form

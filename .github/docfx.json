@@ -1,0 +1,39 @@
+{
+  "metadata": [
+    {
+      "src": [
+        {
+          "files": [ "EventHook/EventHook.csproj" ],
+          "src": "../src/"
+        }
+      ],
+      "dest": "obj/api"
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": [ "**/*.yml" ],
+        "src": "obj/api",
+        "dest": "api"
+      },
+      {
+        "files": [ "index.md", "toc.yml" ]
+      }
+    ],
+    "resource": [
+      {
+        "files": [ "images/**" ]
+      }
+    ],
+    "globalMetadata": {
+      "_appName": "EventHook",
+      "_appTitle": "EventHook",
+      "_enableSearch": true,
+      "_disableContribution": true
+    },
+    "template": [ "default", "modern" ],
+    "dest": "../docs",
+    "xrefService": [ "https://xref.docs.microsoft.com/query?uid={uid}" ]
+  }
+}

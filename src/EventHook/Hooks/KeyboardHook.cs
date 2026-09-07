@@ -6,10 +6,7 @@ using System.Text;
 using System.Windows.Input;
 using System.Windows.Threading;
 
-/// <summary>
-/// //adapted from
-/// https://gist.github.com/Ciantic/471698
-/// </summary>
+// adapted from https://gist.github.com/Ciantic/471698
 namespace EventHook.Hooks
 {
     internal class KeyboardHook
