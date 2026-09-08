@@ -8,22 +8,17 @@ namespace EventHook.Hooks
     {
         private static ShellHook sh;
 
+        // NOSONAR S3010 / S2696 — ShellHook is process-wide; first watcher owns the static install.
         internal WindowHook(SyncFactory factory)
         {
-            EnsureShellHook(factory);
-        }
-
-        private static void EnsureShellHook(SyncFactory factory)
-        {
-            if (sh != null)
+            if (sh == null)
             {
-                return;
-            }
+                sh = new ShellHook(factory.GetHandle());
 
-            sh = new ShellHook(factory.GetHandle());
-            sh.WindowCreated += WindowCreatedEvent;
-            sh.WindowDestroyed += WindowDestroyedEvent;
-            sh.WindowActivated += WindowActivatedEvent;
+                sh.WindowCreated += WindowCreatedEvent;
+                sh.WindowDestroyed += WindowDestroyedEvent;
+                sh.WindowActivated += WindowActivatedEvent;
+            }
         }
 
         /// <summary>
@@ -57,11 +52,6 @@ namespace EventHook.Hooks
         }
 
         internal void Destroy()
-        {
-            ClearShellHook();
-        }
-
-        private static void ClearShellHook()
         {
             sh = null;
         }
