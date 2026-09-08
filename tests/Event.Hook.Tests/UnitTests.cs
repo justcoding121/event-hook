@@ -370,6 +370,21 @@ namespace EventHook.Tests
         {
             Assert.Equal(expected, EventHook.Platforms.Mac.MacAppFilter.ShouldTrack(policy));
         }
+
+        [Fact]
+        public void MacRunLoopModes_resolve_exported_cf_constants()
+        {
+            if (!OperatingSystem.IsMacOS())
+            {
+                return;
+            }
+
+            Assert.NotEqual(IntPtr.Zero, EventHook.Platforms.Mac.Native.MacNative.KCFRunLoopDefaultMode);
+            Assert.NotEqual(IntPtr.Zero, EventHook.Platforms.Mac.Native.MacNative.KCFRunLoopCommonModes);
+            Assert.NotEqual(
+                EventHook.Platforms.Mac.Native.MacNative.KCFRunLoopDefaultMode,
+                EventHook.Platforms.Mac.Native.MacNative.KCFRunLoopCommonModes);
+        }
     }
 
     public class LinuxSessionTests

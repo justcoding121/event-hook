@@ -21,30 +21,38 @@ namespace EventHook.Platforms.Mac.Native
         private static IntPtr cfRunLoopDefaultMode;
         private static IntPtr cfRunLoopCommonModes;
 
-        internal static IntPtr KCFRunLoopDefaultMode
+        internal static IntPtr KCFRunLoopDefaultMode =>
+            ResolveMode(ref cfRunLoopDefaultMode, "kCFRunLoopDefaultMode");
+
+        internal static IntPtr KCFRunLoopCommonModes =>
+            ResolveMode(ref cfRunLoopCommonModes, "kCFRunLoopCommonModes");
+
+        /// <summary>
+        /// CoreFoundation treats <c>kCFRunLoopCommonModes</c> as a mode set only when the
+        /// exported constant pointer is used. A newly created CFString with the same text
+        /// is a distinct mode, so taps added there never fire under <c>CFRunLoopRun</c>.
+        /// </summary>
+        private static IntPtr ResolveMode(ref IntPtr cache, string symbolName)
         {
-            get
+            if (cache != IntPtr.Zero)
             {
-                if (cfRunLoopDefaultMode == IntPtr.Zero)
-                {
-                    cfRunLoopDefaultMode = CFStringCreateWithCString(IntPtr.Zero, "kCFRunLoopDefaultMode", 0x08000100);
-                }
-
-                return cfRunLoopDefaultMode;
+                return cache;
             }
-        }
 
-        internal static IntPtr KCFRunLoopCommonModes
-        {
-            get
+            if (NativeLibrary.TryLoad(CoreFoundation, out var lib) &&
+                NativeLibrary.TryGetExport(lib, symbolName, out var symbol) &&
+                symbol != IntPtr.Zero)
             {
-                if (cfRunLoopCommonModes == IntPtr.Zero)
+                var value = Marshal.ReadIntPtr(symbol);
+                if (value != IntPtr.Zero)
                 {
-                    cfRunLoopCommonModes = CFStringCreateWithCString(IntPtr.Zero, "kCFRunLoopCommonModes", 0x08000100);
+                    cache = value;
+                    return cache;
                 }
-
-                return cfRunLoopCommonModes;
             }
+
+            cache = CFStringCreateWithCString(IntPtr.Zero, symbolName, 0x08000100);
+            return cache;
         }
 
         // --- CoreFoundation ---
@@ -93,6 +101,10 @@ namespace EventHook.Platforms.Mac.Native
 
         [DllImport(CoreFoundation)]
         internal static extern IntPtr CFArrayGetValueAtIndex(IntPtr theArray, nint idx);
+
+        [DllImport(CoreFoundation)]
+        [return: MarshalAs(UnmanagedType.I1)]
+        internal static extern bool CFBooleanGetValue(IntPtr boolean);
 
         [StructLayout(LayoutKind.Sequential)]
         internal struct CFRunLoopSourceContext

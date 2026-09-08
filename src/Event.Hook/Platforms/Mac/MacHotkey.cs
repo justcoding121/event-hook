@@ -13,7 +13,13 @@ namespace EventHook.Platforms.Mac
     {
         private const uint Signature = 0x4556484B; // 'EVHK'
 
+        private const ulong CgShift = 0x00020000;
+        private const ulong CgControl = 0x00040000;
+        private const ulong CgAlternate = 0x00080000;
+        private const ulong CgCommand = 0x00100000;
+
         private readonly Dictionary<uint, IntPtr> hotKeyRefs = new Dictionary<uint, IntPtr>();
+        private readonly Dictionary<uint, (uint MacKey, ulong CgFlags)> tapHotkeys = new Dictionary<uint, (uint, ulong)>();
         private MacNative.EventHandlerProc handlerProc;
         private IntPtr handlerRef;
         private Action<int> onHotkey;
@@ -28,6 +34,12 @@ namespace EventHook.Platforms.Mac
             }
 
             onHotkey = enqueue;
+            MacHotkeyTap.SetSink(this);
+            var tap = MacKeyboardMouseHub.EnsureTap();
+            if (!tap.Success)
+            {
+                return tap;
+            }
             if (handlerInstalled)
             {
                 return HookStartResult.Ok();
@@ -98,11 +110,10 @@ namespace EventHook.Platforms.Mac
                     0,
                     out var hotKeyRef);
 
+                tapHotkeys[nativeId] = (macKey, ToCgFlags(hotkey.Modifiers));
                 if (status != 0 || hotKeyRef == IntPtr.Zero)
                 {
-                    result = HookStartResult.Fail(
-                        HookFailureReason.AlreadyInUse,
-                        $"Failed to register hotkey {hotkey}. OSStatus: {status}");
+                    // Carbon may refuse a combo that the event tap can still observe.
                     return;
                 }
 
@@ -123,6 +134,7 @@ namespace EventHook.Platforms.Mac
 
                 MacNative.UnregisterEventHotKey(href);
                 hotKeyRefs.Remove(nativeId);
+                tapHotkeys.Remove(nativeId);
             });
         }
 
@@ -145,6 +157,7 @@ namespace EventHook.Platforms.Mac
                     }
 
                     hotKeyRefs.Clear();
+                    tapHotkeys.Clear();
 
                     if (handlerRef != IntPtr.Zero)
                     {
@@ -159,12 +172,14 @@ namespace EventHook.Platforms.Mac
             catch
             {
                 hotKeyRefs.Clear();
+                tapHotkeys.Clear();
                 handlerRef = IntPtr.Zero;
                 handlerInstalled = false;
                 handlerProc = null;
             }
 
             onHotkey = null;
+            MacHotkeyTap.SetSink(null);
         }
 
         public void Dispose()
@@ -229,5 +244,61 @@ namespace EventHook.Platforms.Mac
 
             return carbon;
         }
+
+        private static ulong ToCgFlags(KeyModifiers modifiers)
+        {
+            ulong flags = 0;
+            if (modifiers.HasFlag(KeyModifiers.Shift))
+            {
+                flags |= CgShift;
+            }
+
+            if (modifiers.HasFlag(KeyModifiers.Control))
+            {
+                flags |= CgControl;
+            }
+
+            if (modifiers.HasFlag(KeyModifiers.Alt))
+            {
+                flags |= CgAlternate;
+            }
+
+            if (modifiers.HasFlag(KeyModifiers.Meta))
+            {
+                flags |= CgCommand;
+            }
+
+            return flags;
+        }
+
+        internal void TryDispatchTap(int macKeyCode, ulong cgFlags, int eventType)
+        {
+            if (eventType != 0)
+            {
+                return;
+            }
+
+            foreach (var pair in tapHotkeys)
+            {
+                if ((int)pair.Value.MacKey == macKeyCode && (cgFlags & pair.Value.CgFlags) == pair.Value.CgFlags)
+                {
+                    onHotkey?.Invoke((int)pair.Key);
+                    return;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// CGEventTap delivers synthetic hotkeys that Carbon <c>RegisterEventHotKey</c> misses.
+    /// </summary>
+    internal static class MacHotkeyTap
+    {
+        private static MacHotkey sink;
+
+        internal static void SetSink(MacHotkey value) => sink = value;
+
+        internal static void TryDispatch(int macKeyCode, ulong cgFlags, int eventType) =>
+            sink?.TryDispatchTap(macKeyCode, cgFlags, eventType);
     }
 }

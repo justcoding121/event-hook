@@ -157,6 +157,11 @@ namespace EventHook.Platforms.Mac
                 try
                 {
                     MacNative.NSApplicationLoad();
+                    var nsApp = MacObjC.GetClass("NSApplication");
+                    if (nsApp != IntPtr.Zero)
+                    {
+                        MacNative.objc_msgSend(nsApp, MacObjC.Sel("sharedApplication"));
+                    }
                 }
                 catch
                 {

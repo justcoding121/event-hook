@@ -121,6 +121,14 @@ namespace EventHook.Platforms.Mac
             }
         }
 
+        internal HookStartResult EnsureTap()
+        {
+            lock (gate)
+            {
+                return EnsureTapUnlocked();
+            }
+        }
+
         internal void StopKeyboard()
         {
             lock (gate)
@@ -228,6 +236,10 @@ namespace EventHook.Platforms.Mac
                 MacNative.CFRunLoopAddSource(
                     MacRunLoopHost.Shared.RunLoop,
                     runLoopSource,
+                    MacNative.KCFRunLoopDefaultMode);
+                MacNative.CFRunLoopAddSource(
+                    MacRunLoopHost.Shared.RunLoop,
+                    runLoopSource,
                     MacNative.KCFRunLoopCommonModes);
                 MacNative.CGEventTapEnable(tap, true);
 
@@ -272,6 +284,10 @@ namespace EventHook.Platforms.Mac
             {
                 try
                 {
+                    MacNative.CFRunLoopRemoveSource(
+                        MacRunLoopHost.Shared.RunLoop,
+                        runLoopSource,
+                        MacNative.KCFRunLoopDefaultMode);
                     MacNative.CFRunLoopRemoveSource(
                         MacRunLoopHost.Shared.RunLoop,
                         runLoopSource,
@@ -333,6 +349,15 @@ namespace EventHook.Platforms.Mac
                         }
 
                         keyHandler(snap);
+                        MacHotkeyTap.TryDispatch(snap.MacKeyCode, snap.Flags, snap.EventType);
+                    }
+                    else
+                    {
+                        var keyCode = (int)MacNative.CGEventGetIntegerValueField(eventRef, MacNative.kCGKeyboardEventKeycode);
+                        MacHotkeyTap.TryDispatch(
+                            keyCode,
+                            MacNative.CGEventGetFlags(eventRef),
+                            type == MacNative.kCGEventKeyDown ? 0 : 1);
                     }
                 }
                 else
@@ -438,6 +463,8 @@ namespace EventHook.Platforms.Mac
                 }
             }
         }
+
+        internal static HookStartResult EnsureTap() => Shared.EnsureTap();
     }
 
     /// <summary>
