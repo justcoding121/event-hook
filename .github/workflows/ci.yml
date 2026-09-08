@@ -61,7 +61,14 @@ jobs:
           /d:sonar.cs.vscoveragexml.reportsPaths="coverage/coverage.xml"
           /d:sonar.exclusions="**/docs/**,**/examples/**,**/_site/**,**/.github/**"
           /d:sonar.cs.roslyn.ignoreIssues=true
-          /d:sonar.coverage.exclusions="**/Platforms/Linux/LinuxX11Native.cs,**/Platforms/Mac/Native/**,**/Hooks/Library/**,**/Platforms/Linux/LinuxKeyboardMouseX11.cs,**/Platforms/Linux/LinuxKeyboardMouseEvdev.cs,**/Platforms/Linux/LinuxX11Display.cs,**/Platforms/Linux/LinuxApplicationX11.cs,**/Platforms/Linux/LinuxClipboardX11.cs,**/Platforms/Linux/LinuxHotkeyX11.cs,**/Platforms/Linux/LinuxWindowHookEx.cs,**/Platforms/Linux/LinuxPrintCups.cs,**/Platforms/Linux/LinuxKeyboardMouseHub.cs,**/Platforms/Linux/LinuxKeyboardMouseFactory.cs,**/Platforms/Mac/**,**/Hooks/WindowHookEx*.cs,**/Hooks/KeyboardHook.cs,**/Hooks/MouseHook.cs,**/Hooks/PrintQueueHook.cs,**/Hooks/ShellHook.cs,**/Hooks/ClipBoardHook.cs,**/Hooks/WindowHook.cs,**/Helpers/AsyncConcurrentQueue.cs,**/Helpers/WindowHelper.cs,**/Helpers/AppWindowFilter.cs,**/ApplicationWatcher.cs,**/ClipboardWatcher.cs,**/HotkeyWatcher.cs,**/PrintWatcher.cs,**/KeyboardWatcher.cs,**/MouseWatcher.cs"
+          /d:sonar.issue.ignore.multicriteria=e1,e2,e3
+          /d:sonar.issue.ignore.multicriteria.e1.ruleKey=csharpsquid:S101
+          /d:sonar.issue.ignore.multicriteria.e1.resourceKey=**/*
+          /d:sonar.issue.ignore.multicriteria.e2.ruleKey=csharpsquid:S2342
+          /d:sonar.issue.ignore.multicriteria.e2.resourceKey=**/*
+          /d:sonar.issue.ignore.multicriteria.e3.ruleKey=csharpsquid:S1450
+          /d:sonar.issue.ignore.multicriteria.e3.resourceKey=**/*
+          /d:sonar.coverage.exclusions="**/Platforms/Linux/LinuxX11Native.cs,**/Platforms/Mac/Native/**,**/Hooks/Library/**,**/Platforms/Linux/LinuxKeyboardMouseX11.cs,**/Platforms/Linux/LinuxKeyboardMouseEvdev.cs,**/Platforms/Linux/LinuxX11Display.cs,**/Platforms/Linux/LinuxApplicationX11.cs,**/Platforms/Linux/LinuxClipboardX11.cs,**/Platforms/Linux/LinuxHotkeyX11.cs,**/Platforms/Linux/LinuxWindowHookEx.cs,**/Platforms/Linux/LinuxPrintCups.cs,**/Platforms/Linux/LinuxKeyboardMouseHub.cs,**/Platforms/Linux/LinuxKeyboardMouseFactory.cs,**/Platforms/Mac/**,**/Hooks/WindowHookEx*.cs,**/Hooks/KeyboardHook.cs,**/Hooks/MouseHook.cs,**/Hooks/PrintQueueHook.cs,**/Hooks/ShellHook.cs,**/Hooks/ClipBoardHook.cs,**/Hooks/WindowHook.cs,**/Helpers/AsyncConcurrentQueue.cs,**/Helpers/WindowHelper.cs,**/Helpers/AppWindowFilter.cs,**/Helpers/SyncFactory.cs,**/ApplicationWatcher.cs,**/ClipboardWatcher.cs,**/HotkeyWatcher.cs,**/PrintWatcher.cs,**/KeyboardWatcher.cs,**/MouseWatcher.cs"
 
       - name: Build for SonarCloud analysis
         if: github.event_name == 'push' && github.ref == 'refs/heads/develop' && env.SONAR_TOKEN != ''

@@ -53,6 +53,106 @@ namespace EventHook.Tests
             Assert.True(wrote >= 1);
             Assert.True(offload.DroppedEventCount >= 1);
         }
+
+        [Fact]
+        public async Task Coalesce_keeps_latest_when_channel_full()
+        {
+            using var offload = new EventOffload<int>(
+                capacity: 1,
+                isCoalesceCandidate: _ => true,
+                coalesce: (_, newer) => newer);
+            Assert.True(offload.TryWrite(1));
+            Assert.False(offload.TryWrite(2));
+            Assert.False(offload.TryWrite(3));
+            Assert.True(offload.DroppedEventCount >= 1);
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            var first = await offload.ReadAsync(cts.Token);
+            Assert.True(first == 1 || first == 3);
+            if (first == 1)
+            {
+                Assert.Equal(3, await offload.ReadAsync(cts.Token));
+            }
+        }
+
+        [Fact]
+        public void Dispose_rejects_further_writes()
+        {
+            var offload = new EventOffload<int>(capacity: 4);
+            offload.Dispose();
+            Assert.False(offload.TryWrite(1));
+        }
+    }
+
+    public class VirtualKeyNamesSharedTests
+    {
+        [Theory]
+        [InlineData(0x08, "Back")]
+        [InlineData(0x09, "Tab")]
+        [InlineData(0x0D, "Return")]
+        [InlineData(0x10, "LeftShift")]
+        [InlineData(0x11, "LeftCtrl")]
+        [InlineData(0x12, "LeftAlt")]
+        [InlineData(0x13, "Pause")]
+        [InlineData(0x14, "CapsLock")]
+        [InlineData(0x1B, "Escape")]
+        [InlineData(0x20, "Space")]
+        [InlineData(0x21, "PageUp")]
+        [InlineData(0x22, "PageDown")]
+        [InlineData(0x23, "End")]
+        [InlineData(0x24, "Home")]
+        [InlineData(0x25, "Left")]
+        [InlineData(0x26, "Up")]
+        [InlineData(0x27, "Right")]
+        [InlineData(0x28, "Down")]
+        [InlineData(0x2D, "Insert")]
+        [InlineData(0x2E, "Delete")]
+        [InlineData(0x5B, "LWin")]
+        [InlineData(0x5C, "RWin")]
+        [InlineData(0xA0, "LeftShift")]
+        [InlineData(0xA1, "RightShift")]
+        [InlineData(0xA2, "LeftCtrl")]
+        [InlineData(0xA3, "RightCtrl")]
+        [InlineData(0xA4, "LeftAlt")]
+        [InlineData(0xA5, "RightAlt")]
+        [InlineData(0x41, "A")]
+        [InlineData(0x30, "0")]
+        [InlineData(0x70, "F1")]
+        [InlineData(0x7B, "F12")]
+        [InlineData(0x99, "Key153")]
+        public void GetName_maps_all_branches(int vk, string expected)
+        {
+            Assert.Equal(expected, VirtualKeyNames.GetName(vk));
+        }
+    }
+
+    public class MouseTypesTests
+    {
+        [Fact]
+        public void Point_and_MouseSnapshot_roundtrip()
+        {
+            var point = new Point(12, 34);
+            Assert.Equal(12, point.x);
+            Assert.Equal(34, point.y);
+            Assert.Equal("12,34", point.ToString());
+            var snap = new MouseSnapshot(MouseMessages.WM_LBUTTONDOWN, point, 9);
+            Assert.Equal(MouseMessages.WM_LBUTTONDOWN, snap.Message);
+            Assert.Equal(12, snap.Point.x);
+            Assert.Equal(9u, snap.MouseData);
+            Assert.Equal(MouseMessages.WM_MOUSEMOVE, MouseMessages.WM_MOUSEMOVE);
+        }
+    }
+
+    public class PlatformSupportSharedTests
+    {
+        [Fact]
+        public void NotSupportedYet_and_os_name()
+        {
+            var result = PlatformSupport.NotSupportedYet("FeatureX", "OSY");
+            Assert.False(result.Success);
+            Assert.Contains("FeatureX", result.Message);
+            Assert.Contains("OSY", result.Message);
+            Assert.False(string.IsNullOrWhiteSpace(PlatformSupport.CurrentOsName));
+        }
     }
 
     public class HookStartResultTests
