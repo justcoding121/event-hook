@@ -206,7 +206,7 @@ namespace EventHook.Helpers
             disposed = true;
         }
 
-        internal TaskScheduler GetTaskScheduler() => TaskScheduler.Default;
+        internal static TaskScheduler GetTaskScheduler() => TaskScheduler.Default;
 
         internal void RunOnPump(Action action)
         {

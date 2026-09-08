@@ -159,7 +159,7 @@
                         hookMin: @event, hookMax: @event,
                         moduleHandle: IntPtr.Zero, callback: proc,
                         processID: 0, threadID: 0,
-            flags: HookFlags.None);
+                        flags: HookFlag.None);
 
                     if (hookId == IntPtr.Zero)
                     {
@@ -342,10 +342,10 @@
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern IntPtr SetWinEventHook(WindowEvent hookMin, WindowEvent hookMax,
             IntPtr moduleHandle,
-            WinEventProc callback, int processID, int threadID, HookFlags flags);
+            WinEventProc callback, int processID, int threadID, HookFlag flags);
 
         [Flags]
-        private enum HookFlags : int
+        private enum HookFlag
         {
             None = 0,
         }

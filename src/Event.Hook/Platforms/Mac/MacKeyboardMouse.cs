@@ -10,7 +10,9 @@ namespace EventHook.Platforms.Mac
     [InlineArray(8)]
     internal struct MacUnicodeBuffer
     {
+#pragma warning disable IDE0051 // InlineArray requires a field; Sonar S1144 is a false positive
         private char element0;
+#pragma warning restore IDE0051
     }
 
     /// <summary>
@@ -22,7 +24,7 @@ namespace EventHook.Platforms.Mac
         internal int VkCode;
         internal int EventType; // 0 down, 1 up
         internal ulong Flags;
-        private MacUnicodeBuffer unicode;
+        private MacUnicodeBuffer unicode; // NOSONAR S3459 - mutated via InlineArray indexer
         private int unicodeLength;
 
         internal void SetUnicode(ushort[] chars, int length)
@@ -79,6 +81,7 @@ namespace EventHook.Platforms.Mac
     /// </summary>
     internal sealed class MacKeyboardMouse : IDisposable
     {
+        private const string InputMonitoringPermission = "Input Monitoring";
         private readonly object gate = new object();
         private MacNative.CGEventTapCallBack tapCallback;
         private IntPtr tap;
@@ -159,7 +162,7 @@ namespace EventHook.Platforms.Mac
                 if (!MacNative.CGEventTapIsEnabled(tap))
                 {
                     TeardownUnlocked();
-                    return PlatformSupport.MacPermission("Input Monitoring");
+                    return PlatformSupport.MacPermission(InputMonitoringPermission);
                 }
 
                 return HookStartResult.Ok();
@@ -169,7 +172,7 @@ namespace EventHook.Platforms.Mac
             {
                 if (!MacNative.CGPreflightListenEventAccess())
                 {
-                    return PlatformSupport.MacPermission("Input Monitoring");
+                    return PlatformSupport.MacPermission(InputMonitoringPermission);
                 }
             }
             catch
@@ -207,7 +210,7 @@ namespace EventHook.Platforms.Mac
 
                 if (tap == IntPtr.Zero)
                 {
-                    result = PlatformSupport.MacPermission("Input Monitoring");
+                    result = PlatformSupport.MacPermission(InputMonitoringPermission);
                     return;
                 }
 
@@ -231,7 +234,7 @@ namespace EventHook.Platforms.Mac
                 if (!MacNative.CGEventTapIsEnabled(tap))
                 {
                     TeardownOnLoop();
-                    result = PlatformSupport.MacPermission("Input Monitoring");
+                    result = PlatformSupport.MacPermission(InputMonitoringPermission);
                 }
             });
 

@@ -117,7 +117,7 @@ namespace EventHook.Hooks
             bool bResult = FindNextPrinterChangeNotification(_changeHandle, out pdwChange, _notifyOptions,
                 ref pNotifyInfo);
             //If the Printer Change Notification Call did not give data, exit code
-            if (bResult == false || pNotifyInfo == IntPtr.Zero)
+            if (!bResult || pNotifyInfo == IntPtr.Zero)
             {
                 return;
             }

@@ -51,7 +51,7 @@ namespace EventHook.Hooks
             WindowActivated?.Invoke(ShellObject, hWnd);
         }
 
-        internal void Destroy()
+        internal static void Destroy()
         {
             sh = null;
         }

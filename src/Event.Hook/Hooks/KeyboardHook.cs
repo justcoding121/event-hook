@@ -9,7 +9,9 @@ namespace EventHook.Hooks
     [InlineArray(256)]
     internal struct KeyboardStateBuffer
     {
+#pragma warning disable IDE0051 // InlineArray requires a field; Sonar S1144 is a false positive
         private byte element0;
+#pragma warning restore IDE0051
     }
 
     /// <summary>
@@ -23,7 +25,7 @@ namespace EventHook.Hooks
         internal int Time;
         internal uint WParam;
         internal IntPtr KeyboardLayout;
-        private KeyboardStateBuffer keyState;
+        private KeyboardStateBuffer keyState; // NOSONAR S3459 - mutated via InlineArray indexer
 
         internal void SetKeyState(ReadOnlySpan<byte> source)
         {

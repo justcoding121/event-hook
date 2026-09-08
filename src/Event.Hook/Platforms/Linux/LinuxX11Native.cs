@@ -411,7 +411,6 @@ namespace EventHook.Platforms.Linux
 
         internal static T EventAs<T>(ref XEvent ev) where T : struct
         {
-            var size = Marshal.SizeOf<T>();
             var handle = GCHandle.Alloc(ev, GCHandleType.Pinned);
             try
             {

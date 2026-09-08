@@ -224,7 +224,7 @@ namespace EventHook
                         windowHook.WindowCreated -= WindowCreated;
                         windowHook.WindowDestroyed -= WindowDestroyed;
                         windowHook.WindowActivated -= WindowActivated;
-                        windowHook.Destroy();
+                        WindowHook.Destroy();
                         windowHook = null;
                     }
 
@@ -301,7 +301,7 @@ namespace EventHook
                         windowHook.WindowCreated -= WindowCreated;
                         windowHook.WindowDestroyed -= WindowDestroyed;
                         windowHook.WindowActivated -= WindowActivated;
-                        windowHook.Destroy();
+                        WindowHook.Destroy();
                         windowHook = null;
                     }
 
