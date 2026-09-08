@@ -164,6 +164,8 @@ jobs:
 
       - name: Restore (portable)
         if: runner.os != 'Windows'
+        env:
+          EnableWindowsTargeting: true
         run: |
           dotnet restore src/Event.Hook/Event.Hook.csproj
           dotnet restore tests/Event.Hook.Tests/Event.Hook.Tests.csproj
@@ -173,6 +175,8 @@ jobs:
 
       - name: Build (portable)
         if: runner.os != 'Windows'
+        env:
+          EnableWindowsTargeting: true
         run: |
           dotnet build src/Event.Hook/Event.Hook.csproj -c Release -f net10.0 --no-restore
           dotnet build tests/Event.Hook.Tests/Event.Hook.Tests.csproj -c Release -f net10.0 --no-restore
@@ -194,6 +198,8 @@ jobs:
 
       - name: Unit tests (Unix)
         if: runner.os != 'Windows'
+        env:
+          EnableWindowsTargeting: true
         run: |
           if [ "$RUNNER_OS" = "Linux" ]; then
             xvfb-run -a dotnet test tests/Event.Hook.Tests/Event.Hook.Tests.csproj -c Release -f net10.0 --no-build --logger trx
@@ -203,6 +209,8 @@ jobs:
 
       - name: Integration tests (Unix)
         if: runner.os != 'Windows'
+        env:
+          EnableWindowsTargeting: true
         run: |
           if [ "$RUNNER_OS" = "Linux" ]; then
             xvfb-run -a dotnet test tests/Event.Hook.IntegrationTests/Event.Hook.IntegrationTests.csproj -c Release -f net10.0 --no-build --logger trx
@@ -212,6 +220,8 @@ jobs:
 
       - name: E2E tests (Unix)
         if: runner.os != 'Windows'
+        env:
+          EnableWindowsTargeting: true
         run: |
           if [ "$RUNNER_OS" = "Linux" ]; then
             xvfb-run -a dotnet test tests/Event.Hook.E2ETests/Event.Hook.E2ETests.csproj -c Release -f net10.0 --no-build --filter "Category=E2E" --logger trx
