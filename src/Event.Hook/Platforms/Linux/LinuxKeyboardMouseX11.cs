@@ -113,7 +113,7 @@ namespace EventHook.Platforms.Linux
                 range.deviceEvents.last = LinuxX11Native.MotionNotifyDetail;
                 Marshal.StructureToPtr(range, rangePtr, false);
 
-                var clients = new[] { (IntPtr)0xffff }; // XRecordAllClients
+                var clients = new[] { (IntPtr)3 }; // XRecordAllClients
                 var ranges = new[] { rangePtr };
                 context = LinuxX11Native.XRecordCreateContext(
                     controlDisplay,

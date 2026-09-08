@@ -8,6 +8,10 @@ using EventHook.Helpers;
 using System.Threading.Channels;
 using EventHook.Hooks;
 using EventHook.Hooks.Library;
+#else
+using System.Threading.Channels;
+using EventHook.Platforms.Linux;
+using EventHook.Platforms.Mac;
 #endif
 
 namespace EventHook
@@ -70,6 +74,12 @@ namespace EventHook
             internal IntPtr HWnd { get; }
             internal int EventType { get; }
         }
+#else
+        private EventOffload<LinuxWindowSnapshot> linuxOffload;
+        private EventOffload<MacAppSnapshot> macOffload;
+        private CancellationTokenSource taskCancellationTokenSource;
+        private LinuxApplicationX11 linuxApp;
+        private MacApplication macApp;
 #endif
 
         internal ApplicationWatcher(SyncFactory factory)
@@ -142,6 +152,50 @@ namespace EventHook
                     return PlatformSupport.WindowsOnlyTfm();
                 }
 
+                if (OperatingSystem.IsMacOS())
+                {
+                    taskCancellationTokenSource = new CancellationTokenSource();
+                    macOffload = new EventOffload<MacAppSnapshot>();
+                    macApp = new MacApplication();
+                    var macResult = macApp.Start(snap => macOffload?.TryWrite(snap));
+                    if (!macResult.Success)
+                    {
+                        macApp.Dispose();
+                        macApp = null;
+                        macOffload?.Dispose();
+                        macOffload = null;
+                        taskCancellationTokenSource.Dispose();
+                        taskCancellationTokenSource = null;
+                        return macResult;
+                    }
+
+                    Task.Factory.StartNew(ConsumeMacAppAsync, TaskCreationOptions.LongRunning);
+                    isRunning = true;
+                    return HookStartResult.Ok();
+                }
+
+                if (OperatingSystem.IsLinux())
+                {
+                    taskCancellationTokenSource = new CancellationTokenSource();
+                    linuxOffload = new EventOffload<LinuxWindowSnapshot>();
+                    linuxApp = new LinuxApplicationX11(snap => linuxOffload?.TryWrite(snap));
+                    var linuxResult = linuxApp.Start();
+                    if (!linuxResult.Success)
+                    {
+                        linuxApp.Dispose();
+                        linuxApp = null;
+                        linuxOffload?.Dispose();
+                        linuxOffload = null;
+                        taskCancellationTokenSource.Dispose();
+                        taskCancellationTokenSource = null;
+                        return linuxResult;
+                    }
+
+                    Task.Factory.StartNew(ConsumeLinuxAppAsync, TaskCreationOptions.LongRunning);
+                    isRunning = true;
+                    return HookStartResult.Ok();
+                }
+
                 return PlatformSupport.NotSupportedYet("Application", PlatformSupport.CurrentOsName);
 #endif
             }
@@ -191,7 +245,20 @@ namespace EventHook
                 offload?.Dispose();
                 offload = null;
 #else
+                macApp?.Dispose();
+                macApp = null;
+                linuxApp?.Dispose();
+                linuxApp = null;
+                macOffload?.Complete();
+                macOffload?.Dispose();
+                macOffload = null;
+                linuxOffload?.Complete();
+                linuxOffload?.Dispose();
+                linuxOffload = null;
                 isRunning = false;
+                taskCancellationTokenSource?.Cancel();
+                taskCancellationTokenSource?.Dispose();
+                taskCancellationTokenSource = null;
 #endif
             }
         }
@@ -391,6 +458,114 @@ namespace EventHook
             catch
             {
                 // swallow
+            }
+        }
+#else
+        private async Task ConsumeMacAppAsync()
+        {
+            var token = taskCancellationTokenSource.Token;
+            while (!token.IsCancellationRequested)
+            {
+                MacAppSnapshot snap;
+                try
+                {
+                    snap = await macOffload.ReadAsync(token).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+                catch (ChannelClosedException)
+                {
+                    break;
+                }
+                catch (InvalidOperationException)
+                {
+                    break;
+                }
+
+                try
+                {
+                    var appEvent = snap.EventKind switch
+                    {
+                        0 => ApplicationEvents.Launched,
+                        1 => ApplicationEvents.Activated,
+                        _ => ApplicationEvents.Closed
+                    };
+
+                    OnApplicationWindowChange?.Invoke(this, new ApplicationEventArgs
+                    {
+                        Event = appEvent,
+                        ApplicationData = new WindowData
+                        {
+                            EventType = snap.EventKind,
+                            HWnd = new IntPtr(snap.Pid),
+                            AppName = snap.GetName(),
+                            AppPath = snap.GetPath(),
+                            AppTitle = snap.GetName()
+                        }
+                    });
+                }
+                catch
+                {
+                    // swallow
+                }
+            }
+        }
+
+        private async Task ConsumeLinuxAppAsync()
+        {
+            var token = taskCancellationTokenSource.Token;
+            while (!token.IsCancellationRequested)
+            {
+                LinuxWindowSnapshot snap;
+                try
+                {
+                    snap = await linuxOffload.ReadAsync(token).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+                catch (ChannelClosedException)
+                {
+                    break;
+                }
+                catch (InvalidOperationException)
+                {
+                    break;
+                }
+
+                try
+                {
+                    var appEvent = snap.EventType switch
+                    {
+                        0 => ApplicationEvents.Launched,
+                        1 => ApplicationEvents.Activated,
+                        _ => ApplicationEvents.Closed
+                    };
+
+                    var title = appEvent == ApplicationEvents.Closed
+                        ? string.Empty
+                        : (linuxApp?.TryGetWindowTitle(snap.HWnd) ?? string.Empty);
+
+                    OnApplicationWindowChange?.Invoke(this, new ApplicationEventArgs
+                    {
+                        Event = appEvent,
+                        ApplicationData = new WindowData
+                        {
+                            EventType = snap.EventType,
+                            HWnd = snap.HWnd,
+                            AppTitle = title,
+                            AppName = title,
+                            AppPath = string.Empty
+                        }
+                    });
+                }
+                catch
+                {
+                    // swallow
+                }
             }
         }
 #endif

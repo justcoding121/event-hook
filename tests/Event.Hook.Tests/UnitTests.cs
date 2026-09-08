@@ -185,4 +185,132 @@ namespace EventHook.Tests
             }
         }
     }
+
+    public class PlatformSupportMessageTests
+    {
+        [Fact]
+        public void WaylandNeedsX11_message_names_feature_and_DISPLAY()
+        {
+            var result = PlatformSupport.WaylandNeedsX11("Clipboard");
+            Assert.False(result.Success);
+            Assert.Equal(HookFailureReason.NotSupportedOnPlatform, result.Reason);
+            Assert.Contains("Clipboard", result.Message);
+            Assert.Contains("DISPLAY", result.Message);
+        }
+
+        [Fact]
+        public void PrivilegeInputGroup_mentions_input_group()
+        {
+            var result = PlatformSupport.PrivilegeInputGroup();
+            Assert.False(result.Success);
+            Assert.Equal(HookFailureReason.PrivilegeRequired, result.Reason);
+            Assert.Contains("input", result.Message);
+            Assert.Contains("/dev/input", result.Message);
+        }
+
+        [Fact]
+        public void DisplayUnavailable_mentions_session_env()
+        {
+            var result = PlatformSupport.DisplayUnavailable();
+            Assert.False(result.Success);
+            Assert.Equal(HookFailureReason.DisplayUnavailable, result.Reason);
+            Assert.Contains("DISPLAY", result.Message);
+        }
+    }
+
+#if !WINDOWS
+    public class MacPlatformMessageTests
+    {
+        [Fact]
+        public void MacPermission_mentions_settings_and_service()
+        {
+            var result = PlatformSupport.MacPermission("Input Monitoring");
+            Assert.False(result.Success);
+            Assert.Equal(HookFailureReason.PermissionDenied, result.Reason);
+            Assert.Contains("Input Monitoring", result.Message);
+            Assert.Contains("Privacy & Security", result.Message);
+        }
+
+        [Fact]
+        public void MacKeyCodeMap_roundtrips_letter_A()
+        {
+            Assert.True(EventHook.Platforms.Mac.MacKeyCodeMap.TryToMacKeyCode(EventKey.A, out var mac));
+            Assert.Equal(0u, mac);
+            Assert.Equal(0x41, EventHook.Platforms.Mac.MacKeyCodeMap.ToVirtualKey(0));
+        }
+
+        [Fact]
+        public void MacKeyCodeMap_maps_F12_hotkey()
+        {
+            Assert.True(EventHook.Platforms.Mac.MacKeyCodeMap.TryToMacKeyCode(EventKey.F12, out var mac));
+            Assert.True(mac > 0);
+        }
+    }
+
+    public class LinuxSessionTests
+    {
+        [Fact]
+        public void RequireX11_ok_when_DISPLAY_set()
+        {
+            var previous = Environment.GetEnvironmentVariable("DISPLAY");
+            var previousWayland = Environment.GetEnvironmentVariable("WAYLAND_DISPLAY");
+            try
+            {
+                Environment.SetEnvironmentVariable("DISPLAY", ":99");
+                Environment.SetEnvironmentVariable("WAYLAND_DISPLAY", null);
+                Assert.True(EventHook.Platforms.Linux.LinuxSession.HasX11Display);
+                var result = EventHook.Platforms.Linux.LinuxSession.RequireX11("Clipboard");
+                Assert.True(result.Success);
+            }
+            finally
+            {
+                Environment.SetEnvironmentVariable("DISPLAY", previous);
+                Environment.SetEnvironmentVariable("WAYLAND_DISPLAY", previousWayland);
+            }
+        }
+
+        [Fact]
+        public void RequireX11_wayland_only_returns_WaylandNeedsX11()
+        {
+            var previous = Environment.GetEnvironmentVariable("DISPLAY");
+            var previousWayland = Environment.GetEnvironmentVariable("WAYLAND_DISPLAY");
+            try
+            {
+                Environment.SetEnvironmentVariable("DISPLAY", null);
+                Environment.SetEnvironmentVariable("WAYLAND_DISPLAY", "wayland-0");
+                Assert.True(EventHook.Platforms.Linux.LinuxSession.IsWaylandOnly);
+                var result = EventHook.Platforms.Linux.LinuxSession.RequireX11("Hotkey");
+                Assert.False(result.Success);
+                Assert.Equal(HookFailureReason.NotSupportedOnPlatform, result.Reason);
+                Assert.Contains("Hotkey", result.Message);
+                Assert.Contains("DISPLAY", result.Message);
+            }
+            finally
+            {
+                Environment.SetEnvironmentVariable("DISPLAY", previous);
+                Environment.SetEnvironmentVariable("WAYLAND_DISPLAY", previousWayland);
+            }
+        }
+
+        [Fact]
+        public void RequireX11_no_session_returns_DisplayUnavailable()
+        {
+            var previous = Environment.GetEnvironmentVariable("DISPLAY");
+            var previousWayland = Environment.GetEnvironmentVariable("WAYLAND_DISPLAY");
+            try
+            {
+                Environment.SetEnvironmentVariable("DISPLAY", null);
+                Environment.SetEnvironmentVariable("WAYLAND_DISPLAY", null);
+                var result = EventHook.Platforms.Linux.LinuxSession.RequireX11("Application");
+                Assert.False(result.Success);
+                Assert.Equal(HookFailureReason.DisplayUnavailable, result.Reason);
+            }
+            finally
+            {
+                Environment.SetEnvironmentVariable("DISPLAY", previous);
+                Environment.SetEnvironmentVariable("WAYLAND_DISPLAY", previousWayland);
+            }
+        }
+    }
+#endif
 }

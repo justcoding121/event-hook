@@ -9,6 +9,10 @@ using System.Printing;
 using System.Threading.Channels;
 using EventHook.Hooks;
 using EventHook.Hooks.Library;
+#else
+using System.Threading.Channels;
+using EventHook.Platforms.Linux;
+using EventHook.Platforms.Mac;
 #endif
 
 namespace EventHook
@@ -41,6 +45,11 @@ namespace EventHook
         private List<PrintQueueHook> printers;
         private EventOffload<PrintEventData> offload;
         private CancellationTokenSource taskCancellationTokenSource;
+#else
+        private MacPrint macPrint;
+        private LinuxPrintCups linuxPrint;
+        private EventOffload<PrintEventData> offload;
+        private CancellationTokenSource taskCancellationTokenSource;
 #endif
 
         internal PrintWatcher(SyncFactory factory)
@@ -48,7 +57,7 @@ namespace EventHook
             this.factory = factory;
         }
 
-#pragma warning disable CS0067 // Raised only on Windows implementation
+#pragma warning disable CS0067
         public event EventHandler<PrintEventArgs> OnPrintEvent;
 #pragma warning restore CS0067
 
@@ -144,6 +153,50 @@ namespace EventHook
                     return PlatformSupport.WindowsOnlyTfm();
                 }
 
+                if (OperatingSystem.IsMacOS())
+                {
+                    taskCancellationTokenSource = new CancellationTokenSource();
+                    offload = new EventOffload<PrintEventData>();
+                    macPrint = new MacPrint();
+                    var macResult = macPrint.Start(data => offload?.TryWrite(data));
+                    if (!macResult.Success)
+                    {
+                        macPrint.Dispose();
+                        macPrint = null;
+                        offload?.Dispose();
+                        offload = null;
+                        taskCancellationTokenSource.Dispose();
+                        taskCancellationTokenSource = null;
+                        return macResult;
+                    }
+
+                    Task.Factory.StartNew(PrintConsumerAsync, TaskCreationOptions.LongRunning);
+                    isRunning = true;
+                    return HookStartResult.Ok();
+                }
+
+                if (OperatingSystem.IsLinux())
+                {
+                    taskCancellationTokenSource = new CancellationTokenSource();
+                    offload = new EventOffload<PrintEventData>();
+                    linuxPrint = new LinuxPrintCups(data => offload?.TryWrite(data));
+                    var linuxResult = linuxPrint.Start();
+                    if (!linuxResult.Success)
+                    {
+                        linuxPrint.Dispose();
+                        linuxPrint = null;
+                        offload?.Dispose();
+                        offload = null;
+                        taskCancellationTokenSource.Dispose();
+                        taskCancellationTokenSource = null;
+                        return linuxResult;
+                    }
+
+                    Task.Factory.StartNew(PrintConsumerAsync, TaskCreationOptions.LongRunning);
+                    isRunning = true;
+                    return HookStartResult.Ok();
+                }
+
                 return PlatformSupport.NotSupportedYet("Print", PlatformSupport.CurrentOsName);
 #endif
             }
@@ -190,7 +243,26 @@ namespace EventHook
                 offload?.Dispose();
                 offload = null;
 #else
+                if (OperatingSystem.IsMacOS())
+                {
+                    macPrint?.Stop();
+                    macPrint?.Dispose();
+                    macPrint = null;
+                }
+                else if (OperatingSystem.IsLinux())
+                {
+                    linuxPrint?.Stop();
+                    linuxPrint?.Dispose();
+                    linuxPrint = null;
+                }
+
                 isRunning = false;
+                offload?.Complete();
+                taskCancellationTokenSource?.Cancel();
+                taskCancellationTokenSource?.Dispose();
+                taskCancellationTokenSource = null;
+                offload?.Dispose();
+                offload = null;
 #endif
             }
         }
@@ -271,6 +343,7 @@ namespace EventHook
                 // never throw from spool callback
             }
         }
+#endif
 
         private async Task PrintConsumerAsync()
         {
@@ -305,6 +378,5 @@ namespace EventHook
                 }
             }
         }
-#endif
     }
 }

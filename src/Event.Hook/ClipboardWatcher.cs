@@ -7,6 +7,10 @@ using EventHook.Helpers;
 using System.Threading.Channels;
 using System.Windows.Forms;
 using EventHook.Hooks;
+#else
+using System.Threading.Channels;
+using EventHook.Platforms.Linux;
+using EventHook.Platforms.Mac;
 #endif
 
 namespace EventHook
@@ -48,6 +52,11 @@ namespace EventHook
         private ClipBoardHook clip;
         private EventOffload<object> offload;
         private CancellationTokenSource taskCancellationTokenSource;
+#else
+        private EventOffload<int> offload;
+        private CancellationTokenSource taskCancellationTokenSource;
+        private MacClipboard macClipboard;
+        private LinuxClipboardX11 linuxClipboard;
 #endif
 
         internal ClipboardWatcher(SyncFactory factory)
@@ -55,13 +64,10 @@ namespace EventHook
             this.factory = factory;
         }
 
-#pragma warning disable CS0067 // Raised only on Windows implementation
+#pragma warning disable CS0067
         public event EventHandler<ClipboardEventArgs> OnClipboardModified;
 #pragma warning restore CS0067
 
-        /// <summary>
-        /// True only after a successful <see cref="Start"/>.
-        /// </summary>
         public bool IsRunning
         {
             get
@@ -110,6 +116,50 @@ namespace EventHook
                     return PlatformSupport.WindowsOnlyTfm();
                 }
 
+                if (OperatingSystem.IsMacOS())
+                {
+                    taskCancellationTokenSource = new CancellationTokenSource();
+                    offload = new EventOffload<int>();
+                    macClipboard = new MacClipboard();
+                    var macResult = macClipboard.Start(snap => offload?.TryWrite((int)snap.ChangeCount));
+                    if (!macResult.Success)
+                    {
+                        macClipboard.Dispose();
+                        macClipboard = null;
+                        offload?.Dispose();
+                        offload = null;
+                        taskCancellationTokenSource.Dispose();
+                        taskCancellationTokenSource = null;
+                        return macResult;
+                    }
+
+                    Task.Factory.StartNew(UnixClipConsumerAsync, TaskCreationOptions.LongRunning);
+                    isRunning = true;
+                    return HookStartResult.Ok();
+                }
+
+                if (OperatingSystem.IsLinux())
+                {
+                    taskCancellationTokenSource = new CancellationTokenSource();
+                    offload = new EventOffload<int>();
+                    linuxClipboard = new LinuxClipboardX11(snap => offload?.TryWrite(snap.Generation));
+                    var linuxResult = linuxClipboard.Start();
+                    if (!linuxResult.Success)
+                    {
+                        linuxClipboard.Dispose();
+                        linuxClipboard = null;
+                        offload?.Dispose();
+                        offload = null;
+                        taskCancellationTokenSource.Dispose();
+                        taskCancellationTokenSource = null;
+                        return linuxResult;
+                    }
+
+                    Task.Factory.StartNew(UnixClipConsumerAsync, TaskCreationOptions.LongRunning);
+                    isRunning = true;
+                    return HookStartResult.Ok();
+                }
+
                 return PlatformSupport.NotSupportedYet("Clipboard", PlatformSupport.CurrentOsName);
 #endif
             }
@@ -144,7 +194,17 @@ namespace EventHook
                 offload?.Dispose();
                 offload = null;
 #else
+                macClipboard?.Dispose();
+                macClipboard = null;
+                linuxClipboard?.Dispose();
+                linuxClipboard = null;
                 isRunning = false;
+                offload?.Complete();
+                taskCancellationTokenSource?.Cancel();
+                taskCancellationTokenSource?.Dispose();
+                taskCancellationTokenSource = null;
+                offload?.Dispose();
+                offload = null;
 #endif
             }
         }
@@ -191,7 +251,6 @@ namespace EventHook
         {
             try
             {
-                // Enqueue the data object reference only; classify on the consumer.
                 offload?.TryWrite(sender);
             }
             catch
@@ -230,9 +289,6 @@ namespace EventHook
             }
         }
 
-        /// <summary>
-        /// Classify clipboard content. Windows-only (WinForms data formats).
-        /// </summary>
         internal static bool TryClassify(IDataObject iData, out ClipboardContentTypes format, out object data)
         {
             format = ClipboardContentTypes.Other;
@@ -318,6 +374,53 @@ namespace EventHook
             catch
             {
                 // swallow
+            }
+        }
+#else
+        private async Task UnixClipConsumerAsync()
+        {
+            var token = taskCancellationTokenSource.Token;
+            while (!token.IsCancellationRequested)
+            {
+                try
+                {
+                    _ = await offload.ReadAsync(token).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+                catch (ChannelClosedException)
+                {
+                    break;
+                }
+                catch (InvalidOperationException)
+                {
+                    break;
+                }
+
+                try
+                {
+                    if (OperatingSystem.IsMacOS())
+                    {
+                        if (MacClipboard.TryRead(out var format, out var data))
+                        {
+                            OnClipboardModified?.Invoke(this, new ClipboardEventArgs { Data = data, DataFormat = format });
+                        }
+                    }
+                    else if (linuxClipboard != null && linuxClipboard.TryReadUnicodeText(out var text))
+                    {
+                        OnClipboardModified?.Invoke(this, new ClipboardEventArgs
+                        {
+                            Data = text,
+                            DataFormat = ClipboardContentTypes.UnicodeText
+                        });
+                    }
+                }
+                catch
+                {
+                    // swallow
+                }
             }
         }
 #endif

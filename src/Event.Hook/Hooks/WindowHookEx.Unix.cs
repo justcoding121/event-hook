@@ -1,17 +1,19 @@
 using System;
 using System.Runtime.CompilerServices;
 using EventHook.Helpers;
+using EventHook.Platforms.Linux;
 using EventHook.Platforms.Mac;
 
 namespace EventHook.Hooks
 {
     /// <summary>
-    /// Portable window event watcher (macOS AXObserver; Linux later).
+    /// Portable window event watcher (macOS AXObserver; Linux EWMH).
     /// </summary>
     public sealed class WindowHookEx : IDisposable
     {
         private readonly object gate = new object();
         private MacWindowHookExBackend mac;
+        private LinuxWindowHookExBackend linux;
         private bool disposed;
 
         private EventHandler<WindowEventArgs> activated;
@@ -49,7 +51,7 @@ namespace EventHook.Hooks
             {
                 lock (gate)
                 {
-                    return mac?.IsRunning == true;
+                    return mac?.IsRunning == true || linux?.IsRunning == true;
                 }
             }
         }
@@ -66,6 +68,11 @@ namespace EventHook.Hooks
                 return StartMac();
             }
 
+            if (OperatingSystem.IsLinux())
+            {
+                return StartLinux();
+            }
+
             return PlatformSupport.NotSupportedYet("WindowHookEx", PlatformSupport.CurrentOsName);
         }
 
@@ -74,6 +81,10 @@ namespace EventHook.Hooks
             if (OperatingSystem.IsMacOS())
             {
                 StopMac();
+            }
+            else if (OperatingSystem.IsLinux())
+            {
+                StopLinux();
             }
         }
 
@@ -120,6 +131,40 @@ namespace EventHook.Hooks
                 mac.Stop();
                 mac.Dispose();
                 mac = null;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private HookStartResult StartLinux()
+        {
+            lock (gate)
+            {
+                linux ??= new LinuxWindowHookExBackend();
+                linux.Activated += ForwardActivated;
+                linux.Minimized += ForwardMinimized;
+                linux.Unminimized += ForwardUnminimized;
+                linux.TextChanged += ForwardTextChanged;
+                return linux.Start();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void StopLinux()
+        {
+            lock (gate)
+            {
+                if (linux == null)
+                {
+                    return;
+                }
+
+                linux.Activated -= ForwardActivated;
+                linux.Minimized -= ForwardMinimized;
+                linux.Unminimized -= ForwardUnminimized;
+                linux.TextChanged -= ForwardTextChanged;
+                linux.Stop();
+                linux.Dispose();
+                linux = null;
             }
         }
 

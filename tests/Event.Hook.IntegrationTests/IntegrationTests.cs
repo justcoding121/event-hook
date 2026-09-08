@@ -157,5 +157,15 @@ namespace EventHook.IntegrationTests
             Thread.Sleep(300);
             apps.Stop();
         }
+
+        [Fact]
+        [Trait("Category", "Integration")]
+        public void WindowHookEx_start_stop()
+        {
+            using var hook = new EventHook.Hooks.WindowHookEx();
+            AssertStartOkOrExpected(hook.Start());
+            Thread.Sleep(200);
+            hook.Stop();
+        }
     }
 }

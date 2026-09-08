@@ -6,6 +6,10 @@ using EventHook.Hooks;
 
 #if WINDOWS
 using System.Threading.Channels;
+#else
+using System.Threading.Channels;
+using EventHook.Platforms.Linux;
+using EventHook.Platforms.Mac;
 #endif
 
 namespace EventHook
@@ -36,6 +40,11 @@ namespace EventHook
         private MouseHook mouseHook;
         private EventOffload<MouseSnapshot> offload;
         private CancellationTokenSource taskCancellationTokenSource;
+#else
+        private EventOffload<MouseSnapshot> linuxOffload;
+        private EventOffload<MacMouseSnapshot> macOffload;
+        private CancellationTokenSource taskCancellationTokenSource;
+        private IDisposable linuxBackend;
 #endif
 
         internal MouseWatcher(SyncFactory factory)
@@ -43,7 +52,7 @@ namespace EventHook
             this.factory = factory;
         }
 
-#pragma warning disable CS0067 // Raised only on Windows implementation
+#pragma warning disable CS0067
         public event EventHandler<MouseEventArgs> OnMouseInput;
 #pragma warning restore CS0067
 
@@ -112,6 +121,79 @@ namespace EventHook
                     return PlatformSupport.WindowsOnlyTfm();
                 }
 
+                if (OperatingSystem.IsMacOS())
+                {
+                    taskCancellationTokenSource = new CancellationTokenSource();
+                    macOffload = new EventOffload<MacMouseSnapshot>(
+                        capacity: 1024,
+                        isCoalesceCandidate: s => s.Message == MouseMessages.WM_MOUSEMOVE,
+                        coalesce: (_, newer) => newer);
+
+                    var includeMove = IncludeMouseMove;
+                    var macResult = MacKeyboardMouseHub.Shared.StartMouse(
+                        snap =>
+                        {
+                            if (!MouseMessageFilter.ShouldRaise(snap.Message, includeMove))
+                            {
+                                return;
+                            }
+
+                            macOffload?.TryWrite(snap);
+                        },
+                        includeMove);
+
+                    if (!macResult.Success)
+                    {
+                        macOffload?.Dispose();
+                        macOffload = null;
+                        taskCancellationTokenSource.Dispose();
+                        taskCancellationTokenSource = null;
+                        return macResult;
+                    }
+
+                    Task.Factory.StartNew(ConsumeMacAsync, TaskCreationOptions.LongRunning);
+                    isRunning = true;
+                    return HookStartResult.Ok();
+                }
+
+                if (OperatingSystem.IsLinux())
+                {
+                    taskCancellationTokenSource = new CancellationTokenSource();
+                    linuxOffload = new EventOffload<MouseSnapshot>(
+                        capacity: 1024,
+                        isCoalesceCandidate: s => s.Message == MouseMessages.WM_MOUSEMOVE,
+                        coalesce: (_, newer) => newer);
+
+                    var includeMove = IncludeMouseMove;
+                    var linuxResult = LinuxKeyboardMouseFactory.Start(
+                        _ => { },
+                        snap =>
+                        {
+                            if (!MouseMessageFilter.ShouldRaise(snap.Message, includeMove))
+                            {
+                                return;
+                            }
+
+                            linuxOffload?.TryWrite(snap);
+                        },
+                        out linuxBackend);
+
+                    if (!linuxResult.Success)
+                    {
+                        linuxBackend?.Dispose();
+                        linuxBackend = null;
+                        linuxOffload?.Dispose();
+                        linuxOffload = null;
+                        taskCancellationTokenSource.Dispose();
+                        taskCancellationTokenSource = null;
+                        return linuxResult;
+                    }
+
+                    Task.Factory.StartNew(ConsumeLinuxAsync, TaskCreationOptions.LongRunning);
+                    isRunning = true;
+                    return HookStartResult.Ok();
+                }
+
                 return PlatformSupport.NotSupportedYet("Mouse", PlatformSupport.CurrentOsName);
 #endif
             }
@@ -145,7 +227,26 @@ namespace EventHook
                 offload?.Dispose();
                 offload = null;
 #else
+                if (OperatingSystem.IsMacOS())
+                {
+                    MacKeyboardMouseHub.Shared.StopMouse();
+                    macOffload?.Complete();
+                    macOffload?.Dispose();
+                    macOffload = null;
+                }
+                else if (OperatingSystem.IsLinux())
+                {
+                    linuxBackend?.Dispose();
+                    linuxBackend = null;
+                    linuxOffload?.Complete();
+                    linuxOffload?.Dispose();
+                    linuxOffload = null;
+                }
+
                 isRunning = false;
+                taskCancellationTokenSource?.Cancel();
+                taskCancellationTokenSource?.Dispose();
+                taskCancellationTokenSource = null;
 #endif
             }
         }
@@ -171,6 +272,84 @@ namespace EventHook
                 try
                 {
                     snapshot = await offload.ReadAsync(token).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+                catch (ChannelClosedException)
+                {
+                    break;
+                }
+                catch (InvalidOperationException)
+                {
+                    break;
+                }
+
+                try
+                {
+                    OnMouseInput?.Invoke(this, new MouseEventArgs
+                    {
+                        Message = snapshot.Message,
+                        Point = snapshot.Point,
+                        MouseData = snapshot.MouseData
+                    });
+                }
+                catch
+                {
+                    // swallow
+                }
+            }
+        }
+#else
+        private async Task ConsumeMacAsync()
+        {
+            var token = taskCancellationTokenSource.Token;
+            while (!token.IsCancellationRequested)
+            {
+                MacMouseSnapshot snapshot;
+                try
+                {
+                    snapshot = await macOffload.ReadAsync(token).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+                catch (ChannelClosedException)
+                {
+                    break;
+                }
+                catch (InvalidOperationException)
+                {
+                    break;
+                }
+
+                try
+                {
+                    OnMouseInput?.Invoke(this, new MouseEventArgs
+                    {
+                        Message = snapshot.Message,
+                        Point = snapshot.Point,
+                        MouseData = snapshot.MouseData
+                    });
+                }
+                catch
+                {
+                    // swallow
+                }
+            }
+        }
+
+        private async Task ConsumeLinuxAsync()
+        {
+            var token = taskCancellationTokenSource.Token;
+            while (!token.IsCancellationRequested)
+            {
+                MouseSnapshot snapshot;
+                try
+                {
+                    snapshot = await linuxOffload.ReadAsync(token).ConfigureAwait(false);
                 }
                 catch (OperationCanceledException)
                 {

@@ -9,6 +9,10 @@ using System.Runtime.InteropServices;
 using System.Threading.Channels;
 using System.Windows.Forms;
 using EventHook.Hooks.Library;
+#else
+using System.Threading.Channels;
+using EventHook.Platforms.Linux;
+using EventHook.Platforms.Mac;
 #endif
 
 namespace EventHook
@@ -39,6 +43,14 @@ namespace EventHook
         private MessageHandler pumpWindow;
         private EventOffload<int> offload;
         private CancellationTokenSource taskCancellationTokenSource;
+#else
+        private readonly Dictionary<int, (object Id, Hotkey Hotkey)> registrations =
+            new Dictionary<int, (object, Hotkey)>();
+        private int nextId = 1;
+        private MacHotkey macHotkey;
+        private LinuxHotkeyX11 linuxHotkey;
+        private EventOffload<int> offload;
+        private CancellationTokenSource taskCancellationTokenSource;
 #endif
 
         internal HotkeyWatcher(SyncFactory factory)
@@ -46,7 +58,7 @@ namespace EventHook
             this.factory = factory;
         }
 
-#pragma warning disable CS0067 // Raised only on Windows implementation
+#pragma warning disable CS0067
         public event EventHandler<HotkeyEventArgs> OnHotkeyPressed;
 #pragma warning restore CS0067
 
@@ -114,6 +126,42 @@ namespace EventHook
                 return PlatformSupport.WindowsOnlyTfm();
             }
 
+            if (OperatingSystem.IsMacOS())
+            {
+                var start = Start();
+                if (!start.Success)
+                {
+                    return start;
+                }
+
+                lock (accesslock)
+                {
+                    var nativeId = nextId++;
+                    var result = macHotkey.Register((uint)nativeId, hotkey);
+                    if (!result.Success)
+                    {
+                        return result;
+                    }
+
+                    registrations[nativeId] = (id, hotkey);
+                    return HookStartResult.Ok();
+                }
+            }
+
+            if (OperatingSystem.IsLinux())
+            {
+                var start = Start();
+                if (!start.Success)
+                {
+                    return start;
+                }
+
+                lock (accesslock)
+                {
+                    return linuxHotkey.Register(id, hotkey);
+                }
+            }
+
             return PlatformSupport.NotSupportedYet("Hotkey", PlatformSupport.CurrentOsName);
 #endif
         }
@@ -154,7 +202,36 @@ namespace EventHook
                 registrations.Remove(nativeId.Value);
             }
 #else
-            _ = id;
+            if (OperatingSystem.IsMacOS())
+            {
+                lock (accesslock)
+                {
+                    int? nativeId = null;
+                    foreach (var pair in registrations)
+                    {
+                        if (Equals(pair.Value.Id, id))
+                        {
+                            nativeId = pair.Key;
+                            break;
+                        }
+                    }
+
+                    if (nativeId == null)
+                    {
+                        return;
+                    }
+
+                    macHotkey?.Unregister((uint)nativeId.Value);
+                    registrations.Remove(nativeId.Value);
+                }
+
+                return;
+            }
+
+            if (OperatingSystem.IsLinux())
+            {
+                linuxHotkey?.Unregister(id);
+            }
 #endif
         }
 
@@ -200,6 +277,50 @@ namespace EventHook
                     return PlatformSupport.WindowsOnlyTfm();
                 }
 
+                if (OperatingSystem.IsMacOS())
+                {
+                    taskCancellationTokenSource = new CancellationTokenSource();
+                    offload = new EventOffload<int>();
+                    macHotkey = new MacHotkey();
+                    var macResult = macHotkey.Start(nativeId => offload?.TryWrite(nativeId));
+                    if (!macResult.Success)
+                    {
+                        macHotkey.Dispose();
+                        macHotkey = null;
+                        offload?.Dispose();
+                        offload = null;
+                        taskCancellationTokenSource?.Dispose();
+                        taskCancellationTokenSource = null;
+                        return macResult;
+                    }
+
+                    Task.Factory.StartNew(HotkeyConsumerAsync, TaskCreationOptions.LongRunning);
+                    isRunning = true;
+                    return HookStartResult.Ok();
+                }
+
+                if (OperatingSystem.IsLinux())
+                {
+                    taskCancellationTokenSource = new CancellationTokenSource();
+                    offload = new EventOffload<int>();
+                    linuxHotkey = new LinuxHotkeyX11(nativeId => offload?.TryWrite(nativeId));
+                    var linuxResult = linuxHotkey.Start();
+                    if (!linuxResult.Success)
+                    {
+                        linuxHotkey.Dispose();
+                        linuxHotkey = null;
+                        offload?.Dispose();
+                        offload = null;
+                        taskCancellationTokenSource?.Dispose();
+                        taskCancellationTokenSource = null;
+                        return linuxResult;
+                    }
+
+                    Task.Factory.StartNew(HotkeyConsumerAsync, TaskCreationOptions.LongRunning);
+                    isRunning = true;
+                    return HookStartResult.Ok();
+                }
+
                 return PlatformSupport.NotSupportedYet("Hotkey", PlatformSupport.CurrentOsName);
 #endif
             }
@@ -239,7 +360,26 @@ namespace EventHook
                 offload?.Dispose();
                 offload = null;
 #else
+                if (OperatingSystem.IsMacOS())
+                {
+                    macHotkey?.Stop();
+                    macHotkey?.Dispose();
+                    macHotkey = null;
+                    registrations.Clear();
+                }
+                else if (OperatingSystem.IsLinux())
+                {
+                    linuxHotkey?.Dispose();
+                    linuxHotkey = null;
+                }
+
                 isRunning = false;
+                offload?.Complete();
+                taskCancellationTokenSource?.Cancel();
+                taskCancellationTokenSource?.Dispose();
+                taskCancellationTokenSource = null;
+                offload?.Dispose();
+                offload = null;
 #endif
             }
         }
@@ -265,49 +405,6 @@ namespace EventHook
 
             var nativeId = msg.WParam.ToInt32();
             offload?.TryWrite(nativeId);
-        }
-
-        private async Task HotkeyConsumerAsync()
-        {
-            var token = taskCancellationTokenSource.Token;
-            while (!token.IsCancellationRequested)
-            {
-                int nativeId;
-                try
-                {
-                    nativeId = await offload.ReadAsync(token).ConfigureAwait(false);
-                }
-                catch (OperationCanceledException)
-                {
-                    break;
-                }
-                catch (ChannelClosedException)
-                {
-                    break;
-                }
-                catch (InvalidOperationException)
-                {
-                    break;
-                }
-
-                (object Id, Hotkey Hotkey) entry;
-                lock (accesslock)
-                {
-                    if (!registrations.TryGetValue(nativeId, out entry))
-                    {
-                        continue;
-                    }
-                }
-
-                try
-                {
-                    OnHotkeyPressed?.Invoke(this, new HotkeyEventArgs { Id = entry.Id, Hotkey = entry.Hotkey });
-                }
-                catch
-                {
-                    // never throw from consumer
-                }
-            }
         }
 
         private static (uint modifiers, uint vk) Split(Hotkey hotkey)
@@ -337,5 +434,72 @@ namespace EventHook
             return (modifiers, (uint)hotkey.Key);
         }
 #endif
+
+        private async Task HotkeyConsumerAsync()
+        {
+            var token = taskCancellationTokenSource.Token;
+            while (!token.IsCancellationRequested)
+            {
+                int nativeId;
+                try
+                {
+                    nativeId = await offload.ReadAsync(token).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+                catch (ChannelClosedException)
+                {
+                    break;
+                }
+                catch (InvalidOperationException)
+                {
+                    break;
+                }
+
+                object entryId;
+                Hotkey entryHotkey;
+                lock (accesslock)
+                {
+#if WINDOWS
+                    if (!registrations.TryGetValue(nativeId, out var entry))
+                    {
+                        continue;
+                    }
+
+                    entryId = entry.Id;
+                    entryHotkey = entry.Hotkey;
+#else
+                    if (OperatingSystem.IsLinux())
+                    {
+                        if (linuxHotkey == null ||
+                            !linuxHotkey.TryGetRegistration(nativeId, out entryId, out entryHotkey))
+                        {
+                            continue;
+                        }
+                    }
+                    else if (!registrations.TryGetValue(nativeId, out var entry))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        entryId = entry.Id;
+                        entryHotkey = entry.Hotkey;
+                    }
+#endif
+                }
+
+                try
+                {
+                    OnHotkeyPressed?.Invoke(this, new HotkeyEventArgs { Id = entryId, Hotkey = entryHotkey });
+                }
+                catch
+                {
+                    // never throw from consumer
+                }
+            }
+        }
     }
 }

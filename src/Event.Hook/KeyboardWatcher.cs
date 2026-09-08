@@ -6,6 +6,10 @@ using EventHook.Helpers;
 #if WINDOWS
 using System.Threading.Channels;
 using EventHook.Hooks;
+#else
+using System.Threading.Channels;
+using EventHook.Platforms.Linux;
+using EventHook.Platforms.Mac;
 #endif
 
 namespace EventHook
@@ -43,6 +47,11 @@ namespace EventHook
         private KeyboardHook keyboardHook;
         private EventOffload<KeyboardSnapshot> offload;
         private CancellationTokenSource taskCancellationTokenSource;
+#else
+        private EventOffload<LinuxKeySnapshot> linuxOffload;
+        private EventOffload<MacKeySnapshot> macOffload;
+        private CancellationTokenSource taskCancellationTokenSource;
+        private IDisposable linuxBackend;
 #endif
 
         internal KeyboardWatcher(SyncFactory factory)
@@ -50,7 +59,7 @@ namespace EventHook
             this.factory = factory;
         }
 
-#pragma warning disable CS0067 // Raised only on Windows implementation
+#pragma warning disable CS0067
         public event EventHandler<KeyInputEventArgs> OnKeyInput;
 #pragma warning restore CS0067
 
@@ -111,6 +120,49 @@ namespace EventHook
                     return PlatformSupport.WindowsOnlyTfm();
                 }
 
+                if (OperatingSystem.IsMacOS())
+                {
+                    taskCancellationTokenSource = new CancellationTokenSource();
+                    macOffload = new EventOffload<MacKeySnapshot>();
+                    var macResult = MacKeyboardMouseHub.Shared.StartKeyboard(snap => macOffload?.TryWrite(snap));
+                    if (!macResult.Success)
+                    {
+                        macOffload?.Dispose();
+                        macOffload = null;
+                        taskCancellationTokenSource.Dispose();
+                        taskCancellationTokenSource = null;
+                        return macResult;
+                    }
+
+                    Task.Factory.StartNew(ConsumeMacKeyAsync, TaskCreationOptions.LongRunning);
+                    isRunning = true;
+                    return HookStartResult.Ok();
+                }
+
+                if (OperatingSystem.IsLinux())
+                {
+                    taskCancellationTokenSource = new CancellationTokenSource();
+                    linuxOffload = new EventOffload<LinuxKeySnapshot>();
+                    var linuxResult = LinuxKeyboardMouseFactory.Start(
+                        snap => linuxOffload?.TryWrite(snap),
+                        _ => { },
+                        out linuxBackend);
+                    if (!linuxResult.Success)
+                    {
+                        linuxBackend?.Dispose();
+                        linuxBackend = null;
+                        linuxOffload?.Dispose();
+                        linuxOffload = null;
+                        taskCancellationTokenSource.Dispose();
+                        taskCancellationTokenSource = null;
+                        return linuxResult;
+                    }
+
+                    Task.Factory.StartNew(ConsumeLinuxKeyAsync, TaskCreationOptions.LongRunning);
+                    isRunning = true;
+                    return HookStartResult.Ok();
+                }
+
                 return PlatformSupport.NotSupportedYet("Keyboard", PlatformSupport.CurrentOsName);
 #endif
             }
@@ -144,7 +196,26 @@ namespace EventHook
                 offload?.Dispose();
                 offload = null;
 #else
+                if (OperatingSystem.IsMacOS())
+                {
+                    MacKeyboardMouseHub.Shared.StopKeyboard();
+                    macOffload?.Complete();
+                    macOffload?.Dispose();
+                    macOffload = null;
+                }
+                else if (OperatingSystem.IsLinux())
+                {
+                    linuxBackend?.Dispose();
+                    linuxBackend = null;
+                    linuxOffload?.Complete();
+                    linuxOffload?.Dispose();
+                    linuxOffload = null;
+                }
+
                 isRunning = false;
+                taskCancellationTokenSource?.Cancel();
+                taskCancellationTokenSource?.Dispose();
+                taskCancellationTokenSource = null;
 #endif
             }
         }
@@ -198,6 +269,90 @@ namespace EventHook
                 catch
                 {
                     // swallow user callback exceptions
+                }
+            }
+        }
+#else
+        private async Task ConsumeMacKeyAsync()
+        {
+            var token = taskCancellationTokenSource.Token;
+            while (!token.IsCancellationRequested)
+            {
+                MacKeySnapshot snapshot;
+                try
+                {
+                    snapshot = await macOffload.ReadAsync(token).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+                catch (ChannelClosedException)
+                {
+                    break;
+                }
+                catch (InvalidOperationException)
+                {
+                    break;
+                }
+
+                try
+                {
+                    OnKeyInput?.Invoke(this, new KeyInputEventArgs
+                    {
+                        KeyData = new KeyData
+                        {
+                            UnicodeCharacter = snapshot.GetUnicode(),
+                            Keyname = VirtualKeyNames.GetName(snapshot.VkCode),
+                            EventType = (KeyEvent)snapshot.EventType
+                        }
+                    });
+                }
+                catch
+                {
+                    // swallow
+                }
+            }
+        }
+
+        private async Task ConsumeLinuxKeyAsync()
+        {
+            var token = taskCancellationTokenSource.Token;
+            while (!token.IsCancellationRequested)
+            {
+                LinuxKeySnapshot snapshot;
+                try
+                {
+                    snapshot = await linuxOffload.ReadAsync(token).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+                catch (ChannelClosedException)
+                {
+                    break;
+                }
+                catch (InvalidOperationException)
+                {
+                    break;
+                }
+
+                try
+                {
+                    OnKeyInput?.Invoke(this, new KeyInputEventArgs
+                    {
+                        KeyData = new KeyData
+                        {
+                            UnicodeCharacter = LinuxKeyMap.KeySymToUnicode(snapshot.KeySym),
+                            Keyname = VirtualKeyNames.GetName(snapshot.VkCode),
+                            EventType = (KeyEvent)snapshot.EventType
+                        }
+                    });
+                }
+                catch
+                {
+                    // swallow
                 }
             }
         }
