@@ -1,0 +1,72 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net10.0-windows;net10.0</TargetFrameworks>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RootNamespace>EventHook</RootNamespace>
+    <AssemblyName>EventHook</AssemblyName>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <VersionPrefix>3.0.0</VersionPrefix>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+    <FileVersion>3.0.0.0</FileVersion>
+    <PackageId>EventHook</PackageId>
+    <Title>EventHook</Title>
+    <Authors>justcoding121</Authors>
+    <Company>justcoding121</Company>
+    <Description>Subscribe to global user actions on Windows, macOS, and Linux: keyboard, mouse, clipboard, application windows, print, and hotkeys.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/justcoding121/event-hook</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/justcoding121/event-hook</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>windows;macos;linux;hooks;keyboard;mouse;clipboard;hotkey;print</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>StrongNameKey.snk</AssemblyOriginatorKeyFile>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0-windows'">
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
+    <DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="EventHook.Tests, PublicKey=002400000480000094000000060200000024000052534131000400000100010079b321ed64dd41b5c5d69b50bc0eb8d6d0f8ebae75cc04b8654fc269d6257a957e4760b5f5180dae3bbaf0f591af1f697c1e371e515146f323df33b7d5454f875e1c3dc8c57635b52c325e537cdce870fd37bfb96fb2af0f5d14d67e5fcdf9428628d8194cc2d2d5470697636350d41a542b1f0b42d794b87bd9db0057b747c2" />
+    <InternalsVisibleTo Include="EventHook.IntegrationTests, PublicKey=002400000480000094000000060200000024000052534131000400000100010079b321ed64dd41b5c5d69b50bc0eb8d6d0f8ebae75cc04b8654fc269d6257a957e4760b5f5180dae3bbaf0f591af1f697c1e371e515146f323df33b7d5454f875e1c3dc8c57635b52c325e537cdce870fd37bfb96fb2af0f5d14d67e5fcdf9428628d8194cc2d2d5470697636350d41a542b1f0b42d794b87bd9db0057b747c2" />
+    <InternalsVisibleTo Include="EventHook.E2ETests, PublicKey=002400000480000094000000060200000024000052534131000400000100010079b321ed64dd41b5c5d69b50bc0eb8d6d0f8ebae75cc04b8654fc269d6257a957e4760b5f5180dae3bbaf0f591af1f697c1e371e515146f323df33b7d5454f875e1c3dc8c57635b52c325e537cdce870fd37bfb96fb2af0f5d14d67e5fcdf9428628d8194cc2d2d5470697636350d41a542b1f0b42d794b87bd9db0057b747c2" />
+  </ItemGroup>
+
+  <!-- Windows-only sources -->
+  <ItemGroup Condition="'$(TargetFramework)' != 'net10.0-windows'">
+    <Compile Remove="Hooks\Library\**" />
+    <Compile Remove="Hooks\ClipBoardHook.cs" />
+    <Compile Remove="Hooks\KeyboardHook.cs" />
+    <Compile Remove="Hooks\MouseHook.cs" />
+    <Compile Remove="Hooks\PrintQueueHook.cs" />
+    <Compile Remove="Hooks\ShellHook.cs" />
+    <Compile Remove="Hooks\WindowHook.cs" />
+    <Compile Remove="Hooks\WindowHookEx.cs" />
+    <Compile Remove="Helpers\WindowHelper.cs" />
+    <Compile Remove="Helpers\AppWindowFilter.cs" />
+  </ItemGroup>
+
+  <!-- macOS / Linux backends only on portable TFM -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0-windows'">
+    <Compile Remove="Platforms\Mac\**" />
+    <Compile Remove="Platforms\Linux\**" />
+    <Compile Remove="Hooks\WindowHookEx.Unix.cs" />
+  </ItemGroup>
+
+</Project>

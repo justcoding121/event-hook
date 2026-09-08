@@ -75,6 +75,15 @@ references:
   commentId: M:EventHook.ApplicationWatcher.Dispose
   fullName: EventHook.ApplicationWatcher.Dispose()
   nameWithType: ApplicationWatcher.Dispose()
+- uid: EventHook.ApplicationWatcher.Dispose(System.Boolean)
+  name: Dispose(bool)
+  href: api/EventHook.ApplicationWatcher.html#EventHook_ApplicationWatcher_Dispose_System_Boolean_
+  commentId: M:EventHook.ApplicationWatcher.Dispose(System.Boolean)
+  name.vb: Dispose(Boolean)
+  fullName: EventHook.ApplicationWatcher.Dispose(bool)
+  fullName.vb: EventHook.ApplicationWatcher.Dispose(Boolean)
+  nameWithType: ApplicationWatcher.Dispose(bool)
+  nameWithType.vb: ApplicationWatcher.Dispose(Boolean)
 - uid: EventHook.ApplicationWatcher.Dispose*
   name: Dispose
   href: api/EventHook.ApplicationWatcher.html#EventHook_ApplicationWatcher_Dispose_
@@ -82,6 +91,19 @@ references:
   isSpec: "True"
   fullName: EventHook.ApplicationWatcher.Dispose
   nameWithType: ApplicationWatcher.Dispose
+- uid: EventHook.ApplicationWatcher.IsRunning
+  name: IsRunning
+  href: api/EventHook.ApplicationWatcher.html#EventHook_ApplicationWatcher_IsRunning
+  commentId: P:EventHook.ApplicationWatcher.IsRunning
+  fullName: EventHook.ApplicationWatcher.IsRunning
+  nameWithType: ApplicationWatcher.IsRunning
+- uid: EventHook.ApplicationWatcher.IsRunning*
+  name: IsRunning
+  href: api/EventHook.ApplicationWatcher.html#EventHook_ApplicationWatcher_IsRunning_
+  commentId: Overload:EventHook.ApplicationWatcher.IsRunning
+  isSpec: "True"
+  fullName: EventHook.ApplicationWatcher.IsRunning
+  nameWithType: ApplicationWatcher.IsRunning
 - uid: EventHook.ApplicationWatcher.OnApplicationWindowChange
   name: OnApplicationWindowChange
   href: api/EventHook.ApplicationWatcher.html#EventHook_ApplicationWatcher_OnApplicationWindowChange
@@ -212,6 +234,15 @@ references:
   commentId: M:EventHook.ClipboardWatcher.Dispose
   fullName: EventHook.ClipboardWatcher.Dispose()
   nameWithType: ClipboardWatcher.Dispose()
+- uid: EventHook.ClipboardWatcher.Dispose(System.Boolean)
+  name: Dispose(bool)
+  href: api/EventHook.ClipboardWatcher.html#EventHook_ClipboardWatcher_Dispose_System_Boolean_
+  commentId: M:EventHook.ClipboardWatcher.Dispose(System.Boolean)
+  name.vb: Dispose(Boolean)
+  fullName: EventHook.ClipboardWatcher.Dispose(bool)
+  fullName.vb: EventHook.ClipboardWatcher.Dispose(Boolean)
+  nameWithType: ClipboardWatcher.Dispose(bool)
+  nameWithType.vb: ClipboardWatcher.Dispose(Boolean)
 - uid: EventHook.ClipboardWatcher.Dispose*
   name: Dispose
   href: api/EventHook.ClipboardWatcher.html#EventHook_ClipboardWatcher_Dispose_
@@ -219,6 +250,19 @@ references:
   isSpec: "True"
   fullName: EventHook.ClipboardWatcher.Dispose
   nameWithType: ClipboardWatcher.Dispose
+- uid: EventHook.ClipboardWatcher.IsRunning
+  name: IsRunning
+  href: api/EventHook.ClipboardWatcher.html#EventHook_ClipboardWatcher_IsRunning
+  commentId: P:EventHook.ClipboardWatcher.IsRunning
+  fullName: EventHook.ClipboardWatcher.IsRunning
+  nameWithType: ClipboardWatcher.IsRunning
+- uid: EventHook.ClipboardWatcher.IsRunning*
+  name: IsRunning
+  href: api/EventHook.ClipboardWatcher.html#EventHook_ClipboardWatcher_IsRunning_
+  commentId: Overload:EventHook.ClipboardWatcher.IsRunning
+  isSpec: "True"
+  fullName: EventHook.ClipboardWatcher.IsRunning
+  nameWithType: ClipboardWatcher.IsRunning
 - uid: EventHook.ClipboardWatcher.OnClipboardModified
   name: OnClipboardModified
   href: api/EventHook.ClipboardWatcher.html#EventHook_ClipboardWatcher_OnClipboardModified
@@ -251,6 +295,44 @@ references:
   isSpec: "True"
   fullName: EventHook.ClipboardWatcher.Stop
   nameWithType: ClipboardWatcher.Stop
+- uid: EventHook.EventHookException
+  name: EventHookException
+  href: api/EventHook.EventHookException.html
+  commentId: T:EventHook.EventHookException
+  fullName: EventHook.EventHookException
+  nameWithType: EventHookException
+- uid: EventHook.EventHookException.#ctor(EventHook.HookFailureReason,System.String)
+  name: EventHookException(HookFailureReason, string)
+  href: api/EventHook.EventHookException.html#EventHook_EventHookException__ctor_EventHook_HookFailureReason_System_String_
+  commentId: M:EventHook.EventHookException.#ctor(EventHook.HookFailureReason,System.String)
+  name.vb: New(HookFailureReason, String)
+  fullName: EventHook.EventHookException.EventHookException(EventHook.HookFailureReason, string)
+  fullName.vb: EventHook.EventHookException.New(EventHook.HookFailureReason, String)
+  nameWithType: EventHookException.EventHookException(HookFailureReason, string)
+  nameWithType.vb: EventHookException.New(HookFailureReason, String)
+- uid: EventHook.EventHookException.#ctor*
+  name: EventHookException
+  href: api/EventHook.EventHookException.html#EventHook_EventHookException__ctor_
+  commentId: Overload:EventHook.EventHookException.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: EventHook.EventHookException.EventHookException
+  fullName.vb: EventHook.EventHookException.New
+  nameWithType: EventHookException.EventHookException
+  nameWithType.vb: EventHookException.New
+- uid: EventHook.EventHookException.Reason
+  name: Reason
+  href: api/EventHook.EventHookException.html#EventHook_EventHookException_Reason
+  commentId: P:EventHook.EventHookException.Reason
+  fullName: EventHook.EventHookException.Reason
+  nameWithType: EventHookException.Reason
+- uid: EventHook.EventHookException.Reason*
+  name: Reason
+  href: api/EventHook.EventHookException.html#EventHook_EventHookException_Reason_
+  commentId: Overload:EventHook.EventHookException.Reason
+  isSpec: "True"
+  fullName: EventHook.EventHookException.Reason
+  nameWithType: EventHookException.Reason
 - uid: EventHook.EventHookFactory
   name: EventHookFactory
   href: api/EventHook.EventHookFactory.html
@@ -291,6 +373,15 @@ references:
   commentId: M:EventHook.EventHookFactory.Dispose
   fullName: EventHook.EventHookFactory.Dispose()
   nameWithType: EventHookFactory.Dispose()
+- uid: EventHook.EventHookFactory.Dispose(System.Boolean)
+  name: Dispose(bool)
+  href: api/EventHook.EventHookFactory.html#EventHook_EventHookFactory_Dispose_System_Boolean_
+  commentId: M:EventHook.EventHookFactory.Dispose(System.Boolean)
+  name.vb: Dispose(Boolean)
+  fullName: EventHook.EventHookFactory.Dispose(bool)
+  fullName.vb: EventHook.EventHookFactory.Dispose(Boolean)
+  nameWithType: EventHookFactory.Dispose(bool)
+  nameWithType.vb: EventHookFactory.Dispose(Boolean)
 - uid: EventHook.EventHookFactory.Dispose*
   name: Dispose
   href: api/EventHook.EventHookFactory.html#EventHook_EventHookFactory_Dispose_
@@ -376,6 +467,396 @@ references:
   isSpec: "True"
   fullName: EventHook.EventHookFactory.GetPrintWatcher
   nameWithType: EventHookFactory.GetPrintWatcher
+- uid: EventHook.EventKey
+  name: EventKey
+  href: api/EventHook.EventKey.html
+  commentId: T:EventHook.EventKey
+  fullName: EventHook.EventKey
+  nameWithType: EventKey
+- uid: EventHook.EventKey.A
+  name: A
+  href: api/EventHook.EventKey.html#EventHook_EventKey_A
+  commentId: F:EventHook.EventKey.A
+  fullName: EventHook.EventKey.A
+  nameWithType: EventKey.A
+- uid: EventHook.EventKey.B
+  name: B
+  href: api/EventHook.EventKey.html#EventHook_EventKey_B
+  commentId: F:EventHook.EventKey.B
+  fullName: EventHook.EventKey.B
+  nameWithType: EventKey.B
+- uid: EventHook.EventKey.Back
+  name: Back
+  href: api/EventHook.EventKey.html#EventHook_EventKey_Back
+  commentId: F:EventHook.EventKey.Back
+  fullName: EventHook.EventKey.Back
+  nameWithType: EventKey.Back
+- uid: EventHook.EventKey.C
+  name: C
+  href: api/EventHook.EventKey.html#EventHook_EventKey_C
+  commentId: F:EventHook.EventKey.C
+  fullName: EventHook.EventKey.C
+  nameWithType: EventKey.C
+- uid: EventHook.EventKey.D
+  name: D
+  href: api/EventHook.EventKey.html#EventHook_EventKey_D
+  commentId: F:EventHook.EventKey.D
+  fullName: EventHook.EventKey.D
+  nameWithType: EventKey.D
+- uid: EventHook.EventKey.D0
+  name: D0
+  href: api/EventHook.EventKey.html#EventHook_EventKey_D0
+  commentId: F:EventHook.EventKey.D0
+  fullName: EventHook.EventKey.D0
+  nameWithType: EventKey.D0
+- uid: EventHook.EventKey.D1
+  name: D1
+  href: api/EventHook.EventKey.html#EventHook_EventKey_D1
+  commentId: F:EventHook.EventKey.D1
+  fullName: EventHook.EventKey.D1
+  nameWithType: EventKey.D1
+- uid: EventHook.EventKey.D2
+  name: D2
+  href: api/EventHook.EventKey.html#EventHook_EventKey_D2
+  commentId: F:EventHook.EventKey.D2
+  fullName: EventHook.EventKey.D2
+  nameWithType: EventKey.D2
+- uid: EventHook.EventKey.D3
+  name: D3
+  href: api/EventHook.EventKey.html#EventHook_EventKey_D3
+  commentId: F:EventHook.EventKey.D3
+  fullName: EventHook.EventKey.D3
+  nameWithType: EventKey.D3
+- uid: EventHook.EventKey.D4
+  name: D4
+  href: api/EventHook.EventKey.html#EventHook_EventKey_D4
+  commentId: F:EventHook.EventKey.D4
+  fullName: EventHook.EventKey.D4
+  nameWithType: EventKey.D4
+- uid: EventHook.EventKey.D5
+  name: D5
+  href: api/EventHook.EventKey.html#EventHook_EventKey_D5
+  commentId: F:EventHook.EventKey.D5
+  fullName: EventHook.EventKey.D5
+  nameWithType: EventKey.D5
+- uid: EventHook.EventKey.D6
+  name: D6
+  href: api/EventHook.EventKey.html#EventHook_EventKey_D6
+  commentId: F:EventHook.EventKey.D6
+  fullName: EventHook.EventKey.D6
+  nameWithType: EventKey.D6
+- uid: EventHook.EventKey.D7
+  name: D7
+  href: api/EventHook.EventKey.html#EventHook_EventKey_D7
+  commentId: F:EventHook.EventKey.D7
+  fullName: EventHook.EventKey.D7
+  nameWithType: EventKey.D7
+- uid: EventHook.EventKey.D8
+  name: D8
+  href: api/EventHook.EventKey.html#EventHook_EventKey_D8
+  commentId: F:EventHook.EventKey.D8
+  fullName: EventHook.EventKey.D8
+  nameWithType: EventKey.D8
+- uid: EventHook.EventKey.D9
+  name: D9
+  href: api/EventHook.EventKey.html#EventHook_EventKey_D9
+  commentId: F:EventHook.EventKey.D9
+  fullName: EventHook.EventKey.D9
+  nameWithType: EventKey.D9
+- uid: EventHook.EventKey.Delete
+  name: Delete
+  href: api/EventHook.EventKey.html#EventHook_EventKey_Delete
+  commentId: F:EventHook.EventKey.Delete
+  fullName: EventHook.EventKey.Delete
+  nameWithType: EventKey.Delete
+- uid: EventHook.EventKey.Down
+  name: Down
+  href: api/EventHook.EventKey.html#EventHook_EventKey_Down
+  commentId: F:EventHook.EventKey.Down
+  fullName: EventHook.EventKey.Down
+  nameWithType: EventKey.Down
+- uid: EventHook.EventKey.E
+  name: E
+  href: api/EventHook.EventKey.html#EventHook_EventKey_E
+  commentId: F:EventHook.EventKey.E
+  fullName: EventHook.EventKey.E
+  nameWithType: EventKey.E
+- uid: EventHook.EventKey.End
+  name: End
+  href: api/EventHook.EventKey.html#EventHook_EventKey_End
+  commentId: F:EventHook.EventKey.End
+  fullName: EventHook.EventKey.End
+  nameWithType: EventKey.End
+- uid: EventHook.EventKey.Escape
+  name: Escape
+  href: api/EventHook.EventKey.html#EventHook_EventKey_Escape
+  commentId: F:EventHook.EventKey.Escape
+  fullName: EventHook.EventKey.Escape
+  nameWithType: EventKey.Escape
+- uid: EventHook.EventKey.F
+  name: F
+  href: api/EventHook.EventKey.html#EventHook_EventKey_F
+  commentId: F:EventHook.EventKey.F
+  fullName: EventHook.EventKey.F
+  nameWithType: EventKey.F
+- uid: EventHook.EventKey.F1
+  name: F1
+  href: api/EventHook.EventKey.html#EventHook_EventKey_F1
+  commentId: F:EventHook.EventKey.F1
+  fullName: EventHook.EventKey.F1
+  nameWithType: EventKey.F1
+- uid: EventHook.EventKey.F10
+  name: F10
+  href: api/EventHook.EventKey.html#EventHook_EventKey_F10
+  commentId: F:EventHook.EventKey.F10
+  fullName: EventHook.EventKey.F10
+  nameWithType: EventKey.F10
+- uid: EventHook.EventKey.F11
+  name: F11
+  href: api/EventHook.EventKey.html#EventHook_EventKey_F11
+  commentId: F:EventHook.EventKey.F11
+  fullName: EventHook.EventKey.F11
+  nameWithType: EventKey.F11
+- uid: EventHook.EventKey.F12
+  name: F12
+  href: api/EventHook.EventKey.html#EventHook_EventKey_F12
+  commentId: F:EventHook.EventKey.F12
+  fullName: EventHook.EventKey.F12
+  nameWithType: EventKey.F12
+- uid: EventHook.EventKey.F2
+  name: F2
+  href: api/EventHook.EventKey.html#EventHook_EventKey_F2
+  commentId: F:EventHook.EventKey.F2
+  fullName: EventHook.EventKey.F2
+  nameWithType: EventKey.F2
+- uid: EventHook.EventKey.F3
+  name: F3
+  href: api/EventHook.EventKey.html#EventHook_EventKey_F3
+  commentId: F:EventHook.EventKey.F3
+  fullName: EventHook.EventKey.F3
+  nameWithType: EventKey.F3
+- uid: EventHook.EventKey.F4
+  name: F4
+  href: api/EventHook.EventKey.html#EventHook_EventKey_F4
+  commentId: F:EventHook.EventKey.F4
+  fullName: EventHook.EventKey.F4
+  nameWithType: EventKey.F4
+- uid: EventHook.EventKey.F5
+  name: F5
+  href: api/EventHook.EventKey.html#EventHook_EventKey_F5
+  commentId: F:EventHook.EventKey.F5
+  fullName: EventHook.EventKey.F5
+  nameWithType: EventKey.F5
+- uid: EventHook.EventKey.F6
+  name: F6
+  href: api/EventHook.EventKey.html#EventHook_EventKey_F6
+  commentId: F:EventHook.EventKey.F6
+  fullName: EventHook.EventKey.F6
+  nameWithType: EventKey.F6
+- uid: EventHook.EventKey.F7
+  name: F7
+  href: api/EventHook.EventKey.html#EventHook_EventKey_F7
+  commentId: F:EventHook.EventKey.F7
+  fullName: EventHook.EventKey.F7
+  nameWithType: EventKey.F7
+- uid: EventHook.EventKey.F8
+  name: F8
+  href: api/EventHook.EventKey.html#EventHook_EventKey_F8
+  commentId: F:EventHook.EventKey.F8
+  fullName: EventHook.EventKey.F8
+  nameWithType: EventKey.F8
+- uid: EventHook.EventKey.F9
+  name: F9
+  href: api/EventHook.EventKey.html#EventHook_EventKey_F9
+  commentId: F:EventHook.EventKey.F9
+  fullName: EventHook.EventKey.F9
+  nameWithType: EventKey.F9
+- uid: EventHook.EventKey.G
+  name: G
+  href: api/EventHook.EventKey.html#EventHook_EventKey_G
+  commentId: F:EventHook.EventKey.G
+  fullName: EventHook.EventKey.G
+  nameWithType: EventKey.G
+- uid: EventHook.EventKey.H
+  name: H
+  href: api/EventHook.EventKey.html#EventHook_EventKey_H
+  commentId: F:EventHook.EventKey.H
+  fullName: EventHook.EventKey.H
+  nameWithType: EventKey.H
+- uid: EventHook.EventKey.Home
+  name: Home
+  href: api/EventHook.EventKey.html#EventHook_EventKey_Home
+  commentId: F:EventHook.EventKey.Home
+  fullName: EventHook.EventKey.Home
+  nameWithType: EventKey.Home
+- uid: EventHook.EventKey.I
+  name: I
+  href: api/EventHook.EventKey.html#EventHook_EventKey_I
+  commentId: F:EventHook.EventKey.I
+  fullName: EventHook.EventKey.I
+  nameWithType: EventKey.I
+- uid: EventHook.EventKey.Insert
+  name: Insert
+  href: api/EventHook.EventKey.html#EventHook_EventKey_Insert
+  commentId: F:EventHook.EventKey.Insert
+  fullName: EventHook.EventKey.Insert
+  nameWithType: EventKey.Insert
+- uid: EventHook.EventKey.J
+  name: J
+  href: api/EventHook.EventKey.html#EventHook_EventKey_J
+  commentId: F:EventHook.EventKey.J
+  fullName: EventHook.EventKey.J
+  nameWithType: EventKey.J
+- uid: EventHook.EventKey.K
+  name: K
+  href: api/EventHook.EventKey.html#EventHook_EventKey_K
+  commentId: F:EventHook.EventKey.K
+  fullName: EventHook.EventKey.K
+  nameWithType: EventKey.K
+- uid: EventHook.EventKey.L
+  name: L
+  href: api/EventHook.EventKey.html#EventHook_EventKey_L
+  commentId: F:EventHook.EventKey.L
+  fullName: EventHook.EventKey.L
+  nameWithType: EventKey.L
+- uid: EventHook.EventKey.Left
+  name: Left
+  href: api/EventHook.EventKey.html#EventHook_EventKey_Left
+  commentId: F:EventHook.EventKey.Left
+  fullName: EventHook.EventKey.Left
+  nameWithType: EventKey.Left
+- uid: EventHook.EventKey.M
+  name: M
+  href: api/EventHook.EventKey.html#EventHook_EventKey_M
+  commentId: F:EventHook.EventKey.M
+  fullName: EventHook.EventKey.M
+  nameWithType: EventKey.M
+- uid: EventHook.EventKey.N
+  name: N
+  href: api/EventHook.EventKey.html#EventHook_EventKey_N
+  commentId: F:EventHook.EventKey.N
+  fullName: EventHook.EventKey.N
+  nameWithType: EventKey.N
+- uid: EventHook.EventKey.None
+  name: None
+  href: api/EventHook.EventKey.html#EventHook_EventKey_None
+  commentId: F:EventHook.EventKey.None
+  fullName: EventHook.EventKey.None
+  nameWithType: EventKey.None
+- uid: EventHook.EventKey.O
+  name: O
+  href: api/EventHook.EventKey.html#EventHook_EventKey_O
+  commentId: F:EventHook.EventKey.O
+  fullName: EventHook.EventKey.O
+  nameWithType: EventKey.O
+- uid: EventHook.EventKey.P
+  name: P
+  href: api/EventHook.EventKey.html#EventHook_EventKey_P
+  commentId: F:EventHook.EventKey.P
+  fullName: EventHook.EventKey.P
+  nameWithType: EventKey.P
+- uid: EventHook.EventKey.PageDown
+  name: PageDown
+  href: api/EventHook.EventKey.html#EventHook_EventKey_PageDown
+  commentId: F:EventHook.EventKey.PageDown
+  fullName: EventHook.EventKey.PageDown
+  nameWithType: EventKey.PageDown
+- uid: EventHook.EventKey.PageUp
+  name: PageUp
+  href: api/EventHook.EventKey.html#EventHook_EventKey_PageUp
+  commentId: F:EventHook.EventKey.PageUp
+  fullName: EventHook.EventKey.PageUp
+  nameWithType: EventKey.PageUp
+- uid: EventHook.EventKey.Q
+  name: Q
+  href: api/EventHook.EventKey.html#EventHook_EventKey_Q
+  commentId: F:EventHook.EventKey.Q
+  fullName: EventHook.EventKey.Q
+  nameWithType: EventKey.Q
+- uid: EventHook.EventKey.R
+  name: R
+  href: api/EventHook.EventKey.html#EventHook_EventKey_R
+  commentId: F:EventHook.EventKey.R
+  fullName: EventHook.EventKey.R
+  nameWithType: EventKey.R
+- uid: EventHook.EventKey.Return
+  name: Return
+  href: api/EventHook.EventKey.html#EventHook_EventKey_Return
+  commentId: F:EventHook.EventKey.Return
+  fullName: EventHook.EventKey.Return
+  nameWithType: EventKey.Return
+- uid: EventHook.EventKey.Right
+  name: Right
+  href: api/EventHook.EventKey.html#EventHook_EventKey_Right
+  commentId: F:EventHook.EventKey.Right
+  fullName: EventHook.EventKey.Right
+  nameWithType: EventKey.Right
+- uid: EventHook.EventKey.S
+  name: S
+  href: api/EventHook.EventKey.html#EventHook_EventKey_S
+  commentId: F:EventHook.EventKey.S
+  fullName: EventHook.EventKey.S
+  nameWithType: EventKey.S
+- uid: EventHook.EventKey.Space
+  name: Space
+  href: api/EventHook.EventKey.html#EventHook_EventKey_Space
+  commentId: F:EventHook.EventKey.Space
+  fullName: EventHook.EventKey.Space
+  nameWithType: EventKey.Space
+- uid: EventHook.EventKey.T
+  name: T
+  href: api/EventHook.EventKey.html#EventHook_EventKey_T
+  commentId: F:EventHook.EventKey.T
+  fullName: EventHook.EventKey.T
+  nameWithType: EventKey.T
+- uid: EventHook.EventKey.Tab
+  name: Tab
+  href: api/EventHook.EventKey.html#EventHook_EventKey_Tab
+  commentId: F:EventHook.EventKey.Tab
+  fullName: EventHook.EventKey.Tab
+  nameWithType: EventKey.Tab
+- uid: EventHook.EventKey.U
+  name: U
+  href: api/EventHook.EventKey.html#EventHook_EventKey_U
+  commentId: F:EventHook.EventKey.U
+  fullName: EventHook.EventKey.U
+  nameWithType: EventKey.U
+- uid: EventHook.EventKey.Up
+  name: Up
+  href: api/EventHook.EventKey.html#EventHook_EventKey_Up
+  commentId: F:EventHook.EventKey.Up
+  fullName: EventHook.EventKey.Up
+  nameWithType: EventKey.Up
+- uid: EventHook.EventKey.V
+  name: V
+  href: api/EventHook.EventKey.html#EventHook_EventKey_V
+  commentId: F:EventHook.EventKey.V
+  fullName: EventHook.EventKey.V
+  nameWithType: EventKey.V
+- uid: EventHook.EventKey.W
+  name: W
+  href: api/EventHook.EventKey.html#EventHook_EventKey_W
+  commentId: F:EventHook.EventKey.W
+  fullName: EventHook.EventKey.W
+  nameWithType: EventKey.W
+- uid: EventHook.EventKey.X
+  name: X
+  href: api/EventHook.EventKey.html#EventHook_EventKey_X
+  commentId: F:EventHook.EventKey.X
+  fullName: EventHook.EventKey.X
+  nameWithType: EventKey.X
+- uid: EventHook.EventKey.Y
+  name: Y
+  href: api/EventHook.EventKey.html#EventHook_EventKey_Y
+  commentId: F:EventHook.EventKey.Y
+  fullName: EventHook.EventKey.Y
+  nameWithType: EventKey.Y
+- uid: EventHook.EventKey.Z
+  name: Z
+  href: api/EventHook.EventKey.html#EventHook_EventKey_Z
+  commentId: F:EventHook.EventKey.Z
+  fullName: EventHook.EventKey.Z
+  nameWithType: EventKey.Z
 - uid: EventHook.Helpers
   name: EventHook.Helpers
   href: api/EventHook.Helpers.html
@@ -449,6 +930,154 @@ references:
   isSpec: "True"
   fullName: EventHook.Helpers.MouseMessageFilter.ShouldRaise
   nameWithType: MouseMessageFilter.ShouldRaise
+- uid: EventHook.HookFailureReason
+  name: HookFailureReason
+  href: api/EventHook.HookFailureReason.html
+  commentId: T:EventHook.HookFailureReason
+  fullName: EventHook.HookFailureReason
+  nameWithType: HookFailureReason
+- uid: EventHook.HookFailureReason.AlreadyInUse
+  name: AlreadyInUse
+  href: api/EventHook.HookFailureReason.html#EventHook_HookFailureReason_AlreadyInUse
+  commentId: F:EventHook.HookFailureReason.AlreadyInUse
+  fullName: EventHook.HookFailureReason.AlreadyInUse
+  nameWithType: HookFailureReason.AlreadyInUse
+- uid: EventHook.HookFailureReason.DisplayUnavailable
+  name: DisplayUnavailable
+  href: api/EventHook.HookFailureReason.html#EventHook_HookFailureReason_DisplayUnavailable
+  commentId: F:EventHook.HookFailureReason.DisplayUnavailable
+  fullName: EventHook.HookFailureReason.DisplayUnavailable
+  nameWithType: HookFailureReason.DisplayUnavailable
+- uid: EventHook.HookFailureReason.NativeFailure
+  name: NativeFailure
+  href: api/EventHook.HookFailureReason.html#EventHook_HookFailureReason_NativeFailure
+  commentId: F:EventHook.HookFailureReason.NativeFailure
+  fullName: EventHook.HookFailureReason.NativeFailure
+  nameWithType: HookFailureReason.NativeFailure
+- uid: EventHook.HookFailureReason.None
+  name: None
+  href: api/EventHook.HookFailureReason.html#EventHook_HookFailureReason_None
+  commentId: F:EventHook.HookFailureReason.None
+  fullName: EventHook.HookFailureReason.None
+  nameWithType: HookFailureReason.None
+- uid: EventHook.HookFailureReason.NotSupportedOnPlatform
+  name: NotSupportedOnPlatform
+  href: api/EventHook.HookFailureReason.html#EventHook_HookFailureReason_NotSupportedOnPlatform
+  commentId: F:EventHook.HookFailureReason.NotSupportedOnPlatform
+  fullName: EventHook.HookFailureReason.NotSupportedOnPlatform
+  nameWithType: HookFailureReason.NotSupportedOnPlatform
+- uid: EventHook.HookFailureReason.PermissionDenied
+  name: PermissionDenied
+  href: api/EventHook.HookFailureReason.html#EventHook_HookFailureReason_PermissionDenied
+  commentId: F:EventHook.HookFailureReason.PermissionDenied
+  fullName: EventHook.HookFailureReason.PermissionDenied
+  nameWithType: HookFailureReason.PermissionDenied
+- uid: EventHook.HookFailureReason.PrivilegeRequired
+  name: PrivilegeRequired
+  href: api/EventHook.HookFailureReason.html#EventHook_HookFailureReason_PrivilegeRequired
+  commentId: F:EventHook.HookFailureReason.PrivilegeRequired
+  fullName: EventHook.HookFailureReason.PrivilegeRequired
+  nameWithType: HookFailureReason.PrivilegeRequired
+- uid: EventHook.HookStartResult
+  name: HookStartResult
+  href: api/EventHook.HookStartResult.html
+  commentId: T:EventHook.HookStartResult
+  fullName: EventHook.HookStartResult
+  nameWithType: HookStartResult
+- uid: EventHook.HookStartResult.Fail(EventHook.HookFailureReason,System.String)
+  name: Fail(HookFailureReason, string)
+  href: api/EventHook.HookStartResult.html#EventHook_HookStartResult_Fail_EventHook_HookFailureReason_System_String_
+  commentId: M:EventHook.HookStartResult.Fail(EventHook.HookFailureReason,System.String)
+  name.vb: Fail(HookFailureReason, String)
+  fullName: EventHook.HookStartResult.Fail(EventHook.HookFailureReason, string)
+  fullName.vb: EventHook.HookStartResult.Fail(EventHook.HookFailureReason, String)
+  nameWithType: HookStartResult.Fail(HookFailureReason, string)
+  nameWithType.vb: HookStartResult.Fail(HookFailureReason, String)
+- uid: EventHook.HookStartResult.Fail*
+  name: Fail
+  href: api/EventHook.HookStartResult.html#EventHook_HookStartResult_Fail_
+  commentId: Overload:EventHook.HookStartResult.Fail
+  isSpec: "True"
+  fullName: EventHook.HookStartResult.Fail
+  nameWithType: HookStartResult.Fail
+- uid: EventHook.HookStartResult.Message
+  name: Message
+  href: api/EventHook.HookStartResult.html#EventHook_HookStartResult_Message
+  commentId: P:EventHook.HookStartResult.Message
+  fullName: EventHook.HookStartResult.Message
+  nameWithType: HookStartResult.Message
+- uid: EventHook.HookStartResult.Message*
+  name: Message
+  href: api/EventHook.HookStartResult.html#EventHook_HookStartResult_Message_
+  commentId: Overload:EventHook.HookStartResult.Message
+  isSpec: "True"
+  fullName: EventHook.HookStartResult.Message
+  nameWithType: HookStartResult.Message
+- uid: EventHook.HookStartResult.Ok
+  name: Ok()
+  href: api/EventHook.HookStartResult.html#EventHook_HookStartResult_Ok
+  commentId: M:EventHook.HookStartResult.Ok
+  fullName: EventHook.HookStartResult.Ok()
+  nameWithType: HookStartResult.Ok()
+- uid: EventHook.HookStartResult.Ok*
+  name: Ok
+  href: api/EventHook.HookStartResult.html#EventHook_HookStartResult_Ok_
+  commentId: Overload:EventHook.HookStartResult.Ok
+  isSpec: "True"
+  fullName: EventHook.HookStartResult.Ok
+  nameWithType: HookStartResult.Ok
+- uid: EventHook.HookStartResult.Reason
+  name: Reason
+  href: api/EventHook.HookStartResult.html#EventHook_HookStartResult_Reason
+  commentId: P:EventHook.HookStartResult.Reason
+  fullName: EventHook.HookStartResult.Reason
+  nameWithType: HookStartResult.Reason
+- uid: EventHook.HookStartResult.Reason*
+  name: Reason
+  href: api/EventHook.HookStartResult.html#EventHook_HookStartResult_Reason_
+  commentId: Overload:EventHook.HookStartResult.Reason
+  isSpec: "True"
+  fullName: EventHook.HookStartResult.Reason
+  nameWithType: HookStartResult.Reason
+- uid: EventHook.HookStartResult.Success
+  name: Success
+  href: api/EventHook.HookStartResult.html#EventHook_HookStartResult_Success
+  commentId: P:EventHook.HookStartResult.Success
+  fullName: EventHook.HookStartResult.Success
+  nameWithType: HookStartResult.Success
+- uid: EventHook.HookStartResult.Success*
+  name: Success
+  href: api/EventHook.HookStartResult.html#EventHook_HookStartResult_Success_
+  commentId: Overload:EventHook.HookStartResult.Success
+  isSpec: "True"
+  fullName: EventHook.HookStartResult.Success
+  nameWithType: HookStartResult.Success
+- uid: EventHook.HookStartResult.ThrowIfFailed
+  name: ThrowIfFailed()
+  href: api/EventHook.HookStartResult.html#EventHook_HookStartResult_ThrowIfFailed
+  commentId: M:EventHook.HookStartResult.ThrowIfFailed
+  fullName: EventHook.HookStartResult.ThrowIfFailed()
+  nameWithType: HookStartResult.ThrowIfFailed()
+- uid: EventHook.HookStartResult.ThrowIfFailed*
+  name: ThrowIfFailed
+  href: api/EventHook.HookStartResult.html#EventHook_HookStartResult_ThrowIfFailed_
+  commentId: Overload:EventHook.HookStartResult.ThrowIfFailed
+  isSpec: "True"
+  fullName: EventHook.HookStartResult.ThrowIfFailed
+  nameWithType: HookStartResult.ThrowIfFailed
+- uid: EventHook.HookStartResult.ToString
+  name: ToString()
+  href: api/EventHook.HookStartResult.html#EventHook_HookStartResult_ToString
+  commentId: M:EventHook.HookStartResult.ToString
+  fullName: EventHook.HookStartResult.ToString()
+  nameWithType: HookStartResult.ToString()
+- uid: EventHook.HookStartResult.ToString*
+  name: ToString
+  href: api/EventHook.HookStartResult.html#EventHook_HookStartResult_ToString_
+  commentId: Overload:EventHook.HookStartResult.ToString
+  isSpec: "True"
+  fullName: EventHook.HookStartResult.ToString
+  nameWithType: HookStartResult.ToString
 - uid: EventHook.Hooks
   name: EventHook.Hooks
   href: api/EventHook.Hooks.html
@@ -527,6 +1156,38 @@ references:
   commentId: T:EventHook.Hooks.Point
   fullName: EventHook.Hooks.Point
   nameWithType: Point
+- uid: EventHook.Hooks.Point.#ctor(System.Int32,System.Int32)
+  name: Point(int, int)
+  href: api/EventHook.Hooks.Point.html#EventHook_Hooks_Point__ctor_System_Int32_System_Int32_
+  commentId: M:EventHook.Hooks.Point.#ctor(System.Int32,System.Int32)
+  name.vb: New(Integer, Integer)
+  fullName: EventHook.Hooks.Point.Point(int, int)
+  fullName.vb: EventHook.Hooks.Point.New(Integer, Integer)
+  nameWithType: Point.Point(int, int)
+  nameWithType.vb: Point.New(Integer, Integer)
+- uid: EventHook.Hooks.Point.#ctor*
+  name: Point
+  href: api/EventHook.Hooks.Point.html#EventHook_Hooks_Point__ctor_
+  commentId: Overload:EventHook.Hooks.Point.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: EventHook.Hooks.Point.Point
+  fullName.vb: EventHook.Hooks.Point.New
+  nameWithType: Point.Point
+  nameWithType.vb: Point.New
+- uid: EventHook.Hooks.Point.ToString
+  name: ToString()
+  href: api/EventHook.Hooks.Point.html#EventHook_Hooks_Point_ToString
+  commentId: M:EventHook.Hooks.Point.ToString
+  fullName: EventHook.Hooks.Point.ToString()
+  nameWithType: Point.ToString()
+- uid: EventHook.Hooks.Point.ToString*
+  name: ToString
+  href: api/EventHook.Hooks.Point.html#EventHook_Hooks_Point_ToString_
+  commentId: Overload:EventHook.Hooks.Point.ToString
+  isSpec: "True"
+  fullName: EventHook.Hooks.Point.ToString
+  nameWithType: Point.ToString
 - uid: EventHook.Hooks.Point.x
   name: x
   href: api/EventHook.Hooks.Point.html#EventHook_Hooks_Point_x
@@ -637,12 +1298,51 @@ references:
   isSpec: "True"
   fullName: EventHook.Hooks.WindowHookEx.~WindowHookEx
   nameWithType: WindowHookEx.~WindowHookEx
+- uid: EventHook.Hooks.WindowHookEx.IsRunning
+  name: IsRunning
+  href: api/EventHook.Hooks.WindowHookEx.html#EventHook_Hooks_WindowHookEx_IsRunning
+  commentId: P:EventHook.Hooks.WindowHookEx.IsRunning
+  fullName: EventHook.Hooks.WindowHookEx.IsRunning
+  nameWithType: WindowHookEx.IsRunning
+- uid: EventHook.Hooks.WindowHookEx.IsRunning*
+  name: IsRunning
+  href: api/EventHook.Hooks.WindowHookEx.html#EventHook_Hooks_WindowHookEx_IsRunning_
+  commentId: Overload:EventHook.Hooks.WindowHookEx.IsRunning
+  isSpec: "True"
+  fullName: EventHook.Hooks.WindowHookEx.IsRunning
+  nameWithType: WindowHookEx.IsRunning
 - uid: EventHook.Hooks.WindowHookEx.Minimized
   name: Minimized
   href: api/EventHook.Hooks.WindowHookEx.html#EventHook_Hooks_WindowHookEx_Minimized
   commentId: E:EventHook.Hooks.WindowHookEx.Minimized
   fullName: EventHook.Hooks.WindowHookEx.Minimized
   nameWithType: WindowHookEx.Minimized
+- uid: EventHook.Hooks.WindowHookEx.Start
+  name: Start()
+  href: api/EventHook.Hooks.WindowHookEx.html#EventHook_Hooks_WindowHookEx_Start
+  commentId: M:EventHook.Hooks.WindowHookEx.Start
+  fullName: EventHook.Hooks.WindowHookEx.Start()
+  nameWithType: WindowHookEx.Start()
+- uid: EventHook.Hooks.WindowHookEx.Start*
+  name: Start
+  href: api/EventHook.Hooks.WindowHookEx.html#EventHook_Hooks_WindowHookEx_Start_
+  commentId: Overload:EventHook.Hooks.WindowHookEx.Start
+  isSpec: "True"
+  fullName: EventHook.Hooks.WindowHookEx.Start
+  nameWithType: WindowHookEx.Start
+- uid: EventHook.Hooks.WindowHookEx.Stop
+  name: Stop()
+  href: api/EventHook.Hooks.WindowHookEx.html#EventHook_Hooks_WindowHookEx_Stop
+  commentId: M:EventHook.Hooks.WindowHookEx.Stop
+  fullName: EventHook.Hooks.WindowHookEx.Stop()
+  nameWithType: WindowHookEx.Stop()
+- uid: EventHook.Hooks.WindowHookEx.Stop*
+  name: Stop
+  href: api/EventHook.Hooks.WindowHookEx.html#EventHook_Hooks_WindowHookEx_Stop_
+  commentId: Overload:EventHook.Hooks.WindowHookEx.Stop
+  isSpec: "True"
+  fullName: EventHook.Hooks.WindowHookEx.Stop
+  nameWithType: WindowHookEx.Stop
 - uid: EventHook.Hooks.WindowHookEx.TextChanged
   name: TextChanged
   href: api/EventHook.Hooks.WindowHookEx.html#EventHook_Hooks_WindowHookEx_TextChanged
@@ -655,12 +1355,162 @@ references:
   commentId: E:EventHook.Hooks.WindowHookEx.Unminimized
   fullName: EventHook.Hooks.WindowHookEx.Unminimized
   nameWithType: WindowHookEx.Unminimized
+- uid: EventHook.Hotkey
+  name: Hotkey
+  href: api/EventHook.Hotkey.html
+  commentId: T:EventHook.Hotkey
+  fullName: EventHook.Hotkey
+  nameWithType: Hotkey
+- uid: EventHook.Hotkey.#ctor(EventHook.KeyModifiers,EventHook.EventKey)
+  name: Hotkey(KeyModifiers, EventKey)
+  href: api/EventHook.Hotkey.html#EventHook_Hotkey__ctor_EventHook_KeyModifiers_EventHook_EventKey_
+  commentId: M:EventHook.Hotkey.#ctor(EventHook.KeyModifiers,EventHook.EventKey)
+  name.vb: New(KeyModifiers, EventKey)
+  fullName: EventHook.Hotkey.Hotkey(EventHook.KeyModifiers, EventHook.EventKey)
+  fullName.vb: EventHook.Hotkey.New(EventHook.KeyModifiers, EventHook.EventKey)
+  nameWithType: Hotkey.Hotkey(KeyModifiers, EventKey)
+  nameWithType.vb: Hotkey.New(KeyModifiers, EventKey)
+- uid: EventHook.Hotkey.#ctor*
+  name: Hotkey
+  href: api/EventHook.Hotkey.html#EventHook_Hotkey__ctor_
+  commentId: Overload:EventHook.Hotkey.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: EventHook.Hotkey.Hotkey
+  fullName.vb: EventHook.Hotkey.New
+  nameWithType: Hotkey.Hotkey
+  nameWithType.vb: Hotkey.New
+- uid: EventHook.Hotkey.Equals(EventHook.Hotkey)
+  name: Equals(Hotkey)
+  href: api/EventHook.Hotkey.html#EventHook_Hotkey_Equals_EventHook_Hotkey_
+  commentId: M:EventHook.Hotkey.Equals(EventHook.Hotkey)
+  fullName: EventHook.Hotkey.Equals(EventHook.Hotkey)
+  nameWithType: Hotkey.Equals(Hotkey)
+- uid: EventHook.Hotkey.Equals(System.Object)
+  name: Equals(object)
+  href: api/EventHook.Hotkey.html#EventHook_Hotkey_Equals_System_Object_
+  commentId: M:EventHook.Hotkey.Equals(System.Object)
+  name.vb: Equals(Object)
+  fullName: EventHook.Hotkey.Equals(object)
+  fullName.vb: EventHook.Hotkey.Equals(Object)
+  nameWithType: Hotkey.Equals(object)
+  nameWithType.vb: Hotkey.Equals(Object)
+- uid: EventHook.Hotkey.Equals*
+  name: Equals
+  href: api/EventHook.Hotkey.html#EventHook_Hotkey_Equals_
+  commentId: Overload:EventHook.Hotkey.Equals
+  isSpec: "True"
+  fullName: EventHook.Hotkey.Equals
+  nameWithType: Hotkey.Equals
+- uid: EventHook.Hotkey.GetHashCode
+  name: GetHashCode()
+  href: api/EventHook.Hotkey.html#EventHook_Hotkey_GetHashCode
+  commentId: M:EventHook.Hotkey.GetHashCode
+  fullName: EventHook.Hotkey.GetHashCode()
+  nameWithType: Hotkey.GetHashCode()
+- uid: EventHook.Hotkey.GetHashCode*
+  name: GetHashCode
+  href: api/EventHook.Hotkey.html#EventHook_Hotkey_GetHashCode_
+  commentId: Overload:EventHook.Hotkey.GetHashCode
+  isSpec: "True"
+  fullName: EventHook.Hotkey.GetHashCode
+  nameWithType: Hotkey.GetHashCode
+- uid: EventHook.Hotkey.Key
+  name: Key
+  href: api/EventHook.Hotkey.html#EventHook_Hotkey_Key
+  commentId: P:EventHook.Hotkey.Key
+  fullName: EventHook.Hotkey.Key
+  nameWithType: Hotkey.Key
+- uid: EventHook.Hotkey.Key*
+  name: Key
+  href: api/EventHook.Hotkey.html#EventHook_Hotkey_Key_
+  commentId: Overload:EventHook.Hotkey.Key
+  isSpec: "True"
+  fullName: EventHook.Hotkey.Key
+  nameWithType: Hotkey.Key
+- uid: EventHook.Hotkey.Modifiers
+  name: Modifiers
+  href: api/EventHook.Hotkey.html#EventHook_Hotkey_Modifiers
+  commentId: P:EventHook.Hotkey.Modifiers
+  fullName: EventHook.Hotkey.Modifiers
+  nameWithType: Hotkey.Modifiers
+- uid: EventHook.Hotkey.Modifiers*
+  name: Modifiers
+  href: api/EventHook.Hotkey.html#EventHook_Hotkey_Modifiers_
+  commentId: Overload:EventHook.Hotkey.Modifiers
+  isSpec: "True"
+  fullName: EventHook.Hotkey.Modifiers
+  nameWithType: Hotkey.Modifiers
+- uid: EventHook.Hotkey.ToString
+  name: ToString()
+  href: api/EventHook.Hotkey.html#EventHook_Hotkey_ToString
+  commentId: M:EventHook.Hotkey.ToString
+  fullName: EventHook.Hotkey.ToString()
+  nameWithType: Hotkey.ToString()
+- uid: EventHook.Hotkey.ToString*
+  name: ToString
+  href: api/EventHook.Hotkey.html#EventHook_Hotkey_ToString_
+  commentId: Overload:EventHook.Hotkey.ToString
+  isSpec: "True"
+  fullName: EventHook.Hotkey.ToString
+  nameWithType: Hotkey.ToString
+- uid: EventHook.Hotkey.op_Equality(EventHook.Hotkey,EventHook.Hotkey)
+  name: operator ==(Hotkey, Hotkey)
+  href: api/EventHook.Hotkey.html#EventHook_Hotkey_op_Equality_EventHook_Hotkey_EventHook_Hotkey_
+  commentId: M:EventHook.Hotkey.op_Equality(EventHook.Hotkey,EventHook.Hotkey)
+  name.vb: =(Hotkey, Hotkey)
+  fullName: EventHook.Hotkey.operator ==(EventHook.Hotkey, EventHook.Hotkey)
+  fullName.vb: EventHook.Hotkey.=(EventHook.Hotkey, EventHook.Hotkey)
+  nameWithType: Hotkey.operator ==(Hotkey, Hotkey)
+  nameWithType.vb: Hotkey.=(Hotkey, Hotkey)
+- uid: EventHook.Hotkey.op_Equality*
+  name: operator ==
+  href: api/EventHook.Hotkey.html#EventHook_Hotkey_op_Equality_
+  commentId: Overload:EventHook.Hotkey.op_Equality
+  isSpec: "True"
+  name.vb: =
+  fullName: EventHook.Hotkey.operator ==
+  fullName.vb: EventHook.Hotkey.=
+  nameWithType: Hotkey.operator ==
+  nameWithType.vb: Hotkey.=
+- uid: EventHook.Hotkey.op_Inequality(EventHook.Hotkey,EventHook.Hotkey)
+  name: operator !=(Hotkey, Hotkey)
+  href: api/EventHook.Hotkey.html#EventHook_Hotkey_op_Inequality_EventHook_Hotkey_EventHook_Hotkey_
+  commentId: M:EventHook.Hotkey.op_Inequality(EventHook.Hotkey,EventHook.Hotkey)
+  name.vb: <>(Hotkey, Hotkey)
+  fullName: EventHook.Hotkey.operator !=(EventHook.Hotkey, EventHook.Hotkey)
+  fullName.vb: EventHook.Hotkey.<>(EventHook.Hotkey, EventHook.Hotkey)
+  nameWithType: Hotkey.operator !=(Hotkey, Hotkey)
+  nameWithType.vb: Hotkey.<>(Hotkey, Hotkey)
+- uid: EventHook.Hotkey.op_Inequality*
+  name: operator !=
+  href: api/EventHook.Hotkey.html#EventHook_Hotkey_op_Inequality_
+  commentId: Overload:EventHook.Hotkey.op_Inequality
+  isSpec: "True"
+  name.vb: <>
+  fullName: EventHook.Hotkey.operator !=
+  fullName.vb: EventHook.Hotkey.<>
+  nameWithType: Hotkey.operator !=
+  nameWithType.vb: Hotkey.<>
 - uid: EventHook.HotkeyEventArgs
   name: HotkeyEventArgs
   href: api/EventHook.HotkeyEventArgs.html
   commentId: T:EventHook.HotkeyEventArgs
   fullName: EventHook.HotkeyEventArgs
   nameWithType: HotkeyEventArgs
+- uid: EventHook.HotkeyEventArgs.Hotkey
+  name: Hotkey
+  href: api/EventHook.HotkeyEventArgs.html#EventHook_HotkeyEventArgs_Hotkey
+  commentId: P:EventHook.HotkeyEventArgs.Hotkey
+  fullName: EventHook.HotkeyEventArgs.Hotkey
+  nameWithType: HotkeyEventArgs.Hotkey
+- uid: EventHook.HotkeyEventArgs.Hotkey*
+  name: Hotkey
+  href: api/EventHook.HotkeyEventArgs.html#EventHook_HotkeyEventArgs_Hotkey_
+  commentId: Overload:EventHook.HotkeyEventArgs.Hotkey
+  isSpec: "True"
+  fullName: EventHook.HotkeyEventArgs.Hotkey
+  nameWithType: HotkeyEventArgs.Hotkey
 - uid: EventHook.HotkeyEventArgs.Id
   name: Id
   href: api/EventHook.HotkeyEventArgs.html#EventHook_HotkeyEventArgs_Id
@@ -674,19 +1524,6 @@ references:
   isSpec: "True"
   fullName: EventHook.HotkeyEventArgs.Id
   nameWithType: HotkeyEventArgs.Id
-- uid: EventHook.HotkeyEventArgs.Keys
-  name: Keys
-  href: api/EventHook.HotkeyEventArgs.html#EventHook_HotkeyEventArgs_Keys
-  commentId: P:EventHook.HotkeyEventArgs.Keys
-  fullName: EventHook.HotkeyEventArgs.Keys
-  nameWithType: HotkeyEventArgs.Keys
-- uid: EventHook.HotkeyEventArgs.Keys*
-  name: Keys
-  href: api/EventHook.HotkeyEventArgs.html#EventHook_HotkeyEventArgs_Keys_
-  commentId: Overload:EventHook.HotkeyEventArgs.Keys
-  isSpec: "True"
-  fullName: EventHook.HotkeyEventArgs.Keys
-  nameWithType: HotkeyEventArgs.Keys
 - uid: EventHook.HotkeyWatcher
   name: HotkeyWatcher
   href: api/EventHook.HotkeyWatcher.html
@@ -699,6 +1536,15 @@ references:
   commentId: M:EventHook.HotkeyWatcher.Dispose
   fullName: EventHook.HotkeyWatcher.Dispose()
   nameWithType: HotkeyWatcher.Dispose()
+- uid: EventHook.HotkeyWatcher.Dispose(System.Boolean)
+  name: Dispose(bool)
+  href: api/EventHook.HotkeyWatcher.html#EventHook_HotkeyWatcher_Dispose_System_Boolean_
+  commentId: M:EventHook.HotkeyWatcher.Dispose(System.Boolean)
+  name.vb: Dispose(Boolean)
+  fullName: EventHook.HotkeyWatcher.Dispose(bool)
+  fullName.vb: EventHook.HotkeyWatcher.Dispose(Boolean)
+  nameWithType: HotkeyWatcher.Dispose(bool)
+  nameWithType.vb: HotkeyWatcher.Dispose(Boolean)
 - uid: EventHook.HotkeyWatcher.Dispose*
   name: Dispose
   href: api/EventHook.HotkeyWatcher.html#EventHook_HotkeyWatcher_Dispose_
@@ -706,21 +1552,34 @@ references:
   isSpec: "True"
   fullName: EventHook.HotkeyWatcher.Dispose
   nameWithType: HotkeyWatcher.Dispose
+- uid: EventHook.HotkeyWatcher.IsRunning
+  name: IsRunning
+  href: api/EventHook.HotkeyWatcher.html#EventHook_HotkeyWatcher_IsRunning
+  commentId: P:EventHook.HotkeyWatcher.IsRunning
+  fullName: EventHook.HotkeyWatcher.IsRunning
+  nameWithType: HotkeyWatcher.IsRunning
+- uid: EventHook.HotkeyWatcher.IsRunning*
+  name: IsRunning
+  href: api/EventHook.HotkeyWatcher.html#EventHook_HotkeyWatcher_IsRunning_
+  commentId: Overload:EventHook.HotkeyWatcher.IsRunning
+  isSpec: "True"
+  fullName: EventHook.HotkeyWatcher.IsRunning
+  nameWithType: HotkeyWatcher.IsRunning
 - uid: EventHook.HotkeyWatcher.OnHotkeyPressed
   name: OnHotkeyPressed
   href: api/EventHook.HotkeyWatcher.html#EventHook_HotkeyWatcher_OnHotkeyPressed
   commentId: E:EventHook.HotkeyWatcher.OnHotkeyPressed
   fullName: EventHook.HotkeyWatcher.OnHotkeyPressed
   nameWithType: HotkeyWatcher.OnHotkeyPressed
-- uid: EventHook.HotkeyWatcher.Register(System.Object,System.Windows.Forms.Keys)
-  name: Register(object, Keys)
-  href: api/EventHook.HotkeyWatcher.html#EventHook_HotkeyWatcher_Register_System_Object_System_Windows_Forms_Keys_
-  commentId: M:EventHook.HotkeyWatcher.Register(System.Object,System.Windows.Forms.Keys)
-  name.vb: Register(Object, Keys)
-  fullName: EventHook.HotkeyWatcher.Register(object, System.Windows.Forms.Keys)
-  fullName.vb: EventHook.HotkeyWatcher.Register(Object, System.Windows.Forms.Keys)
-  nameWithType: HotkeyWatcher.Register(object, Keys)
-  nameWithType.vb: HotkeyWatcher.Register(Object, Keys)
+- uid: EventHook.HotkeyWatcher.Register(System.Object,EventHook.Hotkey)
+  name: Register(object, Hotkey)
+  href: api/EventHook.HotkeyWatcher.html#EventHook_HotkeyWatcher_Register_System_Object_EventHook_Hotkey_
+  commentId: M:EventHook.HotkeyWatcher.Register(System.Object,EventHook.Hotkey)
+  name.vb: Register(Object, Hotkey)
+  fullName: EventHook.HotkeyWatcher.Register(object, EventHook.Hotkey)
+  fullName.vb: EventHook.HotkeyWatcher.Register(Object, EventHook.Hotkey)
+  nameWithType: HotkeyWatcher.Register(object, Hotkey)
+  nameWithType.vb: HotkeyWatcher.Register(Object, Hotkey)
 - uid: EventHook.HotkeyWatcher.Register*
   name: Register
   href: api/EventHook.HotkeyWatcher.html#EventHook_HotkeyWatcher_Register_
@@ -728,15 +1587,15 @@ references:
   isSpec: "True"
   fullName: EventHook.HotkeyWatcher.Register
   nameWithType: HotkeyWatcher.Register
-- uid: EventHook.HotkeyWatcher.Register``1(``0,System.Windows.Forms.Keys)
-  name: Register<T>(T, Keys)
-  href: api/EventHook.HotkeyWatcher.html#EventHook_HotkeyWatcher_Register__1___0_System_Windows_Forms_Keys_
-  commentId: M:EventHook.HotkeyWatcher.Register``1(``0,System.Windows.Forms.Keys)
-  name.vb: Register(Of T)(T, Keys)
-  fullName: EventHook.HotkeyWatcher.Register<T>(T, System.Windows.Forms.Keys)
-  fullName.vb: EventHook.HotkeyWatcher.Register(Of T)(T, System.Windows.Forms.Keys)
-  nameWithType: HotkeyWatcher.Register<T>(T, Keys)
-  nameWithType.vb: HotkeyWatcher.Register(Of T)(T, Keys)
+- uid: EventHook.HotkeyWatcher.Register``1(``0,EventHook.Hotkey)
+  name: Register<T>(T, Hotkey)
+  href: api/EventHook.HotkeyWatcher.html#EventHook_HotkeyWatcher_Register__1___0_EventHook_Hotkey_
+  commentId: M:EventHook.HotkeyWatcher.Register``1(``0,EventHook.Hotkey)
+  name.vb: Register(Of T)(T, Hotkey)
+  fullName: EventHook.HotkeyWatcher.Register<T>(T, EventHook.Hotkey)
+  fullName.vb: EventHook.HotkeyWatcher.Register(Of T)(T, EventHook.Hotkey)
+  nameWithType: HotkeyWatcher.Register<T>(T, Hotkey)
+  nameWithType.vb: HotkeyWatcher.Register(Of T)(T, Hotkey)
 - uid: EventHook.HotkeyWatcher.Start
   name: Start()
   href: api/EventHook.HotkeyWatcher.html#EventHook_HotkeyWatcher_Start
@@ -788,19 +1647,40 @@ references:
 - uid: EventHook.KeyData.EventType
   name: EventType
   href: api/EventHook.KeyData.html#EventHook_KeyData_EventType
-  commentId: F:EventHook.KeyData.EventType
+  commentId: P:EventHook.KeyData.EventType
+  fullName: EventHook.KeyData.EventType
+  nameWithType: KeyData.EventType
+- uid: EventHook.KeyData.EventType*
+  name: EventType
+  href: api/EventHook.KeyData.html#EventHook_KeyData_EventType_
+  commentId: Overload:EventHook.KeyData.EventType
+  isSpec: "True"
   fullName: EventHook.KeyData.EventType
   nameWithType: KeyData.EventType
 - uid: EventHook.KeyData.Keyname
   name: Keyname
   href: api/EventHook.KeyData.html#EventHook_KeyData_Keyname
-  commentId: F:EventHook.KeyData.Keyname
+  commentId: P:EventHook.KeyData.Keyname
+  fullName: EventHook.KeyData.Keyname
+  nameWithType: KeyData.Keyname
+- uid: EventHook.KeyData.Keyname*
+  name: Keyname
+  href: api/EventHook.KeyData.html#EventHook_KeyData_Keyname_
+  commentId: Overload:EventHook.KeyData.Keyname
+  isSpec: "True"
   fullName: EventHook.KeyData.Keyname
   nameWithType: KeyData.Keyname
 - uid: EventHook.KeyData.UnicodeCharacter
   name: UnicodeCharacter
   href: api/EventHook.KeyData.html#EventHook_KeyData_UnicodeCharacter
-  commentId: F:EventHook.KeyData.UnicodeCharacter
+  commentId: P:EventHook.KeyData.UnicodeCharacter
+  fullName: EventHook.KeyData.UnicodeCharacter
+  nameWithType: KeyData.UnicodeCharacter
+- uid: EventHook.KeyData.UnicodeCharacter*
+  name: UnicodeCharacter
+  href: api/EventHook.KeyData.html#EventHook_KeyData_UnicodeCharacter_
+  commentId: Overload:EventHook.KeyData.UnicodeCharacter
+  isSpec: "True"
   fullName: EventHook.KeyData.UnicodeCharacter
   nameWithType: KeyData.UnicodeCharacter
 - uid: EventHook.KeyEvent
@@ -840,6 +1720,42 @@ references:
   isSpec: "True"
   fullName: EventHook.KeyInputEventArgs.KeyData
   nameWithType: KeyInputEventArgs.KeyData
+- uid: EventHook.KeyModifiers
+  name: KeyModifiers
+  href: api/EventHook.KeyModifiers.html
+  commentId: T:EventHook.KeyModifiers
+  fullName: EventHook.KeyModifiers
+  nameWithType: KeyModifiers
+- uid: EventHook.KeyModifiers.Alt
+  name: Alt
+  href: api/EventHook.KeyModifiers.html#EventHook_KeyModifiers_Alt
+  commentId: F:EventHook.KeyModifiers.Alt
+  fullName: EventHook.KeyModifiers.Alt
+  nameWithType: KeyModifiers.Alt
+- uid: EventHook.KeyModifiers.Control
+  name: Control
+  href: api/EventHook.KeyModifiers.html#EventHook_KeyModifiers_Control
+  commentId: F:EventHook.KeyModifiers.Control
+  fullName: EventHook.KeyModifiers.Control
+  nameWithType: KeyModifiers.Control
+- uid: EventHook.KeyModifiers.Meta
+  name: Meta
+  href: api/EventHook.KeyModifiers.html#EventHook_KeyModifiers_Meta
+  commentId: F:EventHook.KeyModifiers.Meta
+  fullName: EventHook.KeyModifiers.Meta
+  nameWithType: KeyModifiers.Meta
+- uid: EventHook.KeyModifiers.None
+  name: None
+  href: api/EventHook.KeyModifiers.html#EventHook_KeyModifiers_None
+  commentId: F:EventHook.KeyModifiers.None
+  fullName: EventHook.KeyModifiers.None
+  nameWithType: KeyModifiers.None
+- uid: EventHook.KeyModifiers.Shift
+  name: Shift
+  href: api/EventHook.KeyModifiers.html#EventHook_KeyModifiers_Shift
+  commentId: F:EventHook.KeyModifiers.Shift
+  fullName: EventHook.KeyModifiers.Shift
+  nameWithType: KeyModifiers.Shift
 - uid: EventHook.KeyboardWatcher
   name: KeyboardWatcher
   href: api/EventHook.KeyboardWatcher.html
@@ -852,6 +1768,15 @@ references:
   commentId: M:EventHook.KeyboardWatcher.Dispose
   fullName: EventHook.KeyboardWatcher.Dispose()
   nameWithType: KeyboardWatcher.Dispose()
+- uid: EventHook.KeyboardWatcher.Dispose(System.Boolean)
+  name: Dispose(bool)
+  href: api/EventHook.KeyboardWatcher.html#EventHook_KeyboardWatcher_Dispose_System_Boolean_
+  commentId: M:EventHook.KeyboardWatcher.Dispose(System.Boolean)
+  name.vb: Dispose(Boolean)
+  fullName: EventHook.KeyboardWatcher.Dispose(bool)
+  fullName.vb: EventHook.KeyboardWatcher.Dispose(Boolean)
+  nameWithType: KeyboardWatcher.Dispose(bool)
+  nameWithType.vb: KeyboardWatcher.Dispose(Boolean)
 - uid: EventHook.KeyboardWatcher.Dispose*
   name: Dispose
   href: api/EventHook.KeyboardWatcher.html#EventHook_KeyboardWatcher_Dispose_
@@ -859,6 +1784,19 @@ references:
   isSpec: "True"
   fullName: EventHook.KeyboardWatcher.Dispose
   nameWithType: KeyboardWatcher.Dispose
+- uid: EventHook.KeyboardWatcher.IsRunning
+  name: IsRunning
+  href: api/EventHook.KeyboardWatcher.html#EventHook_KeyboardWatcher_IsRunning
+  commentId: P:EventHook.KeyboardWatcher.IsRunning
+  fullName: EventHook.KeyboardWatcher.IsRunning
+  nameWithType: KeyboardWatcher.IsRunning
+- uid: EventHook.KeyboardWatcher.IsRunning*
+  name: IsRunning
+  href: api/EventHook.KeyboardWatcher.html#EventHook_KeyboardWatcher_IsRunning_
+  commentId: Overload:EventHook.KeyboardWatcher.IsRunning
+  isSpec: "True"
+  fullName: EventHook.KeyboardWatcher.IsRunning
+  nameWithType: KeyboardWatcher.IsRunning
 - uid: EventHook.KeyboardWatcher.OnKeyInput
   name: OnKeyInput
   href: api/EventHook.KeyboardWatcher.html#EventHook_KeyboardWatcher_OnKeyInput
@@ -948,6 +1886,15 @@ references:
   commentId: M:EventHook.MouseWatcher.Dispose
   fullName: EventHook.MouseWatcher.Dispose()
   nameWithType: MouseWatcher.Dispose()
+- uid: EventHook.MouseWatcher.Dispose(System.Boolean)
+  name: Dispose(bool)
+  href: api/EventHook.MouseWatcher.html#EventHook_MouseWatcher_Dispose_System_Boolean_
+  commentId: M:EventHook.MouseWatcher.Dispose(System.Boolean)
+  name.vb: Dispose(Boolean)
+  fullName: EventHook.MouseWatcher.Dispose(bool)
+  fullName.vb: EventHook.MouseWatcher.Dispose(Boolean)
+  nameWithType: MouseWatcher.Dispose(bool)
+  nameWithType.vb: MouseWatcher.Dispose(Boolean)
 - uid: EventHook.MouseWatcher.Dispose*
   name: Dispose
   href: api/EventHook.MouseWatcher.html#EventHook_MouseWatcher_Dispose_
@@ -968,6 +1915,19 @@ references:
   isSpec: "True"
   fullName: EventHook.MouseWatcher.IncludeMouseMove
   nameWithType: MouseWatcher.IncludeMouseMove
+- uid: EventHook.MouseWatcher.IsRunning
+  name: IsRunning
+  href: api/EventHook.MouseWatcher.html#EventHook_MouseWatcher_IsRunning
+  commentId: P:EventHook.MouseWatcher.IsRunning
+  fullName: EventHook.MouseWatcher.IsRunning
+  nameWithType: MouseWatcher.IsRunning
+- uid: EventHook.MouseWatcher.IsRunning*
+  name: IsRunning
+  href: api/EventHook.MouseWatcher.html#EventHook_MouseWatcher_IsRunning_
+  commentId: Overload:EventHook.MouseWatcher.IsRunning
+  isSpec: "True"
+  fullName: EventHook.MouseWatcher.IsRunning
+  nameWithType: MouseWatcher.IsRunning
 - uid: EventHook.MouseWatcher.OnMouseInput
   name: OnMouseInput
   href: api/EventHook.MouseWatcher.html#EventHook_MouseWatcher_OnMouseInput
@@ -1102,6 +2062,15 @@ references:
   commentId: M:EventHook.PrintWatcher.Dispose
   fullName: EventHook.PrintWatcher.Dispose()
   nameWithType: PrintWatcher.Dispose()
+- uid: EventHook.PrintWatcher.Dispose(System.Boolean)
+  name: Dispose(bool)
+  href: api/EventHook.PrintWatcher.html#EventHook_PrintWatcher_Dispose_System_Boolean_
+  commentId: M:EventHook.PrintWatcher.Dispose(System.Boolean)
+  name.vb: Dispose(Boolean)
+  fullName: EventHook.PrintWatcher.Dispose(bool)
+  fullName.vb: EventHook.PrintWatcher.Dispose(Boolean)
+  nameWithType: PrintWatcher.Dispose(bool)
+  nameWithType.vb: PrintWatcher.Dispose(Boolean)
 - uid: EventHook.PrintWatcher.Dispose*
   name: Dispose
   href: api/EventHook.PrintWatcher.html#EventHook_PrintWatcher_Dispose_
@@ -1109,6 +2078,19 @@ references:
   isSpec: "True"
   fullName: EventHook.PrintWatcher.Dispose
   nameWithType: PrintWatcher.Dispose
+- uid: EventHook.PrintWatcher.IsRunning
+  name: IsRunning
+  href: api/EventHook.PrintWatcher.html#EventHook_PrintWatcher_IsRunning
+  commentId: P:EventHook.PrintWatcher.IsRunning
+  fullName: EventHook.PrintWatcher.IsRunning
+  nameWithType: PrintWatcher.IsRunning
+- uid: EventHook.PrintWatcher.IsRunning*
+  name: IsRunning
+  href: api/EventHook.PrintWatcher.html#EventHook_PrintWatcher_IsRunning_
+  commentId: Overload:EventHook.PrintWatcher.IsRunning
+  isSpec: "True"
+  fullName: EventHook.PrintWatcher.IsRunning
+  nameWithType: PrintWatcher.IsRunning
 - uid: EventHook.PrintWatcher.OnPrintEvent
   name: OnPrintEvent
   href: api/EventHook.PrintWatcher.html#EventHook_PrintWatcher_OnPrintEvent
@@ -1189,12 +2171,26 @@ references:
 - uid: EventHook.WindowData.EventType
   name: EventType
   href: api/EventHook.WindowData.html#EventHook_WindowData_EventType
-  commentId: F:EventHook.WindowData.EventType
+  commentId: P:EventHook.WindowData.EventType
+  fullName: EventHook.WindowData.EventType
+  nameWithType: WindowData.EventType
+- uid: EventHook.WindowData.EventType*
+  name: EventType
+  href: api/EventHook.WindowData.html#EventHook_WindowData_EventType_
+  commentId: Overload:EventHook.WindowData.EventType
+  isSpec: "True"
   fullName: EventHook.WindowData.EventType
   nameWithType: WindowData.EventType
 - uid: EventHook.WindowData.HWnd
   name: HWnd
   href: api/EventHook.WindowData.html#EventHook_WindowData_HWnd
-  commentId: F:EventHook.WindowData.HWnd
+  commentId: P:EventHook.WindowData.HWnd
+  fullName: EventHook.WindowData.HWnd
+  nameWithType: WindowData.HWnd
+- uid: EventHook.WindowData.HWnd*
+  name: HWnd
+  href: api/EventHook.WindowData.html#EventHook_WindowData_HWnd_
+  commentId: Overload:EventHook.WindowData.HWnd
+  isSpec: "True"
   fullName: EventHook.WindowData.HWnd
   nameWithType: WindowData.HWnd

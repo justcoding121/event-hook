@@ -16,7 +16,7 @@
       <meta name="docfx:rel" content="../">
       
       
-      <meta name="docfx:docurl" content="https://github.com/justcoding121/windows-user-action-hook/new/develop/apiSpec/new?filename=EventHook_ApplicationWatcher.md&amp;value=---%0Auid%3A%20EventHook.ApplicationWatcher%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
+      <meta name="docfx:docurl" content="https://github.com/justcoding121/event-hook/new/develop/apiSpec/new?filename=EventHook_ApplicationWatcher.md&amp;value=---%0Auid%3A%20EventHook.ApplicationWatcher%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
       <meta name="loc:inThisArticle" content="In this article">
       <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
       <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
@@ -89,7 +89,7 @@
 
 
   <h1 id="EventHook_ApplicationWatcher" data-uid="EventHook.ApplicationWatcher" class="text-break">
-Class ApplicationWatcher  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/windows-user-action-hook/blob/develop/src/EventHook/ApplicationWatcher.cs/#L36"><i class="bi bi-code-slash"></i></a>
+Class ApplicationWatcher  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/ApplicationWatcher.cs/#L44"><i class="bi bi-code-slash"></i></a>
   </h1>
 
   <div class="facts text-secondary">
@@ -155,6 +155,42 @@ Class ApplicationWatcher  <a class="header-action link-secondary" title="View so
 
 
 
+  <h2 class="section" id="properties">Properties
+</h2>
+
+
+  <a id="EventHook_ApplicationWatcher_IsRunning_" data-uid="EventHook.ApplicationWatcher.IsRunning*"></a>
+
+  <h3 id="EventHook_ApplicationWatcher_IsRunning" data-uid="EventHook.ApplicationWatcher.IsRunning">
+  IsRunning
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/ApplicationWatcher.cs/#L103"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>True only after a successful <a class="xref" href="EventHook.ApplicationWatcher.html#EventHook_ApplicationWatcher_Start">Start()</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsRunning { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
   <h2 class="section" id="methods">Methods
 </h2>
 
@@ -163,7 +199,7 @@ Class ApplicationWatcher  <a class="header-action link-secondary" title="View so
 
   <h3 id="EventHook_ApplicationWatcher_Dispose" data-uid="EventHook.ApplicationWatcher.Dispose">
   Dispose()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/windows-user-action-hook/blob/develop/src/EventHook/ApplicationWatcher.cs/#L138"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/ApplicationWatcher.cs/#L272"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</p>
@@ -186,21 +222,57 @@ Class ApplicationWatcher  <a class="header-action link-secondary" title="View so
 
 
 
-  <a id="EventHook_ApplicationWatcher_Start_" data-uid="EventHook.ApplicationWatcher.Start*"></a>
+  <a id="EventHook_ApplicationWatcher_Dispose_" data-uid="EventHook.ApplicationWatcher.Dispose*"></a>
 
-  <h3 id="EventHook_ApplicationWatcher_Start" data-uid="EventHook.ApplicationWatcher.Start">
-  Start()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/windows-user-action-hook/blob/develop/src/EventHook/ApplicationWatcher.cs/#L63"><i class="bi bi-code-slash"></i></a>
+  <h3 id="EventHook_ApplicationWatcher_Dispose_System_Boolean_" data-uid="EventHook.ApplicationWatcher.Dispose(System.Boolean)">
+  Dispose(bool)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/ApplicationWatcher.cs/#L278"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Start()</code></pre>
+    <pre><code class="lang-csharp hljs">protected virtual void Dispose(bool disposing)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>disposing</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
+  <a id="EventHook_ApplicationWatcher_Start_" data-uid="EventHook.ApplicationWatcher.Start*"></a>
+
+  <h3 id="EventHook_ApplicationWatcher_Start" data-uid="EventHook.ApplicationWatcher.Start">
+  Start()
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/ApplicationWatcher.cs/#L114"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public HookStartResult Start()</code></pre>
   </div>
 
 
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="EventHook.HookStartResult.html">HookStartResult</a></dt>
+    <dd></dd>
+  </dl>
 
 
 
@@ -216,7 +288,7 @@ Class ApplicationWatcher  <a class="header-action link-secondary" title="View so
 
   <h3 id="EventHook_ApplicationWatcher_Stop" data-uid="EventHook.ApplicationWatcher.Stop">
   Stop()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/windows-user-action-hook/blob/develop/src/EventHook/ApplicationWatcher.cs/#L97"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/ApplicationWatcher.cs/#L210"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"></div>
@@ -245,7 +317,7 @@ Class ApplicationWatcher  <a class="header-action link-secondary" title="View so
 
   <h3 id="EventHook_ApplicationWatcher_OnApplicationWindowChange" data-uid="EventHook.ApplicationWatcher.OnApplicationWindowChange">
   OnApplicationWindowChange
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/windows-user-action-hook/blob/develop/src/EventHook/ApplicationWatcher.cs/#L61"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/ApplicationWatcher.cs/#L97"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"></div>

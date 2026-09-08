@@ -6,7 +6,7 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <meta name="title" content="Struct Point | EventHook ">
       
-      <meta name="description" content="The point co-ordinate.">
+      <meta name="description" content="Screen point.">
       <link rel="icon" href="../favicon.ico">
       <link rel="stylesheet" href="../public/docfx.min.css">
       <link rel="stylesheet" href="../public/main.css">
@@ -16,7 +16,7 @@
       <meta name="docfx:rel" content="../">
       
       
-      <meta name="docfx:docurl" content="https://github.com/justcoding121/windows-user-action-hook/new/develop/apiSpec/new?filename=EventHook_Hooks_Point.md&amp;value=---%0Auid%3A%20EventHook.Hooks.Point%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
+      <meta name="docfx:docurl" content="https://github.com/justcoding121/event-hook/new/develop/apiSpec/new?filename=EventHook_Hooks_Point.md&amp;value=---%0Auid%3A%20EventHook.Hooks.Point%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
       <meta name="loc:inThisArticle" content="In this article">
       <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
       <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
@@ -89,7 +89,7 @@
 
 
   <h1 id="EventHook_Hooks_Point" data-uid="EventHook.Hooks.Point" class="text-break">
-Struct Point  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/windows-user-action-hook/blob/develop/src/EventHook/Hooks/MouseHook.cs/#L35"><i class="bi bi-code-slash"></i></a>
+Struct Point  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/Hooks/MouseTypes.cs/#L25"><i class="bi bi-code-slash"></i></a>
   </h1>
 
   <div class="facts text-secondary">
@@ -97,7 +97,7 @@ Struct Point  <a class="header-action link-secondary" title="View source" href="
   <dl><dt>Assembly</dt><dd>EventHook.dll</dd></dl>
   </div>
 
-  <div class="markdown summary"><p>The point co-ordinate.</p>
+  <div class="markdown summary"><p>Screen point.</p>
 </div>
   <div class="markdown conceptual"></div>
 
@@ -121,9 +121,6 @@ Struct Point  <a class="header-action link-secondary" title="View source" href="
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.gethashcode">ValueType.GetHashCode()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.tostring">ValueType.ToString()</a>
-    </div>
-    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
     </div>
     <div>
@@ -139,6 +136,43 @@ Struct Point  <a class="header-action link-secondary" title="View source" href="
 
 
 
+  <h2 class="section" id="constructors">Constructors
+</h2>
+
+
+  <a id="EventHook_Hooks_Point__ctor_" data-uid="EventHook.Hooks.Point.#ctor*"></a>
+
+  <h3 id="EventHook_Hooks_Point__ctor_System_Int32_System_Int32_" data-uid="EventHook.Hooks.Point.#ctor(System.Int32,System.Int32)">
+  Point(int, int)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/Hooks/MouseTypes.cs/#L31"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Point(int x, int y)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>x</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+    <dt><code>y</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
   <h2 class="section" id="fields">Fields
 </h2>
 
@@ -146,7 +180,7 @@ Struct Point  <a class="header-action link-secondary" title="View source" href="
 
   <h3 id="EventHook_Hooks_Point_x" data-uid="EventHook.Hooks.Point.x">
   x
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/windows-user-action-hook/blob/develop/src/EventHook/Hooks/MouseHook.cs/#L38"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/Hooks/MouseTypes.cs/#L28"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"></div>
@@ -176,7 +210,7 @@ Struct Point  <a class="header-action link-secondary" title="View source" href="
 
   <h3 id="EventHook_Hooks_Point_y" data-uid="EventHook.Hooks.Point.y">
   y
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/windows-user-action-hook/blob/develop/src/EventHook/Hooks/MouseHook.cs/#L39"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/Hooks/MouseTypes.cs/#L29"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"></div>
@@ -194,6 +228,43 @@ Struct Point  <a class="header-action link-secondary" title="View source" href="
     <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
     <dd></dd>
   </dl>
+
+
+
+
+
+
+
+
+
+  <h2 class="section" id="methods">Methods
+</h2>
+
+
+  <a id="EventHook_Hooks_Point_ToString_" data-uid="EventHook.Hooks.Point.ToString*"></a>
+
+  <h3 id="EventHook_Hooks_Point_ToString" data-uid="EventHook.Hooks.Point.ToString">
+  ToString()
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/Hooks/MouseTypes.cs/#L37"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Returns the fully qualified type name of this instance.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override string ToString()</code></pre>
+  </div>
+
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>The fully qualified type name.</p>
+</dd>
+  </dl>
+
+
 
 
 

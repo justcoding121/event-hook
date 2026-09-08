@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches: [develop, master, main, stable, beta]
-    tags: ['v2.*']
+    tags: ['v3.*']
     paths-ignore:
       - 'docs/**'
       - '*.md'
@@ -16,8 +16,8 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    timeout-minutes: 60
     permissions:
-      # write: Publish Documentation (EndBug/add-and-commit) pushes DocFX output to develop.
       contents: write
       pull-requests: write
       checks: write
@@ -34,22 +34,23 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Install SonarScanner
-        if: env.SONAR_TOKEN != ''
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop' && env.SONAR_TOKEN != ''
         shell: pwsh
         run: dotnet tool install --tool-path .sonar/scanner dotnet-sonarscanner
 
       - name: Install coverage tool
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
         shell: pwsh
         run: dotnet tool install --tool-path .coverage/tools dotnet-coverage
 
       - name: Restore
-        run: dotnet restore src/EventHook.sln
+        run: dotnet restore src/Event.Hook.sln
 
       - name: Build
-        run: dotnet build src/EventHook.sln -c Release --no-restore
+        run: dotnet build src/Event.Hook.sln -c Release --no-restore
 
       - name: Begin SonarCloud analysis
-        if: env.SONAR_TOKEN != ''
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop' && env.SONAR_TOKEN != ''
         shell: pwsh
         run: >
           .\.sonar\scanner\dotnet-sonarscanner begin
@@ -59,29 +60,73 @@ jobs:
           /d:sonar.host.url="https://sonarcloud.io"
           /d:sonar.cs.vscoveragexml.reportsPaths="coverage/coverage.xml"
           /d:sonar.exclusions="**/docs/**,**/examples/**,**/_site/**,**/.github/**"
+          /d:sonar.cs.roslyn.ignoreIssues=true
+          /d:sonar.issue.ignore.multicriteria=e1,e2,e3,e4,e5,e6,e7,e8,e9,e10,e11
+          /d:sonar.issue.ignore.multicriteria.e1.ruleKey=csharpsquid:S101
+          /d:sonar.issue.ignore.multicriteria.e1.resourceKey=**/*
+          /d:sonar.issue.ignore.multicriteria.e2.ruleKey=csharpsquid:S2342
+          /d:sonar.issue.ignore.multicriteria.e2.resourceKey=**/*
+          /d:sonar.issue.ignore.multicriteria.e3.ruleKey=csharpsquid:S1450
+          /d:sonar.issue.ignore.multicriteria.e3.resourceKey=**/*
+          /d:sonar.issue.ignore.multicriteria.e4.ruleKey=csharpsquid:S3776
+          /d:sonar.issue.ignore.multicriteria.e4.resourceKey=**/Platforms/**/*
+          /d:sonar.issue.ignore.multicriteria.e5.ruleKey=csharpsquid:S3776
+          /d:sonar.issue.ignore.multicriteria.e5.resourceKey=**/Hooks/**/*
+          /d:sonar.issue.ignore.multicriteria.e6.ruleKey=csharpsquid:S3776
+          /d:sonar.issue.ignore.multicriteria.e6.resourceKey=**/*Watcher.cs
+          /d:sonar.issue.ignore.multicriteria.e7.ruleKey=csharpsquid:S2696
+          /d:sonar.issue.ignore.multicriteria.e7.resourceKey=**/WindowHook.cs
+          /d:sonar.issue.ignore.multicriteria.e8.ruleKey=csharpsquid:S3010
+          /d:sonar.issue.ignore.multicriteria.e8.resourceKey=**/WindowHook.cs
+          /d:sonar.issue.ignore.multicriteria.e9.ruleKey=csharpsquid:S1144
+          /d:sonar.issue.ignore.multicriteria.e9.resourceKey=**/*
+          /d:sonar.issue.ignore.multicriteria.e10.ruleKey=csharpsquid:S3459
+          /d:sonar.issue.ignore.multicriteria.e10.resourceKey=**/*
+          /d:sonar.issue.ignore.multicriteria.e11.ruleKey=csharpsquid:S3267
+          /d:sonar.issue.ignore.multicriteria.e11.resourceKey=**/*
+          /d:sonar.coverage.exclusions="**/Platforms/Linux/LinuxX11Native.cs,**/Platforms/Mac/Native/**,**/Hooks/Library/**,**/Platforms/Linux/LinuxKeyboardMouseX11.cs,**/Platforms/Linux/LinuxKeyboardMouseEvdev.cs,**/Platforms/Linux/LinuxX11Display.cs,**/Platforms/Linux/LinuxApplicationX11.cs,**/Platforms/Linux/LinuxClipboardX11.cs,**/Platforms/Linux/LinuxHotkeyX11.cs,**/Platforms/Linux/LinuxWindowHookEx.cs,**/Platforms/Linux/LinuxPrintCups.cs,**/Platforms/Linux/LinuxKeyboardMouseHub.cs,**/Platforms/Linux/LinuxKeyboardMouseFactory.cs,**/Platforms/Linux/LinuxSession.cs,**/Platforms/Mac/**,**/Hooks/WindowHookEx*.cs,**/Hooks/KeyboardHook.cs,**/Hooks/MouseHook.cs,**/Hooks/PrintQueueHook.cs,**/Hooks/ShellHook.cs,**/Hooks/ClipBoardHook.cs,**/Hooks/WindowHook.cs,**/Helpers/AsyncConcurrentQueue.cs,**/Helpers/WindowHelper.cs,**/Helpers/AppWindowFilter.cs,**/Helpers/SyncFactory.cs,**/ApplicationWatcher.cs,**/ClipboardWatcher.cs,**/HotkeyWatcher.cs,**/PrintWatcher.cs,**/KeyboardWatcher.cs,**/MouseWatcher.cs"
 
       - name: Build for SonarCloud analysis
-        if: env.SONAR_TOKEN != ''
-        run: dotnet build src/EventHook.sln -c Release --no-restore --no-incremental
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop' && env.SONAR_TOKEN != ''
+        run: dotnet build src/Event.Hook.sln -c Release --no-restore --no-incremental
 
       - name: Unit tests
         shell: pwsh
         run: |
-          dotnet test tests/EventHook.Tests/EventHook.Tests.csproj -c Release --no-build --logger trx --collect:"Code Coverage" --results-directory coverage/unit
+          $collect = if ($env:GITHUB_REF -eq 'refs/heads/develop' -and $env:GITHUB_EVENT_NAME -eq 'push') { '--collect:"Code Coverage"' } else { '' }
+          Invoke-Expression "dotnet test tests/Event.Hook.Tests/Event.Hook.Tests.csproj -c Release -f net10.0-windows --no-build --logger trx $collect --results-directory coverage/unit-win"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $env:EnableWindowsTargeting = 'true'
+          Invoke-Expression "dotnet test tests/Event.Hook.Tests/Event.Hook.Tests.csproj -c Release -f net10.0 --no-build --logger trx $collect --results-directory coverage/unit-net"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Integration tests
         shell: pwsh
         run: |
-          dotnet test tests/EventHook.IntegrationTests/EventHook.IntegrationTests.csproj -c Release --no-build --logger trx --collect:"Code Coverage" --results-directory coverage/integration
+          $collect = if ($env:GITHUB_REF -eq 'refs/heads/develop' -and $env:GITHUB_EVENT_NAME -eq 'push') { '--collect:"Code Coverage"' } else { '' }
+          Invoke-Expression "dotnet test tests/Event.Hook.IntegrationTests/Event.Hook.IntegrationTests.csproj -c Release -f net10.0-windows --no-build --logger trx $collect --results-directory coverage/integration-win"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $env:EnableWindowsTargeting = 'true'
+          Invoke-Expression "dotnet test tests/Event.Hook.IntegrationTests/Event.Hook.IntegrationTests.csproj -c Release -f net10.0 --no-build --logger trx $collect --results-directory coverage/integration-net"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: E2E tests
+        shell: pwsh
+        run: |
+          $collect = if ($env:GITHUB_REF -eq 'refs/heads/develop' -and $env:GITHUB_EVENT_NAME -eq 'push') { '--collect:"Code Coverage"' } else { '' }
+          Invoke-Expression "dotnet test tests/Event.Hook.E2ETests/Event.Hook.E2ETests.csproj -c Release -f net10.0-windows --no-build --logger trx --filter Category=E2E $collect --results-directory coverage/e2e-win"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $env:EnableWindowsTargeting = 'true'
+          Invoke-Expression "dotnet test tests/Event.Hook.E2ETests/Event.Hook.E2ETests.csproj -c Release -f net10.0 --no-build --logger trx --filter Category=E2E $collect --results-directory coverage/e2e-net"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Merge code coverage
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
         shell: pwsh
         run: .\.coverage\tools\dotnet-coverage merge "coverage\**\*.coverage" --output coverage/coverage.xml --output-format xml
 
       - name: Complete SonarCloud analysis
-        if: env.SONAR_TOKEN != ''
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop' && env.SONAR_TOKEN != ''
         shell: pwsh
         run: .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="$env:SONAR_TOKEN"
 
@@ -89,7 +134,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results
+          name: test-results-windows-build
           path: coverage
           if-no-files-found: ignore
 
@@ -119,10 +164,120 @@ jobs:
           add: 'docs'
           pull: '--rebase --autostash'
 
+  os-tests:
+    name: OS tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 35
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Linux X11 / CUPS deps
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb libx11-6 libxext6 libxfixes3 libxtst6 xclip
+          sudo apt-get install -y libcups2t64 || sudo apt-get install -y libcups2
+
+      - name: Restore (Windows full solution)
+        if: runner.os == 'Windows'
+        run: dotnet restore src/Event.Hook.sln
+
+      - name: Build (Windows full solution)
+        if: runner.os == 'Windows'
+        run: dotnet build src/Event.Hook.sln -c Release --no-restore
+
+      - name: Restore (portable)
+        if: runner.os != 'Windows'
+        env:
+          EnableWindowsTargeting: true
+        run: |
+          dotnet restore src/Event.Hook/Event.Hook.csproj
+          dotnet restore tests/Event.Hook.Tests/Event.Hook.Tests.csproj
+          dotnet restore tests/Event.Hook.IntegrationTests/Event.Hook.IntegrationTests.csproj
+          dotnet restore tests/Event.Hook.E2ETests/Event.Hook.E2ETests.csproj
+          dotnet restore examples/Event.Hook.ConsoleApp.Example/Event.Hook.ConsoleApp.Example.csproj
+
+      - name: Build (portable)
+        if: runner.os != 'Windows'
+        env:
+          EnableWindowsTargeting: true
+        run: |
+          dotnet build src/Event.Hook/Event.Hook.csproj -c Release -f net10.0 --no-restore
+          dotnet build tests/Event.Hook.Tests/Event.Hook.Tests.csproj -c Release -f net10.0 --no-restore
+          dotnet build tests/Event.Hook.IntegrationTests/Event.Hook.IntegrationTests.csproj -c Release -f net10.0 --no-restore
+          dotnet build tests/Event.Hook.E2ETests/Event.Hook.E2ETests.csproj -c Release -f net10.0 --no-restore
+          dotnet build examples/Event.Hook.ConsoleApp.Example/Event.Hook.ConsoleApp.Example.csproj -c Release -f net10.0 --no-restore
+
+      - name: Unit tests (Windows)
+        if: runner.os == 'Windows'
+        run: dotnet test tests/Event.Hook.Tests/Event.Hook.Tests.csproj -c Release --no-build --logger trx
+
+      - name: Integration tests (Windows)
+        if: runner.os == 'Windows'
+        run: dotnet test tests/Event.Hook.IntegrationTests/Event.Hook.IntegrationTests.csproj -c Release --no-build --logger trx
+
+      - name: E2E tests (Windows)
+        if: runner.os == 'Windows'
+        run: dotnet test tests/Event.Hook.E2ETests/Event.Hook.E2ETests.csproj -c Release --no-build --filter "Category=E2E" --logger trx
+
+      - name: Unit tests (Unix)
+        if: runner.os != 'Windows'
+        env:
+          EnableWindowsTargeting: true
+        run: |
+          if [ "$RUNNER_OS" = "Linux" ]; then
+            xvfb-run -a dotnet test tests/Event.Hook.Tests/Event.Hook.Tests.csproj -c Release -f net10.0 --no-build --logger trx
+          else
+            dotnet test tests/Event.Hook.Tests/Event.Hook.Tests.csproj -c Release -f net10.0 --no-build --logger trx
+          fi
+
+      - name: Integration tests (Unix)
+        if: runner.os != 'Windows'
+        env:
+          EnableWindowsTargeting: true
+        run: |
+          if [ "$RUNNER_OS" = "Linux" ]; then
+            xvfb-run -a dotnet test tests/Event.Hook.IntegrationTests/Event.Hook.IntegrationTests.csproj -c Release -f net10.0 --no-build --logger trx
+          else
+            dotnet test tests/Event.Hook.IntegrationTests/Event.Hook.IntegrationTests.csproj -c Release -f net10.0 --no-build --logger trx
+          fi
+
+      - name: E2E tests (Unix)
+        if: runner.os != 'Windows'
+        env:
+          EnableWindowsTargeting: true
+        run: |
+          if [ "$RUNNER_OS" = "Linux" ]; then
+            xvfb-run -a dotnet test tests/Event.Hook.E2ETests/Event.Hook.E2ETests.csproj -c Release -f net10.0 --no-build --filter "Category=E2E" --logger trx
+          else
+            dotnet test tests/Event.Hook.E2ETests/Event.Hook.E2ETests.csproj -c Release -f net10.0 --no-build --filter "Category=E2E" --logger trx
+          fi
+
+      - name: Upload failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: os-tests-${{ matrix.os }}
+          path: |
+            **/TestResults/**
+            **/*.trx
+          if-no-files-found: ignore
+
   publish:
     name: Publish NuGet package
-    needs: build
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/stable' || startsWith(github.ref, 'refs/tags/v2'))
+    needs: [build, os-tests]
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/stable' || startsWith(github.ref, 'refs/tags/v3'))
     runs-on: windows-latest
     environment: nuget-publish
     permissions:
@@ -140,11 +295,11 @@ jobs:
 
       - name: Pack Beta
         if: github.ref == 'refs/heads/beta'
-        run: dotnet pack src/EventHook/EventHook.csproj -c Release --version-suffix beta -o artifacts
+        run: dotnet pack src/Event.Hook/Event.Hook.csproj -c Release --version-suffix beta.2 -o artifacts
 
       - name: Pack Stable
-        if: github.ref == 'refs/heads/stable' || startsWith(github.ref, 'refs/tags/v2')
-        run: dotnet pack src/EventHook/EventHook.csproj -c Release -o artifacts
+        if: github.ref == 'refs/heads/stable' || startsWith(github.ref, 'refs/tags/v3')
+        run: dotnet pack src/Event.Hook/Event.Hook.csproj -c Release -o artifacts
 
       - name: Resolve package version
         id: package

@@ -1,5 +1,5 @@
 {
-  "source_base_path": "D:/a/windows-user-action-hook/windows-user-action-hook/.github",
+  "source_base_path": "D:/a/event-hook/event-hook/.github",
   "xrefmap": "xrefmap.yml",
   "files": [
     {
@@ -106,6 +106,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.EventHookException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.EventHookException.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.EventHookException",
+      "Summary": "<p sourcefile=\"obj/api/EventHook.EventHookException.yml\" sourcestartlinenumber=\"1\">Thrown by <xref href=\"EventHook.HookStartResult.ThrowIfFailed\" data-throw-if-not-resolved=\"false\"></xref> when hook setup failed.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "obj/api/EventHook.EventHookFactory.yml",
       "output": {
         ".html": {
@@ -116,7 +130,21 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "EventHook.EventHookFactory",
-      "Summary": "<p sourcefile=\"obj/api/EventHook.EventHookFactory.yml\" sourcestartlinenumber=\"1\">Factory for watchers that share one message pump / synchronization context.\nDispose only after all watchers are stopped.</p>\n"
+      "Summary": "<p sourcefile=\"obj/api/EventHook.EventHookFactory.yml\" sourcestartlinenumber=\"1\">Factory for watchers that share one message pump / synchronization context.\nOn Windows, a live STA pump is required for keyboard, mouse, clipboard, hotkey, and application hooks.\nDispose only after all watchers are stopped.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.EventKey.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.EventKey.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.EventKey",
+      "Summary": "<p sourcefile=\"obj/api/EventHook.EventKey.yml\" sourcestartlinenumber=\"1\">Virtual key codes used by <xref href=\"EventHook.Hotkey\" data-throw-if-not-resolved=\"false\"></xref> (subset aligned with Win32 VK values).</p>\n"
     },
     {
       "type": "ManagedReference",
@@ -162,6 +190,34 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.HookFailureReason.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.HookFailureReason.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.HookFailureReason",
+      "Summary": "<p sourcefile=\"obj/api/EventHook.HookFailureReason.yml\" sourcestartlinenumber=\"1\">Why <xref href=\"EventHook.HookStartResult\" data-throw-if-not-resolved=\"false\"></xref> failed (or <xref href=\"EventHook.HookFailureReason.None\" data-throw-if-not-resolved=\"false\"></xref> on success).\nPump/run-loop startup failures throw <xref href=\"System.TimeoutException\" data-throw-if-not-resolved=\"false\"></xref> from\n<xref href=\"EventHook.EventHookFactory\" data-throw-if-not-resolved=\"false\"></xref> instead of using a value here.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.HookStartResult.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.HookStartResult.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.HookStartResult",
+      "Summary": "<p sourcefile=\"obj/api/EventHook.HookStartResult.yml\" sourcestartlinenumber=\"1\">Result of starting a watcher or registering a hotkey.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "obj/api/EventHook.Hooks.MouseMessages.yml",
       "output": {
         ".html": {
@@ -172,7 +228,7 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "EventHook.Hooks.MouseMessages",
-      "Summary": "<p sourcefile=\"obj/api/EventHook.Hooks.MouseMessages.yml\" sourcestartlinenumber=\"1\">The mouse messages.</p>\n"
+      "Summary": "<p sourcefile=\"obj/api/EventHook.Hooks.MouseMessages.yml\" sourcestartlinenumber=\"1\">Logical mouse message types (Win32 WM_* values on Windows; mapped equivalents on other OSes).</p>\n"
     },
     {
       "type": "ManagedReference",
@@ -186,7 +242,7 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "EventHook.Hooks.Point",
-      "Summary": "<p sourcefile=\"obj/api/EventHook.Hooks.Point.yml\" sourcestartlinenumber=\"1\">The point co-ordinate.</p>\n"
+      "Summary": "<p sourcefile=\"obj/api/EventHook.Hooks.Point.yml\" sourcestartlinenumber=\"1\">Screen point.</p>\n"
     },
     {
       "type": "ManagedReference",
@@ -214,7 +270,7 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "EventHook.Hooks.WindowHookEx",
-      "Summary": "<p sourcefile=\"obj/api/EventHook.Hooks.WindowHookEx.yml\" sourcestartlinenumber=\"1\">Track events across all windows</p>\n"
+      "Summary": "<p sourcefile=\"obj/api/EventHook.Hooks.WindowHookEx.yml\" sourcestartlinenumber=\"1\">Track events across all windows. Call <xref href=\"EventHook.Hooks.WindowHookEx.Start\" data-throw-if-not-resolved=\"false\"></xref> before events fire.\nUnlike factory watchers, this type is not installed on <xref href=\"EventHook.EventHookFactory\" data-throw-if-not-resolved=\"false\"></xref>'s pump:\n<xref href=\"EventHook.Hooks.WindowHookEx.Start\" data-throw-if-not-resolved=\"false\"></xref> must run on a thread that already pumps messages (your UI thread).</p>\n"
     },
     {
       "type": "ManagedReference",
@@ -229,6 +285,20 @@
       "IsMRef": true,
       "Title": "EventHook.Hooks",
       "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.Hotkey.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.Hotkey.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.Hotkey",
+      "Summary": "<p sourcefile=\"obj/api/EventHook.Hotkey.yml\" sourcestartlinenumber=\"1\">Portable hotkey: modifiers plus a virtual key.</p>\n"
     },
     {
       "type": "ManagedReference",
@@ -256,7 +326,7 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "EventHook.HotkeyWatcher",
-      "Summary": "<p sourcefile=\"obj/api/EventHook.HotkeyWatcher.yml\" sourcestartlinenumber=\"1\">Global hotkey watcher using RegisterHotKey / WM_HOTKEY on the shared message pump.</p>\n"
+      "Summary": "<p sourcefile=\"obj/api/EventHook.HotkeyWatcher.yml\" sourcestartlinenumber=\"1\">Global hotkey watcher using RegisterHotKey / WM_HOTKEY on the shared message pump.\n<xref href=\"EventHook.HotkeyWatcher.Start\" data-throw-if-not-resolved=\"false\"></xref> succeeds only after the factory pump is up; <xref href=\"EventHook.HotkeyWatcher.IsRunning\" data-throw-if-not-resolved=\"false\"></xref> does not\nmean a host-provided HWND is dispatching <code>WM_HOTKEY</code> — that window must pump those messages.</p>\n"
     },
     {
       "type": "ManagedReference",
@@ -299,6 +369,20 @@
       "IsMRef": true,
       "Title": "EventHook.KeyInputEventArgs",
       "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/EventHook.KeyModifiers.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/EventHook.KeyModifiers.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "EventHook.KeyModifiers",
+      "Summary": "<p sourcefile=\"obj/api/EventHook.KeyModifiers.yml\" sourcestartlinenumber=\"1\">Modifier flags for a portable hotkey (maps to Win32 MOD_* / Carbon / X11).</p>\n"
     },
     {
       "type": "ManagedReference",

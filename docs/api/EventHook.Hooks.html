@@ -101,7 +101,9 @@ Classes
     </dl>
     <dl class="jumplist">
       <dt><a class="xref" href="EventHook.Hooks.WindowHookEx.html">WindowHookEx</a></dt>
-      <dd><p>Track events across all windows</p>
+      <dd><p>Track events across all windows. Call <a class="xref" href="EventHook.Hooks.WindowHookEx.html#EventHook_Hooks_WindowHookEx_Start">Start()</a> before events fire.
+Unlike factory watchers, this type is not installed on <a class="xref" href="EventHook.EventHookFactory.html">EventHookFactory</a>'s pump:
+<a class="xref" href="EventHook.Hooks.WindowHookEx.html#EventHook_Hooks_WindowHookEx_Start">Start()</a> must run on a thread that already pumps messages (your UI thread).</p>
 </dd>
     </dl>
     <h3 id="structs">
@@ -109,7 +111,7 @@ Structs
 </h3>
     <dl class="jumplist">
       <dt><a class="xref" href="EventHook.Hooks.Point.html">Point</a></dt>
-      <dd><p>The point co-ordinate.</p>
+      <dd><p>Screen point.</p>
 </dd>
     </dl>
     <h3 id="enums">
@@ -117,7 +119,7 @@ Enums
 </h3>
     <dl class="jumplist">
       <dt><a class="xref" href="EventHook.Hooks.MouseMessages.html">MouseMessages</a></dt>
-      <dd><p>The mouse messages.</p>
+      <dd><p>Logical mouse message types (Win32 WM_* values on Windows; mapped equivalents on other OSes).</p>
 </dd>
     </dl>
 
