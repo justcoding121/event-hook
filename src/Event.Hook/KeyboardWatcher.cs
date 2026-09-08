@@ -51,7 +51,6 @@ namespace EventHook
         private EventOffload<LinuxKeySnapshot> linuxOffload;
         private EventOffload<MacKeySnapshot> macOffload;
         private CancellationTokenSource taskCancellationTokenSource;
-        private IDisposable linuxBackend;
 #endif
 
         internal KeyboardWatcher(SyncFactory factory)
@@ -143,14 +142,10 @@ namespace EventHook
                 {
                     taskCancellationTokenSource = new CancellationTokenSource();
                     linuxOffload = new EventOffload<LinuxKeySnapshot>();
-                    var linuxResult = LinuxKeyboardMouseFactory.Start(
-                        snap => linuxOffload?.TryWrite(snap),
-                        _ => { },
-                        out linuxBackend);
+                    var linuxResult = LinuxKeyboardMouseHub.Shared.StartKeyboard(
+                        snap => linuxOffload?.TryWrite(snap));
                     if (!linuxResult.Success)
                     {
-                        linuxBackend?.Dispose();
-                        linuxBackend = null;
                         linuxOffload?.Dispose();
                         linuxOffload = null;
                         taskCancellationTokenSource.Dispose();
@@ -205,8 +200,7 @@ namespace EventHook
                 }
                 else if (OperatingSystem.IsLinux())
                 {
-                    linuxBackend?.Dispose();
-                    linuxBackend = null;
+                    LinuxKeyboardMouseHub.Shared.StopKeyboard();
                     linuxOffload?.Complete();
                     linuxOffload?.Dispose();
                     linuxOffload = null;

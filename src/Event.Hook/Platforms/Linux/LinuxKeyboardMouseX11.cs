@@ -223,7 +223,6 @@ namespace EventHook.Platforms.Linux
                 var data = Marshal.PtrToStructure<LinuxX11Native.XRecordInterceptData>(recordedDataPtr);
                 if (data.category != LinuxX11Native.XRecordFromServer || data.data == IntPtr.Zero || data.dataLen < 1)
                 {
-                    LinuxX11Native.XRecordFreeData(recordedDataPtr);
                     return;
                 }
 

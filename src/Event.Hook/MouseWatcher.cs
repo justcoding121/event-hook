@@ -44,7 +44,6 @@ namespace EventHook
         private EventOffload<MouseSnapshot> linuxOffload;
         private EventOffload<MacMouseSnapshot> macOffload;
         private CancellationTokenSource taskCancellationTokenSource;
-        private IDisposable linuxBackend;
 #endif
 
         internal MouseWatcher(SyncFactory factory)
@@ -165,8 +164,7 @@ namespace EventHook
                         coalesce: (_, newer) => newer);
 
                     var includeMove = IncludeMouseMove;
-                    var linuxResult = LinuxKeyboardMouseFactory.Start(
-                        _ => { },
+                    var linuxResult = LinuxKeyboardMouseHub.Shared.StartMouse(
                         snap =>
                         {
                             if (!MouseMessageFilter.ShouldRaise(snap.Message, includeMove))
@@ -175,13 +173,10 @@ namespace EventHook
                             }
 
                             linuxOffload?.TryWrite(snap);
-                        },
-                        out linuxBackend);
+                        });
 
                     if (!linuxResult.Success)
                     {
-                        linuxBackend?.Dispose();
-                        linuxBackend = null;
                         linuxOffload?.Dispose();
                         linuxOffload = null;
                         taskCancellationTokenSource.Dispose();
@@ -236,8 +231,7 @@ namespace EventHook
                 }
                 else if (OperatingSystem.IsLinux())
                 {
-                    linuxBackend?.Dispose();
-                    linuxBackend = null;
+                    LinuxKeyboardMouseHub.Shared.StopMouse();
                     linuxOffload?.Complete();
                     linuxOffload?.Dispose();
                     linuxOffload = null;
