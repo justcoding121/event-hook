@@ -75,6 +75,15 @@ references:
   commentId: M:EventHook.ApplicationWatcher.Dispose
   fullName: EventHook.ApplicationWatcher.Dispose()
   nameWithType: ApplicationWatcher.Dispose()
+- uid: EventHook.ApplicationWatcher.Dispose(System.Boolean)
+  name: Dispose(bool)
+  href: api/EventHook.ApplicationWatcher.html#EventHook_ApplicationWatcher_Dispose_System_Boolean_
+  commentId: M:EventHook.ApplicationWatcher.Dispose(System.Boolean)
+  name.vb: Dispose(Boolean)
+  fullName: EventHook.ApplicationWatcher.Dispose(bool)
+  fullName.vb: EventHook.ApplicationWatcher.Dispose(Boolean)
+  nameWithType: ApplicationWatcher.Dispose(bool)
+  nameWithType.vb: ApplicationWatcher.Dispose(Boolean)
 - uid: EventHook.ApplicationWatcher.Dispose*
   name: Dispose
   href: api/EventHook.ApplicationWatcher.html#EventHook_ApplicationWatcher_Dispose_
@@ -225,6 +234,15 @@ references:
   commentId: M:EventHook.ClipboardWatcher.Dispose
   fullName: EventHook.ClipboardWatcher.Dispose()
   nameWithType: ClipboardWatcher.Dispose()
+- uid: EventHook.ClipboardWatcher.Dispose(System.Boolean)
+  name: Dispose(bool)
+  href: api/EventHook.ClipboardWatcher.html#EventHook_ClipboardWatcher_Dispose_System_Boolean_
+  commentId: M:EventHook.ClipboardWatcher.Dispose(System.Boolean)
+  name.vb: Dispose(Boolean)
+  fullName: EventHook.ClipboardWatcher.Dispose(bool)
+  fullName.vb: EventHook.ClipboardWatcher.Dispose(Boolean)
+  nameWithType: ClipboardWatcher.Dispose(bool)
+  nameWithType.vb: ClipboardWatcher.Dispose(Boolean)
 - uid: EventHook.ClipboardWatcher.Dispose*
   name: Dispose
   href: api/EventHook.ClipboardWatcher.html#EventHook_ClipboardWatcher_Dispose_
@@ -355,6 +373,15 @@ references:
   commentId: M:EventHook.EventHookFactory.Dispose
   fullName: EventHook.EventHookFactory.Dispose()
   nameWithType: EventHookFactory.Dispose()
+- uid: EventHook.EventHookFactory.Dispose(System.Boolean)
+  name: Dispose(bool)
+  href: api/EventHook.EventHookFactory.html#EventHook_EventHookFactory_Dispose_System_Boolean_
+  commentId: M:EventHook.EventHookFactory.Dispose(System.Boolean)
+  name.vb: Dispose(Boolean)
+  fullName: EventHook.EventHookFactory.Dispose(bool)
+  fullName.vb: EventHook.EventHookFactory.Dispose(Boolean)
+  nameWithType: EventHookFactory.Dispose(bool)
+  nameWithType.vb: EventHookFactory.Dispose(Boolean)
 - uid: EventHook.EventHookFactory.Dispose*
   name: Dispose
   href: api/EventHook.EventHookFactory.html#EventHook_EventHookFactory_Dispose_
@@ -1509,6 +1536,15 @@ references:
   commentId: M:EventHook.HotkeyWatcher.Dispose
   fullName: EventHook.HotkeyWatcher.Dispose()
   nameWithType: HotkeyWatcher.Dispose()
+- uid: EventHook.HotkeyWatcher.Dispose(System.Boolean)
+  name: Dispose(bool)
+  href: api/EventHook.HotkeyWatcher.html#EventHook_HotkeyWatcher_Dispose_System_Boolean_
+  commentId: M:EventHook.HotkeyWatcher.Dispose(System.Boolean)
+  name.vb: Dispose(Boolean)
+  fullName: EventHook.HotkeyWatcher.Dispose(bool)
+  fullName.vb: EventHook.HotkeyWatcher.Dispose(Boolean)
+  nameWithType: HotkeyWatcher.Dispose(bool)
+  nameWithType.vb: HotkeyWatcher.Dispose(Boolean)
 - uid: EventHook.HotkeyWatcher.Dispose*
   name: Dispose
   href: api/EventHook.HotkeyWatcher.html#EventHook_HotkeyWatcher_Dispose_
@@ -1711,6 +1747,15 @@ references:
   commentId: M:EventHook.KeyboardWatcher.Dispose
   fullName: EventHook.KeyboardWatcher.Dispose()
   nameWithType: KeyboardWatcher.Dispose()
+- uid: EventHook.KeyboardWatcher.Dispose(System.Boolean)
+  name: Dispose(bool)
+  href: api/EventHook.KeyboardWatcher.html#EventHook_KeyboardWatcher_Dispose_System_Boolean_
+  commentId: M:EventHook.KeyboardWatcher.Dispose(System.Boolean)
+  name.vb: Dispose(Boolean)
+  fullName: EventHook.KeyboardWatcher.Dispose(bool)
+  fullName.vb: EventHook.KeyboardWatcher.Dispose(Boolean)
+  nameWithType: KeyboardWatcher.Dispose(bool)
+  nameWithType.vb: KeyboardWatcher.Dispose(Boolean)
 - uid: EventHook.KeyboardWatcher.Dispose*
   name: Dispose
   href: api/EventHook.KeyboardWatcher.html#EventHook_KeyboardWatcher_Dispose_
@@ -1820,6 +1865,15 @@ references:
   commentId: M:EventHook.MouseWatcher.Dispose
   fullName: EventHook.MouseWatcher.Dispose()
   nameWithType: MouseWatcher.Dispose()
+- uid: EventHook.MouseWatcher.Dispose(System.Boolean)
+  name: Dispose(bool)
+  href: api/EventHook.MouseWatcher.html#EventHook_MouseWatcher_Dispose_System_Boolean_
+  commentId: M:EventHook.MouseWatcher.Dispose(System.Boolean)
+  name.vb: Dispose(Boolean)
+  fullName: EventHook.MouseWatcher.Dispose(bool)
+  fullName.vb: EventHook.MouseWatcher.Dispose(Boolean)
+  nameWithType: MouseWatcher.Dispose(bool)
+  nameWithType.vb: MouseWatcher.Dispose(Boolean)
 - uid: EventHook.MouseWatcher.Dispose*
   name: Dispose
   href: api/EventHook.MouseWatcher.html#EventHook_MouseWatcher_Dispose_
@@ -1987,6 +2041,15 @@ references:
   commentId: M:EventHook.PrintWatcher.Dispose
   fullName: EventHook.PrintWatcher.Dispose()
   nameWithType: PrintWatcher.Dispose()
+- uid: EventHook.PrintWatcher.Dispose(System.Boolean)
+  name: Dispose(bool)
+  href: api/EventHook.PrintWatcher.html#EventHook_PrintWatcher_Dispose_System_Boolean_
+  commentId: M:EventHook.PrintWatcher.Dispose(System.Boolean)
+  name.vb: Dispose(Boolean)
+  fullName: EventHook.PrintWatcher.Dispose(bool)
+  fullName.vb: EventHook.PrintWatcher.Dispose(Boolean)
+  nameWithType: PrintWatcher.Dispose(bool)
+  nameWithType.vb: PrintWatcher.Dispose(Boolean)
 - uid: EventHook.PrintWatcher.Dispose*
   name: Dispose
   href: api/EventHook.PrintWatcher.html#EventHook_PrintWatcher_Dispose_
