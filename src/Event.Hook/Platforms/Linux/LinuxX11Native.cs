@@ -50,6 +50,9 @@ namespace EventHook.Platforms.Linux
         internal static extern int XInitThreads();
 
         [DllImport("libX11.so.6", CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int XSynchronize(IntPtr display, int onoff);
+
+        [DllImport("libX11.so.6", CallingConvention = CallingConvention.Cdecl)]
         internal static extern IntPtr XOpenDisplay(string displayName);
 
         [DllImport("libX11.so.6", CallingConvention = CallingConvention.Cdecl)]
@@ -81,6 +84,9 @@ namespace EventHook.Platforms.Linux
 
         [DllImport("libX11.so.6", CallingConvention = CallingConvention.Cdecl)]
         internal static extern ulong XKeycodeToKeysym(IntPtr display, uint keycode, int index);
+
+        [DllImport("libX11.so.6", CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int XDisplayKeycodes(IntPtr display, out int minKeycodes, out int maxKeycodes);
 
         [DllImport("libX11.so.6", CallingConvention = CallingConvention.Cdecl)]
         internal static extern uint XKeysymToKeycode(IntPtr display, ulong keysym);
@@ -148,6 +154,9 @@ namespace EventHook.Platforms.Linux
             out IntPtr parent,
             out IntPtr children,
             out uint nChildren);
+
+        [DllImport("libXtst.so.6", CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int XRecordQueryVersion(IntPtr display, out int majorVersion, out int minorVersion);
 
         [DllImport("libXtst.so.6", CallingConvention = CallingConvention.Cdecl)]
         internal static extern IntPtr XRecordAllocRange();
@@ -248,16 +257,42 @@ namespace EventHook.Platforms.Linux
             public int clientDied;
         }
 
+        /// <summary>
+        /// Native <c>XRecordInterceptData</c> on LP64: XID/Time/unsigned long are 8 bytes.
+        /// <c>data_len</c> is in 4-byte units.
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         internal struct XRecordInterceptData
         {
-            public uint idBase;
-            public int serverTime;
-            public int clientSequence;
+            public ulong idBase;
+            public ulong serverTime;
+            public ulong clientSequence;
             public int category;
             public int clientSwapped;
             public IntPtr data;
             public ulong dataLen;
+        }
+
+        /// <summary>
+        /// Core device-event wire format delivered by XRecord (<c>xEvent</c>, 32 bytes) — not Xlib <c>XEvent</c>.
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        internal struct XRecordWireEvent
+        {
+            public byte type;
+            public byte detail;
+            public ushort sequenceNumber;
+            public uint time;
+            public uint root;
+            public uint eventWindow;
+            public uint child;
+            public short rootX;
+            public short rootY;
+            public short eventX;
+            public short eventY;
+            public ushort state;
+            public byte sameScreen;
+            public byte pad;
         }
 
         // XEvent is a large union; keep a pad large enough for 64-bit Xlib.

@@ -186,7 +186,8 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y xvfb libx11-6 libxext6 libxfixes3 libxtst6 libcups2 xclip
+          sudo apt-get install -y xvfb libx11-6 libxext6 libxfixes3 libxtst6 xclip
+          sudo apt-get install -y libcups2t64 || sudo apt-get install -y libcups2
 
       - name: Restore (Windows full solution)
         if: runner.os == 'Windows'

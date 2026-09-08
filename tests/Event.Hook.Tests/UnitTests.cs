@@ -620,5 +620,17 @@ namespace EventHook.Tests
             Assert.NotEqual(0u, EventHook.Platforms.Linux.LinuxKeyMap.ModifiersToX(KeyModifiers.Meta));
         }
     }
+
+    public class LinuxX11NativeLayoutTests
+    {
+        [Fact]
+        public void XRecord_structs_match_lp64_xlib_layout()
+        {
+            Assert.Equal(48, Marshal.SizeOf<EventHook.Platforms.Linux.LinuxX11Native.XRecordInterceptData>());
+            Assert.Equal(32, Marshal.SizeOf<EventHook.Platforms.Linux.LinuxX11Native.XRecordWireEvent>());
+            Assert.Equal(32, Marshal.SizeOf<EventHook.Platforms.Linux.LinuxX11Native.XRecordRange>());
+            Assert.Equal(192, Marshal.SizeOf<EventHook.Platforms.Linux.LinuxX11Native.XEvent>());
+        }
+    }
 #endif
 }

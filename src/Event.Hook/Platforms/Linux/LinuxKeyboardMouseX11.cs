@@ -21,6 +21,7 @@ namespace EventHook.Platforms.Linux
         private bool disposed;
         private Exception startError;
         private readonly ManualResetEventSlim ready = new ManualResetEventSlim(false);
+        private ulong[] keysymsByKeycode = Array.Empty<ulong>();
 
         internal LinuxKeyboardMouseX11(Action<LinuxKeySnapshot> onKey, Action<MouseSnapshot> onMouse)
         {
@@ -103,6 +104,15 @@ namespace EventHook.Platforms.Linux
                     return;
                 }
 
+                if (LinuxX11Native.XRecordQueryVersion(controlDisplay, out _, out _) == 0)
+                {
+                    startError = new InvalidOperationException("XRecord extension is not available on this display.");
+                    return;
+                }
+
+                LinuxX11Native.XSynchronize(dataDisplay, 1);
+                CacheKeysyms(controlDisplay);
+
                 var rangePtr = LinuxX11Native.XRecordAllocRange();
                 if (rangePtr == IntPtr.Zero)
                 {
@@ -143,13 +153,10 @@ namespace EventHook.Platforms.Linux
             {
                 startError = ex;
             }
-            finally
-            {
-                ready.Set();
-            }
 
             if (startError != null || context == IntPtr.Zero || dataDisplay == IntPtr.Zero)
             {
+                ready.Set();
                 CleanupDisplays();
                 return;
             }
@@ -157,14 +164,23 @@ namespace EventHook.Platforms.Linux
             try
             {
                 // Blocks until XRecordDisableContext from the control connection.
-                LinuxX11Native.XRecordEnableContext(dataDisplay, context, interceptProc, IntPtr.Zero);
+                // Start() waits for XRecordStartOfData so EnableContext is actually live.
+                var status = LinuxX11Native.XRecordEnableContext(
+                    dataDisplay, context, interceptProc, IntPtr.Zero);
+                if (status == 0 && running)
+                {
+                    startError = new InvalidOperationException("XRecordEnableContext failed.");
+                }
             }
             catch (Exception)
             {
                 // shutdown path
             }
-
-            CleanupDisplays();
+            finally
+            {
+                ready.Set();
+                CleanupDisplays();
+            }
         }
 
         private void CleanupDisplays()
@@ -212,35 +228,73 @@ namespace EventHook.Platforms.Linux
             controlDisplay = IntPtr.Zero;
         }
 
+        private void CacheKeysyms(IntPtr display)
+        {
+            if (LinuxX11Native.XDisplayKeycodes(display, out var min, out var max) == 0 || max < min)
+            {
+                keysymsByKeycode = Array.Empty<ulong>();
+                return;
+            }
+
+            var table = new ulong[Math.Max(max + 1, 256)];
+            var lo = Math.Max(min, 0);
+            var hi = Math.Min(max, table.Length - 1);
+            for (var keycode = lo; keycode <= hi; keycode++)
+            {
+                table[keycode] = LinuxX11Native.XKeycodeToKeysym(display, (uint)keycode, 0);
+            }
+
+            keysymsByKeycode = table;
+        }
+
         private void OnIntercept(IntPtr closure, IntPtr recordedDataPtr)
         {
             _ = closure;
-            if (recordedDataPtr == IntPtr.Zero || !running)
+            if (recordedDataPtr == IntPtr.Zero)
             {
+                return;
+            }
+
+            if (!running)
+            {
+                try
+                {
+                    LinuxX11Native.XRecordFreeData(recordedDataPtr);
+                }
+                catch
+                {
+                    // ignore
+                }
+
                 return;
             }
 
             try
             {
                 var data = Marshal.PtrToStructure<LinuxX11Native.XRecordInterceptData>(recordedDataPtr);
-                if (data.category != LinuxX11Native.XRecordFromServer || data.data == IntPtr.Zero || data.dataLen < 1)
+                if (data.category == LinuxX11Native.XRecordStartOfData)
+                {
+                    ready.Set();
+                    return;
+                }
+
+                // data_len is in 4-byte units; a core device event is 32 bytes (8 units).
+                if (data.category != LinuxX11Native.XRecordFromServer || data.data == IntPtr.Zero || data.dataLen < 8)
                 {
                     return;
                 }
 
-                // First byte is the core event type for device events.
-                var eventType = Marshal.ReadByte(data.data);
+                var ev = Marshal.PtrToStructure<LinuxX11Native.XRecordWireEvent>(data.data);
+                var eventType = (int)(ev.type & 0x7F);
                 switch (eventType)
                 {
                     case LinuxX11Native.KeyPress:
                     case LinuxX11Native.KeyRelease:
                     {
-                        var key = Marshal.PtrToStructure<LinuxX11Native.XKeyEvent>(data.data);
-                        // Callback runs on the data-display thread — only touch dataDisplay here.
-                        ulong keysym = dataDisplay != IntPtr.Zero
-                            ? LinuxX11Native.XKeycodeToKeysym(dataDisplay, key.keycode, 0)
-                            : 0;
-
+                        // Do not call Xlib on dataDisplay from this callback — EnableContext holds that lock.
+                        var keysym = ev.detail < keysymsByKeycode.Length
+                            ? keysymsByKeycode[ev.detail]
+                            : 0UL;
                         var vk = LinuxKeyMap.KeySymToVk(keysym);
                         var snap = new LinuxKeySnapshot(
                             vk,
@@ -252,24 +306,22 @@ namespace EventHook.Platforms.Linux
                     case LinuxX11Native.ButtonPress:
                     case LinuxX11Native.ButtonRelease:
                     {
-                        var btn = Marshal.PtrToStructure<LinuxX11Native.XButtonEvent>(data.data);
-                        var message = MapButton(btn.button, eventType == LinuxX11Native.ButtonPress);
+                        var message = MapButton(ev.detail, eventType == LinuxX11Native.ButtonPress);
                         if (message.HasValue)
                         {
                             onMouse?.Invoke(new MouseSnapshot(
                                 message.Value,
-                                new Point(btn.x_root, btn.y_root),
-                                btn.button));
+                                new Point(ev.rootX, ev.rootY),
+                                ev.detail));
                         }
 
                         break;
                     }
                     case LinuxX11Native.MotionNotify:
                     {
-                        var motion = Marshal.PtrToStructure<LinuxX11Native.XMotionEvent>(data.data);
                         onMouse?.Invoke(new MouseSnapshot(
                             MouseMessages.WM_MOUSEMOVE,
-                            new Point(motion.x_root, motion.y_root),
+                            new Point(ev.rootX, ev.rootY),
                             0));
                         break;
                     }

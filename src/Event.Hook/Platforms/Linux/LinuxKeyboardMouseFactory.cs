@@ -17,15 +17,25 @@ namespace EventHook.Platforms.Linux
             if (LinuxSession.HasX11Display)
             {
                 var x11 = new LinuxKeyboardMouseX11(onKey, onMouse);
-                var result = x11.Start();
-                if (!result.Success)
+                var x11Result = x11.Start();
+                if (x11Result.Success)
                 {
-                    x11.Dispose();
-                    return result;
+                    backend = x11;
+                    return x11Result;
                 }
 
-                backend = x11;
-                return result;
+                x11.Dispose();
+
+                var fallback = new LinuxKeyboardMouseEvdev(onKey, onMouse);
+                var fallbackResult = fallback.Start();
+                if (fallbackResult.Success)
+                {
+                    backend = fallback;
+                    return fallbackResult;
+                }
+
+                fallback.Dispose();
+                return x11Result;
             }
 
             var evdev = new LinuxKeyboardMouseEvdev(onKey, onMouse);
