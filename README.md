@@ -1,23 +1,10 @@
 # EventHook
 
+A .NET library to subscribe to global user actions across **Windows**, **macOS**, and **Linux**: keyboard, mouse, clipboard, application windows, print jobs, and hotkeys.
+
 [![CI](https://github.com/justcoding121/event-hook/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/justcoding121/event-hook/actions/workflows/ci.yml)
 [![NuGet](https://img.shields.io/nuget/v/EventHook.svg)](https://www.nuget.org/packages/EventHook)
-
-## Code Quality
-
-[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=justcoding121_windows-user-action-hook&metric=alert_status)](https://sonarcloud.io/summary/overall?id=justcoding121_windows-user-action-hook&branch=develop)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=justcoding121_windows-user-action-hook&metric=coverage)](https://sonarcloud.io/summary/overall?id=justcoding121_windows-user-action-hook&branch=develop)
-[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=justcoding121_windows-user-action-hook&metric=ncloc)](https://sonarcloud.io/summary/overall?id=justcoding121_windows-user-action-hook&branch=develop)
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=justcoding121_windows-user-action-hook&metric=bugs)](https://sonarcloud.io/summary/overall?id=justcoding121_windows-user-action-hook&branch=develop)
-[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=justcoding121_windows-user-action-hook&metric=vulnerabilities)](https://sonarcloud.io/summary/overall?id=justcoding121_windows-user-action-hook&branch=develop)
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=justcoding121_windows-user-action-hook&metric=code_smells)](https://sonarcloud.io/summary/overall?id=justcoding121_windows-user-action-hook&branch=develop)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=justcoding121_windows-user-action-hook&metric=security_rating)](https://sonarcloud.io/summary/overall?id=justcoding121_windows-user-action-hook&branch=develop)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=justcoding121_windows-user-action-hook&metric=reliability_rating)](https://sonarcloud.io/summary/overall?id=justcoding121_windows-user-action-hook&branch=develop)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=justcoding121_windows-user-action-hook&metric=sqale_rating)](https://sonarcloud.io/summary/overall?id=justcoding121_windows-user-action-hook&branch=develop)
-[![Duplicated Lines](https://sonarcloud.io/api/project_badges/measure?project=justcoding121_windows-user-action-hook&metric=duplicated_lines_density)](https://sonarcloud.io/summary/overall?id=justcoding121_windows-user-action-hook&branch=develop)
-[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=justcoding121_windows-user-action-hook&metric=sqale_index)](https://sonarcloud.io/summary/overall?id=justcoding121_windows-user-action-hook&branch=develop)
-
-A .NET library to subscribe to global user actions across **Windows**, **macOS**, and **Linux**: keyboard, mouse, clipboard, application windows, print jobs, and hotkeys.
+[![NuGet downloads](https://img.shields.io/nuget/dt/EventHook.svg)](https://www.nuget.org/packages/EventHook)
 
 * [API Documentation](https://justcoding121.github.io/event-hook/) (DocFX site on `develop`)
 
@@ -164,3 +151,17 @@ Publishing uses NuGet Trusted Publishing (`NUGET_USER` on the `nuget-publish` en
 Breaking: multi-platform (`net10.0-windows` + `net10.0`), `Start()`/`Register()` return `HookStartResult`, portable `Hotkey` replaces WinForms `Keys`, `IncludeMouseMove` defaults to `false`, non-blocking OS hook offload.
 
 Repository renamed from `windows-user-action-hook` to [event-hook](https://github.com/justcoding121/event-hook). Solution/projects use `Event.Hook.*`; NuGet package id remains `EventHook`.
+
+## Code quality
+
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=justcoding121_windows-user-action-hook&metric=alert_status)](https://sonarcloud.io/summary/overall?id=justcoding121_windows-user-action-hook&branch=develop)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=justcoding121_windows-user-action-hook&metric=coverage)](https://sonarcloud.io/summary/overall?id=justcoding121_windows-user-action-hook&branch=develop)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=justcoding121_windows-user-action-hook&metric=ncloc)](https://sonarcloud.io/summary/overall?id=justcoding121_windows-user-action-hook&branch=develop)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=justcoding121_windows-user-action-hook&metric=bugs)](https://sonarcloud.io/summary/overall?id=justcoding121_windows-user-action-hook&branch=develop)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=justcoding121_windows-user-action-hook&metric=vulnerabilities)](https://sonarcloud.io/summary/overall?id=justcoding121_windows-user-action-hook&branch=develop)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=justcoding121_windows-user-action-hook&metric=code_smells)](https://sonarcloud.io/summary/overall?id=justcoding121_windows-user-action-hook&branch=develop)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=justcoding121_windows-user-action-hook&metric=security_rating)](https://sonarcloud.io/summary/overall?id=justcoding121_windows-user-action-hook&branch=develop)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=justcoding121_windows-user-action-hook&metric=reliability_rating)](https://sonarcloud.io/summary/overall?id=justcoding121_windows-user-action-hook&branch=develop)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=justcoding121_windows-user-action-hook&metric=sqale_rating)](https://sonarcloud.io/summary/overall?id=justcoding121_windows-user-action-hook&branch=develop)
+[![Duplicated Lines](https://sonarcloud.io/api/project_badges/measure?project=justcoding121_windows-user-action-hook&metric=duplicated_lines_density)](https://sonarcloud.io/summary/overall?id=justcoding121_windows-user-action-hook&branch=develop)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=justcoding121_windows-user-action-hook&metric=sqale_index)](https://sonarcloud.io/summary/overall?id=justcoding121_windows-user-action-hook&branch=develop)
