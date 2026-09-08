@@ -16,7 +16,6 @@ namespace EventHook.Platforms.Linux
         private Action<LinuxX11Native.XEvent> handler;
         private IntPtr clipboardAtom;
         private IntPtr utf8Atom;
-        private IntPtr targetsAtom;
         private IntPtr propertyAtom;
         private IntPtr helperWindow;
         private int fixesEventBase;
@@ -46,48 +45,31 @@ namespace EventHook.Platforms.Linux
 
             try
             {
-                Exception error = null;
                 display.Invoke(() =>
                 {
-                    try
+                    if (XFixesQueryExtensionBool(display.Display, out fixesEventBase, out _) == 0)
                     {
-                        if (XFixesQueryExtensionBool(display.Display, out fixesEventBase, out _) == 0)
-                        {
-                            error = new InvalidOperationException("XFixes extension is not available.");
-                            return;
-                        }
-
-                        clipboardAtom = LinuxX11Native.XInternAtom(display.Display, "CLIPBOARD", 0);
-                        utf8Atom = LinuxX11Native.XInternAtom(display.Display, "UTF8_STRING", 0);
-                        targetsAtom = LinuxX11Native.XInternAtom(display.Display, "TARGETS", 0);
-                        propertyAtom = LinuxX11Native.XInternAtom(display.Display, "EVENTHOOK_CLIPBOARD", 0);
-                        helperWindow = LinuxX11Native.XCreateSimpleWindow(
-                            display.Display,
-                            display.Root,
-                            -10, -10, 1, 1, 0, 0, 0);
-
-                        LinuxX11Native.XFixesSelectSelectionInput(
-                            display.Display,
-                            helperWindow,
-                            clipboardAtom,
-                            LinuxX11Native.XFixesSetSelectionOwnerNotifyMask |
-                            LinuxX11Native.XFixesSelectionWindowDestroyNotifyMask |
-                            LinuxX11Native.XFixesSelectionClientCloseNotifyMask);
-
-                        LinuxX11Native.XFlush(display.Display);
+                        throw new InvalidOperationException("XFixes extension is not available.");
                     }
-                    catch (Exception ex)
-                    {
-                        error = ex;
-                    }
+
+                    clipboardAtom = LinuxX11Native.XInternAtom(display.Display, "CLIPBOARD", 0);
+                    utf8Atom = LinuxX11Native.XInternAtom(display.Display, "UTF8_STRING", 0);
+                    propertyAtom = LinuxX11Native.XInternAtom(display.Display, "EVENTHOOK_CLIPBOARD", 0);
+                    helperWindow = LinuxX11Native.XCreateSimpleWindow(
+                        display.Display,
+                        display.Root,
+                        -10, -10, 1, 1, 0, 0, 0);
+
+                    LinuxX11Native.XFixesSelectSelectionInput(
+                        display.Display,
+                        helperWindow,
+                        clipboardAtom,
+                        LinuxX11Native.XFixesSetSelectionOwnerNotifyMask |
+                        LinuxX11Native.XFixesSelectionWindowDestroyNotifyMask |
+                        LinuxX11Native.XFixesSelectionClientCloseNotifyMask);
+
+                    LinuxX11Native.XFlush(display.Display);
                 });
-
-                if (error != null)
-                {
-                    display.Dispose();
-                    display = null;
-                    return HookStartResult.Fail(HookFailureReason.NativeFailure, error.Message);
-                }
 
                 selectionReady = new ManualResetEventSlim(false);
                 handler = OnXEvent;

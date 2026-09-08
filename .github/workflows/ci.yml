@@ -60,6 +60,8 @@ jobs:
           /d:sonar.host.url="https://sonarcloud.io"
           /d:sonar.cs.vscoveragexml.reportsPaths="coverage/coverage.xml"
           /d:sonar.exclusions="**/docs/**,**/examples/**,**/_site/**,**/.github/**"
+          /d:sonar.cs.roslyn.ignoreIssues=true
+          /d:sonar.coverage.exclusions="**/Platforms/Linux/LinuxX11Native.cs,**/Platforms/Mac/Native/**,**/Hooks/Library/**,**/Platforms/Linux/LinuxKeyboardMouseX11.cs,**/Platforms/Linux/LinuxKeyboardMouseEvdev.cs,**/Platforms/Linux/LinuxX11Display.cs,**/Platforms/Linux/LinuxApplicationX11.cs,**/Platforms/Linux/LinuxClipboardX11.cs,**/Platforms/Linux/LinuxHotkeyX11.cs,**/Platforms/Linux/LinuxWindowHookEx.cs,**/Platforms/Linux/LinuxPrintCups.cs,**/Platforms/Mac/MacKeyboardMouse.cs,**/Platforms/Mac/MacWindowHookEx.cs,**/Platforms/Mac/MacHotkey.cs,**/Platforms/Mac/MacClipboard.cs,**/Platforms/Mac/MacApplication.cs,**/Platforms/Mac/MacPrint.cs,**/Platforms/Mac/MacRunLoopHost.cs"
 
       - name: Build for SonarCloud analysis
         if: github.event_name == 'push' && github.ref == 'refs/heads/develop' && env.SONAR_TOKEN != ''
@@ -69,21 +71,30 @@ jobs:
         shell: pwsh
         run: |
           $collect = if ($env:GITHUB_REF -eq 'refs/heads/develop' -and $env:GITHUB_EVENT_NAME -eq 'push') { '--collect:"Code Coverage"' } else { '' }
-          Invoke-Expression "dotnet test tests/Event.Hook.Tests/Event.Hook.Tests.csproj -c Release --no-build --logger trx $collect --results-directory coverage/unit"
+          Invoke-Expression "dotnet test tests/Event.Hook.Tests/Event.Hook.Tests.csproj -c Release -f net10.0-windows --no-build --logger trx $collect --results-directory coverage/unit-win"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $env:EnableWindowsTargeting = 'true'
+          Invoke-Expression "dotnet test tests/Event.Hook.Tests/Event.Hook.Tests.csproj -c Release -f net10.0 --no-build --logger trx $collect --results-directory coverage/unit-net"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Integration tests
         shell: pwsh
         run: |
           $collect = if ($env:GITHUB_REF -eq 'refs/heads/develop' -and $env:GITHUB_EVENT_NAME -eq 'push') { '--collect:"Code Coverage"' } else { '' }
-          Invoke-Expression "dotnet test tests/Event.Hook.IntegrationTests/Event.Hook.IntegrationTests.csproj -c Release --no-build --logger trx $collect --results-directory coverage/integration"
+          Invoke-Expression "dotnet test tests/Event.Hook.IntegrationTests/Event.Hook.IntegrationTests.csproj -c Release -f net10.0-windows --no-build --logger trx $collect --results-directory coverage/integration-win"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $env:EnableWindowsTargeting = 'true'
+          Invoke-Expression "dotnet test tests/Event.Hook.IntegrationTests/Event.Hook.IntegrationTests.csproj -c Release -f net10.0 --no-build --logger trx $collect --results-directory coverage/integration-net"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: E2E tests
         shell: pwsh
         run: |
           $collect = if ($env:GITHUB_REF -eq 'refs/heads/develop' -and $env:GITHUB_EVENT_NAME -eq 'push') { '--collect:"Code Coverage"' } else { '' }
-          Invoke-Expression "dotnet test tests/Event.Hook.E2ETests/Event.Hook.E2ETests.csproj -c Release --no-build --logger trx --filter Category=E2E $collect --results-directory coverage/e2e"
+          Invoke-Expression "dotnet test tests/Event.Hook.E2ETests/Event.Hook.E2ETests.csproj -c Release -f net10.0-windows --no-build --logger trx --filter Category=E2E $collect --results-directory coverage/e2e-win"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $env:EnableWindowsTargeting = 'true'
+          Invoke-Expression "dotnet test tests/Event.Hook.E2ETests/Event.Hook.E2ETests.csproj -c Release -f net10.0 --no-build --logger trx --filter Category=E2E $collect --results-directory coverage/e2e-net"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Merge code coverage

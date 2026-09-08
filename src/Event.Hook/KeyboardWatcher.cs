@@ -39,7 +39,9 @@ namespace EventHook
     public class KeyboardWatcher : IDisposable
     {
         private readonly object accesslock = new object();
+#if WINDOWS
         private readonly SyncFactory factory;
+#endif
         private bool isRunning;
         private bool disposed;
 
@@ -55,7 +57,11 @@ namespace EventHook
 
         internal KeyboardWatcher(SyncFactory factory)
         {
+#if WINDOWS
             this.factory = factory;
+#else
+            _ = factory;
+#endif
         }
 
 #pragma warning disable CS0067

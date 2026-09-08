@@ -8,6 +8,8 @@ namespace EventHook.Platforms.Linux
     /// </summary>
     internal static class LinuxSession
     {
+        private static int xThreadsInitialized;
+
         internal static string Display =>
             Environment.GetEnvironmentVariable("DISPLAY");
 
@@ -25,6 +27,27 @@ namespace EventHook.Platforms.Linux
 
         internal static bool HasAnyDisplaySession =>
             HasX11Display || HasWaylandDisplay;
+
+        /// <summary>
+        /// Must run before any <c>XOpenDisplay</c> when Xlib is used from multiple threads
+        /// (e.g. <c>XRecordDisableContext</c> from a stopper thread).
+        /// </summary>
+        internal static void EnsureXInitThreads()
+        {
+            if (System.Threading.Interlocked.Exchange(ref xThreadsInitialized, 1) != 0)
+            {
+                return;
+            }
+
+            try
+            {
+                LinuxX11Native.XInitThreads();
+            }
+            catch (DllNotFoundException)
+            {
+                // Leave flag set so we do not retry; callers surface library errors on XOpenDisplay.
+            }
+        }
 
         /// <summary>
         /// Clipboard / windows / hotkeys require X11 in v3.

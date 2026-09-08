@@ -40,6 +40,8 @@ namespace EventHook.Platforms.Linux
                 return HookStartResult.Ok();
             }
 
+            LinuxSession.EnsureXInitThreads();
+
             running = true;
             interceptProc = OnIntercept;
             thread = new Thread(ThreadMain)

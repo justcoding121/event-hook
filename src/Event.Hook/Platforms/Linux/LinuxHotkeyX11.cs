@@ -85,22 +85,22 @@ namespace EventHook.Platforms.Linux
 
             var modifiers = LinuxKeyMap.ModifiersToX(hotkey.Modifiers);
             var nativeId = Interlocked.Increment(ref nextId);
-            var registered = false;
-            var alreadyInUse = false;
-            Exception error = null;
+            HookStartResult registerResult = HookStartResult.Ok();
 
-            display.Invoke(() =>
+            try
             {
-                try
+                display.Invoke(() =>
                 {
                     var keycode = (int)LinuxX11Native.XKeysymToKeycode(display.Display, keysym);
                     if (keycode == 0)
                     {
-                        error = new InvalidOperationException("XKeysymToKeycode failed for " + hotkey.Key);
+                        registerResult = HookStartResult.Fail(
+                            HookFailureReason.NativeFailure,
+                            "XKeysymToKeycode failed for " + hotkey.Key);
                         return;
                     }
 
-                    lastErrorCode = 0;
+                    Volatile.Write(ref lastErrorCode, 0);
                     // Grab with and without NumLock/CapsLock (LockMask / Mod2).
                     foreach (var extra in IgnoreMaskVariants(modifiers))
                     {
@@ -115,41 +115,29 @@ namespace EventHook.Platforms.Linux
                     }
 
                     LinuxX11Native.XSync(display.Display, 0);
-                    if (lastErrorCode == LinuxX11Native.BadAccess)
+                    if (HadBadAccess())
                     {
-                        alreadyInUse = true;
                         foreach (var extra in IgnoreMaskVariants(modifiers))
                         {
                             LinuxX11Native.XUngrabKey(display.Display, keycode, extra, display.Root);
                         }
 
+                        registerResult = HookStartResult.Fail(
+                            HookFailureReason.AlreadyInUse,
+                            $"Failed to register hotkey {hotkey}: already grabbed (BadAccess).");
                         return;
                     }
 
                     registrations[nativeId] = (id, hotkey, keycode, modifiers);
-                    registered = true;
-                }
-                catch (Exception ex)
-                {
-                    error = ex;
-                }
-            });
-
-            if (alreadyInUse)
+                    registerResult = HookStartResult.Ok();
+                });
+            }
+            catch (Exception ex)
             {
-                return HookStartResult.Fail(
-                    HookFailureReason.AlreadyInUse,
-                    $"Failed to register hotkey {hotkey}: already grabbed (BadAccess).");
+                return HookStartResult.Fail(HookFailureReason.NativeFailure, ex.Message);
             }
 
-            if (error != null)
-            {
-                return HookStartResult.Fail(HookFailureReason.NativeFailure, error.Message);
-            }
-
-            return registered
-                ? HookStartResult.Ok()
-                : HookStartResult.Fail(HookFailureReason.NativeFailure, "XGrabKey failed.");
+            return registerResult;
         }
 
         internal void Unregister(object id)
@@ -289,10 +277,13 @@ namespace EventHook.Platforms.Linux
             }
         }
 
+        private bool HadBadAccess() =>
+            Volatile.Read(ref lastErrorCode) == LinuxX11Native.BadAccess;
+
         private int OnXError(IntPtr dpy, ref LinuxX11Native.XErrorEvent errorEvent)
         {
             _ = dpy;
-            lastErrorCode = errorEvent.error_code;
+            Volatile.Write(ref lastErrorCode, errorEvent.error_code);
             return 0;
         }
 

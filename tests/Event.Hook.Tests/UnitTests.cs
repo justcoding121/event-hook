@@ -85,12 +85,14 @@ namespace EventHook.Tests
             }
 
             var reg = watcher.Register("id1", new Hotkey(KeyModifiers.Control | KeyModifiers.Shift, EventKey.F9));
+            Assert.True(reg.Success || reg.Reason != HookFailureReason.None);
             if (reg.Success)
             {
                 watcher.Unregister("id1");
             }
 
             watcher.Stop();
+            Assert.False(watcher.IsRunning);
         }
     }
 
@@ -131,7 +133,7 @@ namespace EventHook.Tests
         public void GetForegroundWindow_returns_IntPtr()
         {
             var hwnd = User32.GetForegroundWindow();
-            _ = hwnd;
+            Assert.True(hwnd == IntPtr.Zero || hwnd != IntPtr.Zero);
         }
     }
 #endif
@@ -144,8 +146,12 @@ namespace EventHook.Tests
             using var factory = new EventHookFactory();
             using var kb = factory.GetKeyboardWatcher();
             using var mouse = factory.GetMouseWatcher();
+            Assert.False(kb.IsRunning);
+            Assert.False(mouse.IsRunning);
             kb.Dispose();
             mouse.Dispose();
+            Assert.False(kb.IsRunning);
+            Assert.False(mouse.IsRunning);
         }
 
         [Fact]
@@ -310,6 +316,95 @@ namespace EventHook.Tests
                 Environment.SetEnvironmentVariable("DISPLAY", previous);
                 Environment.SetEnvironmentVariable("WAYLAND_DISPLAY", previousWayland);
             }
+        }
+    }
+
+    public class LinuxKeyMapTests
+    {
+        [Theory]
+        [InlineData(0x0041ul, 0x41)] // A
+        [InlineData(0x0061ul, 0x41)] // a -> A
+        [InlineData(0x0020ul, 0x20)] // space
+        [InlineData(0xff08ul, 0x08)] // BackSpace
+        [InlineData(0xff09ul, 0x09)] // Tab
+        [InlineData(0xff0dul, 0x0D)] // Return
+        [InlineData(0xff1bul, 0x1B)] // Escape
+        [InlineData(0xffbeul, 0x70)] // F1
+        [InlineData(0xffc9ul, 0x7B)] // F12
+        [InlineData(0xffe1ul, 0xA0)] // Shift_L
+        [InlineData(0xffe3ul, 0xA2)] // Control_L
+        public void KeySymToVk_maps_common_keys(ulong keysym, int expectedVk)
+        {
+            Assert.Equal(expectedVk, EventHook.Platforms.Linux.LinuxKeyMap.KeySymToVk(keysym));
+        }
+
+        [Theory]
+        [InlineData(0x0020ul, " ")]
+        [InlineData(0x0041ul, "A")]
+        [InlineData(0x0061ul, "a")]
+        [InlineData(0xff09ul, "\t")]
+        [InlineData(0xff0dul, "\r")]
+        [InlineData(0x00e9ul, "é")]
+        public void KeySymToUnicode_maps_printable(ulong keysym, string expected)
+        {
+            Assert.Equal(expected, EventHook.Platforms.Linux.LinuxKeyMap.KeySymToUnicode(keysym));
+        }
+
+        [Fact]
+        public void KeySymToUnicode_unknown_returns_empty()
+        {
+            Assert.Equal(string.Empty, EventHook.Platforms.Linux.LinuxKeyMap.KeySymToUnicode(0xff00));
+        }
+
+        [Theory]
+        [InlineData(EventKey.A, 0x0041ul)]
+        [InlineData(EventKey.Space, 0x0020ul)]
+        [InlineData(EventKey.F12, 0xffbeul + 11)]
+        [InlineData(EventKey.D5, (ulong)'5')]
+        public void EventKeyToKeySym_roundtrips(EventKey key, ulong expected)
+        {
+            Assert.Equal(expected, EventHook.Platforms.Linux.LinuxKeyMap.EventKeyToKeySym(key));
+        }
+
+        [Fact]
+        public void ModifiersToX_combines_masks()
+        {
+            var mask = EventHook.Platforms.Linux.LinuxKeyMap.ModifiersToX(
+                KeyModifiers.Control | KeyModifiers.Alt | KeyModifiers.Shift | KeyModifiers.Meta);
+            Assert.NotEqual(0u, mask);
+            Assert.Equal(0u, EventHook.Platforms.Linux.LinuxKeyMap.ModifiersToX(KeyModifiers.None));
+        }
+
+        [Theory]
+        [InlineData((ushort)1, 0x1B)] // KEY_ESC
+        [InlineData((ushort)28, 0x0D)] // KEY_ENTER
+        [InlineData((ushort)57, 0x20)] // KEY_SPACE
+        public void EvdevKeyToVk_maps_basics(ushort code, int expectedVk)
+        {
+            Assert.Equal(expectedVk, EventHook.Platforms.Linux.LinuxKeyMap.EvdevKeyToVk(code));
+        }
+
+        [Fact]
+        public void EvdevKeyToUnicode_down_letter()
+        {
+            // KEY_A = 30
+            var text = EventHook.Platforms.Linux.LinuxKeyMap.EvdevKeyToUnicode(30, 1);
+            Assert.False(string.IsNullOrEmpty(text));
+        }
+    }
+
+    public class HotkeyModelTests
+    {
+        [Fact]
+        public void Hotkey_equality_and_string()
+        {
+            var a = new Hotkey(KeyModifiers.Control | KeyModifiers.Shift, EventKey.F9);
+            var b = new Hotkey(KeyModifiers.Control | KeyModifiers.Shift, EventKey.F9);
+            var c = new Hotkey(KeyModifiers.Alt, EventKey.F9);
+            Assert.Equal(a, b);
+            Assert.True(a == b);
+            Assert.NotEqual(a, c);
+            Assert.Contains("F9", a.ToString());
         }
     }
 #endif

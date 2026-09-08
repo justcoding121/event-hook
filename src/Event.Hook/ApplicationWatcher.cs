@@ -44,7 +44,9 @@ namespace EventHook
     public class ApplicationWatcher : IDisposable
     {
         private readonly object accesslock = new object();
+#if WINDOWS
         private readonly SyncFactory factory;
+#endif
         private bool isRunning;
         private bool disposed;
 
@@ -84,7 +86,11 @@ namespace EventHook
 
         internal ApplicationWatcher(SyncFactory factory)
         {
+#if WINDOWS
             this.factory = factory;
+#else
+            _ = factory;
+#endif
         }
 
 #pragma warning disable CS0067 // Raised only on Windows implementation

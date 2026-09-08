@@ -39,6 +39,8 @@ namespace EventHook.Platforms.Linux
                 return gate;
             }
 
+            LinuxSession.EnsureXInitThreads();
+
             try
             {
                 instance = new LinuxX11Display();

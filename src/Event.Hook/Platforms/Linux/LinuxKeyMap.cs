@@ -51,7 +51,6 @@ namespace EventHook.Platforms.Linux
                 case XK_Tab: return 0x09;
                 case XK_Return: return 0x0D;
                 case XK_Escape: return 0x1B;
-                case XK_space: return 0x20;
                 case XK_Page_Up: return 0x21;
                 case XK_Page_Down: return 0x22;
                 case XK_End: return 0x23;
@@ -85,11 +84,6 @@ namespace EventHook.Platforms.Linux
             if (keysym >= 0x20 && keysym <= 0x7e)
             {
                 return ((char)keysym).ToString();
-            }
-
-            if (keysym == XK_space)
-            {
-                return " ";
             }
 
             if (keysym == XK_Tab)

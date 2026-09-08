@@ -47,6 +47,9 @@ namespace EventHook.Platforms.Linux
         internal delegate void XRecordInterceptProc(IntPtr closure, IntPtr recordedData);
 
         [DllImport("libX11.so.6", CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int XInitThreads();
+
+        [DllImport("libX11.so.6", CallingConvention = CallingConvention.Cdecl)]
         internal static extern IntPtr XOpenDisplay(string displayName);
 
         [DllImport("libX11.so.6", CallingConvention = CallingConvention.Cdecl)]

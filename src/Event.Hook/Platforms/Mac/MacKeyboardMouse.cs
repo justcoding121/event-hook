@@ -7,16 +7,22 @@ using EventHook.Platforms.Mac.Native;
 
 namespace EventHook.Platforms.Mac
 {
+    [InlineArray(8)]
+    internal struct MacUnicodeBuffer
+    {
+        private char element0;
+    }
+
     /// <summary>
     /// Value-type keyboard snapshot captured on the CGEventTap callback (no managed allocations).
     /// </summary>
-    internal unsafe struct MacKeySnapshot
+    internal struct MacKeySnapshot
     {
         internal int MacKeyCode;
         internal int VkCode;
         internal int EventType; // 0 down, 1 up
         internal ulong Flags;
-        private fixed char unicode[8];
+        private MacUnicodeBuffer unicode;
         private int unicodeLength;
 
         internal void SetUnicode(ushort[] chars, int length)
@@ -41,10 +47,13 @@ namespace EventHook.Platforms.Mac
                 return string.Empty;
             }
 
-            fixed (char* p = unicode)
+            return string.Create(unicodeLength, unicode, static (span, buffer) =>
             {
-                return new string(p, 0, unicodeLength);
-            }
+                for (var i = 0; i < span.Length; i++)
+                {
+                    span[i] = buffer[i];
+                }
+            });
         }
     }
 

@@ -144,7 +144,7 @@ namespace EventHook.Platforms.Linux
                 int read;
                 try
                 {
-                    read = Read(handle.DangerousGetHandle().ToInt32(), buffer, buffer.Length);
+                    read = Read(handle, buffer, buffer.Length);
                 }
                 catch
                 {
@@ -281,7 +281,7 @@ namespace EventHook.Platforms.Linux
         private static extern int Open(string pathname, int flags);
 
         [DllImport("libc", SetLastError = true, EntryPoint = "read")]
-        private static extern int Read(int fd, byte[] buffer, int count);
+        private static extern int Read(SafeFileHandle fd, byte[] buffer, int count);
 
         [StructLayout(LayoutKind.Sequential)]
         private struct InputEvent

@@ -40,44 +40,29 @@ namespace EventHook.Platforms.Linux
 
             try
             {
-                Exception error = null;
                 display.Invoke(() =>
                 {
-                    try
+                    netActiveWindow = LinuxX11Native.XInternAtom(display.Display, "_NET_ACTIVE_WINDOW", 0);
+                    netWmName = LinuxX11Native.XInternAtom(display.Display, "_NET_WM_NAME", 0);
+                    utf8Atom = LinuxX11Native.XInternAtom(display.Display, "UTF8_STRING", 0);
+
+                    LinuxX11Native.XSelectInput(
+                        display.Display,
+                        display.Root,
+                        LinuxX11Native.PropertyChangeMask |
+                        LinuxX11Native.SubstructureNotifyMask |
+                        LinuxX11Native.StructureNotifyMask);
+
+                    LinuxX11Native.XFlush(display.Display);
+
+                    // Seed current active window.
+                    var active = ReadActiveWindow();
+                    if (active != IntPtr.Zero)
                     {
-                        netActiveWindow = LinuxX11Native.XInternAtom(display.Display, "_NET_ACTIVE_WINDOW", 0);
-                        netWmName = LinuxX11Native.XInternAtom(display.Display, "_NET_WM_NAME", 0);
-                        utf8Atom = LinuxX11Native.XInternAtom(display.Display, "UTF8_STRING", 0);
-
-                        LinuxX11Native.XSelectInput(
-                            display.Display,
-                            display.Root,
-                            LinuxX11Native.PropertyChangeMask |
-                            LinuxX11Native.SubstructureNotifyMask |
-                            LinuxX11Native.StructureNotifyMask);
-
-                        LinuxX11Native.XFlush(display.Display);
-
-                        // Seed current active window.
-                        var active = ReadActiveWindow();
-                        if (active != IntPtr.Zero)
-                        {
-                            lastActive = active;
-                            onWindow?.Invoke(new LinuxWindowSnapshot(active, 1));
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        error = ex;
+                        lastActive = active;
+                        onWindow?.Invoke(new LinuxWindowSnapshot(active, 1));
                     }
                 });
-
-                if (error != null)
-                {
-                    display.Dispose();
-                    display = null;
-                    return HookStartResult.Fail(HookFailureReason.NativeFailure, error.Message);
-                }
 
                 handler = OnXEvent;
                 display.AddHandler(handler);

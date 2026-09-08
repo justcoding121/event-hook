@@ -163,7 +163,7 @@ namespace EventHook.Helpers
     /// <summary>
     /// Invisible NativeWindow used as a hook / hotkey message target.
     /// </summary>
-    internal class MessageHandler : NativeWindow
+    internal sealed class MessageHandler : NativeWindow
     {
         internal event Action<Message> MessageReceived;
 
@@ -172,10 +172,10 @@ namespace EventHook.Helpers
             CreateHandle(new CreateParams());
         }
 
-        protected override void WndProc(ref Message msg)
+        protected override void WndProc(ref Message m)
         {
-            MessageReceived?.Invoke(msg);
-            base.WndProc(ref msg);
+            MessageReceived?.Invoke(m);
+            base.WndProc(ref m);
         }
     }
 

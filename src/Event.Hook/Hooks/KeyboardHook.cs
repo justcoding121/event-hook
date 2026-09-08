@@ -6,10 +6,16 @@ using System.Text;
 
 namespace EventHook.Hooks
 {
+    [InlineArray(256)]
+    internal struct KeyboardStateBuffer
+    {
+        private byte element0;
+    }
+
     /// <summary>
     /// Value-type keyboard event captured on the low-level hook thread (no decode).
     /// </summary>
-    internal unsafe struct KeyboardSnapshot
+    internal struct KeyboardSnapshot
     {
         internal int VkCode;
         internal int ScanCode;
@@ -17,22 +23,19 @@ namespace EventHook.Hooks
         internal int Time;
         internal uint WParam;
         internal IntPtr KeyboardLayout;
-        private fixed byte keyState[256];
+        private KeyboardStateBuffer keyState;
 
-        internal void SetKeyState(byte* source, int length)
+        internal void SetKeyState(ReadOnlySpan<byte> source)
         {
-            var copy = length < 256 ? length : 256;
-            fixed (byte* dest = keyState)
+            var copy = source.Length < 256 ? source.Length : 256;
+            for (var i = 0; i < copy; i++)
             {
-                for (var i = 0; i < copy; i++)
-                {
-                    dest[i] = source[i];
-                }
+                keyState[i] = source[i];
+            }
 
-                for (var i = copy; i < 256; i++)
-                {
-                    dest[i] = 0;
-                }
+            for (var i = copy; i < 256; i++)
+            {
+                keyState[i] = 0;
             }
         }
 
@@ -43,9 +46,9 @@ namespace EventHook.Hooks
                 throw new ArgumentException("Key state buffer must be at least 256 bytes.", nameof(destination));
             }
 
-            fixed (byte* src = keyState)
+            for (var i = 0; i < 256; i++)
             {
-                Marshal.Copy((IntPtr)src, destination, 0, 256);
+                destination[i] = keyState[i];
             }
         }
 
@@ -154,12 +157,12 @@ namespace EventHook.Hooks
                         KeyboardLayout = GetKeyboardLayout(layoutThread)
                     };
 
-                    unsafe
+                    unsafe // NOSONAR S6640 - stackalloc required; hook callback must not allocate
                     {
                         byte* state = stackalloc byte[256];
                         if (GetKeyboardState((IntPtr)state))
                         {
-                            snapshot.SetKeyState(state, 256);
+                            snapshot.SetKeyState(new ReadOnlySpan<byte>(state, 256));
                         }
                     }
 
