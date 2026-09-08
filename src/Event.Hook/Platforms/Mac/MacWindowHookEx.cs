@@ -99,8 +99,6 @@ namespace EventHook.Platforms.Mac
 
                         observerCallback = OnAxNotification;
                         var pid = Environment.ProcessId;
-                        // Observe system-wide via focused element changes on our process observer is limited;
-                        // create observer for pid 0 is invalid — use current process and system-wide element notifications where possible.
                         var status = MacNative.AXObserverCreate(pid, observerCallback, out observer);
                         if (status != 0 || observer == IntPtr.Zero)
                         {

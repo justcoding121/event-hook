@@ -31,13 +31,22 @@ namespace EventHook
 
         public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
             if (disposed)
             {
                 return;
             }
 
             disposed = true;
-            syncFactory.Dispose();
+            if (disposing)
+            {
+                syncFactory.Dispose();
+            }
         }
 
         public ApplicationWatcher GetApplicationWatcher() => new ApplicationWatcher(syncFactory);

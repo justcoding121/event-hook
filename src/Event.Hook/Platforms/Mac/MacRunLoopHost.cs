@@ -138,10 +138,15 @@ namespace EventHook.Platforms.Mac
 
             lock (Gate)
             {
-                if (ReferenceEquals(instance, this))
-                {
-                    instance = null;
-                }
+                ClearSharedInstance(this);
+            }
+        }
+
+        private static void ClearSharedInstance(MacRunLoopHost host)
+        {
+            if (ReferenceEquals(instance, host))
+            {
+                instance = null;
             }
         }
 

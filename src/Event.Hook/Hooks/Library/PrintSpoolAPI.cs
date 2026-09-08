@@ -64,7 +64,7 @@ namespace EventHook.Hooks.Library
     }
 
 
-    internal class PRINTER_CHANGES
+    internal static class PRINTER_CHANGES
     {
         internal const uint PRINTER_CHANGE_ADD_PRINTER = 1;
         internal const uint PRINTER_CHANGE_SET_PRINTER = 2;

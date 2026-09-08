@@ -36,7 +36,6 @@ namespace EventHook.Hooks
 
     internal class PrintQueueHook
     {
-        private const int PRINTER_NOTIFY_OPTIONS_REFRESH = 1;
         private readonly ManualResetEvent _mrEvent = new ManualResetEvent(false);
         private readonly PRINTER_NOTIFY_OPTIONS _notifyOptions = new PRINTER_NOTIFY_OPTIONS();
         private readonly Dictionary<int, string> _objJobDict = new Dictionary<int, string>();
@@ -90,14 +89,17 @@ namespace EventHook.Hooks
         {
             try
             {
+                _waitHandle?.Unregister(null);
+                _waitHandle = null;
                 if (_printerHandle != IntPtr.Zero)
                 {
                     ClosePrinter(_printerHandle);
                     _printerHandle = IntPtr.Zero;
                 }
             }
-            catch
+            catch (Exception)
             {
+                // Best-effort teardown when the spooler handle is already invalid.
             }
         }
 
@@ -170,7 +172,6 @@ namespace EventHook.Hooks
                     }
                     catch
                     {
-                        //Trace.WriteLine(ex.Message);
                         pji = null;
                         _objJobDict.TryGetValue(intJobId, out strJobName);
                         if (strJobName == null)

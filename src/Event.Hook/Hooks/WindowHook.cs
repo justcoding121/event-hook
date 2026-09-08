@@ -10,14 +10,20 @@ namespace EventHook.Hooks
 
         internal WindowHook(SyncFactory factory)
         {
-            if (sh == null)
-            {
-                sh = new ShellHook(factory.GetHandle());
+            EnsureShellHook(factory);
+        }
 
-                sh.WindowCreated += WindowCreatedEvent;
-                sh.WindowDestroyed += WindowDestroyedEvent;
-                sh.WindowActivated += WindowActivatedEvent;
+        private static void EnsureShellHook(SyncFactory factory)
+        {
+            if (sh != null)
+            {
+                return;
             }
+
+            sh = new ShellHook(factory.GetHandle());
+            sh.WindowCreated += WindowCreatedEvent;
+            sh.WindowDestroyed += WindowDestroyedEvent;
+            sh.WindowActivated += WindowActivatedEvent;
         }
 
         /// <summary>
@@ -51,6 +57,11 @@ namespace EventHook.Hooks
         }
 
         internal void Destroy()
+        {
+            ClearShellHook();
+        }
+
+        private static void ClearShellHook()
         {
             sh = null;
         }

@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace EventHook.E2ETests
@@ -17,7 +18,7 @@ namespace EventHook.E2ETests
             if (result.Success)
             {
                 Assert.True(kb.IsRunning);
-                Thread.Sleep(150);
+                Task.Delay(150).GetAwaiter().GetResult();
                 kb.Stop();
                 Assert.False(kb.IsRunning);
                 return;
@@ -47,7 +48,7 @@ namespace EventHook.E2ETests
             if (result.Success)
             {
                 Assert.True(mouse.IsRunning);
-                Thread.Sleep(150);
+                Task.Delay(150).GetAwaiter().GetResult();
                 mouse.Stop();
                 return;
             }

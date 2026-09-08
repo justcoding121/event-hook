@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace EventHook.IntegrationTests
@@ -38,7 +39,7 @@ namespace EventHook.IntegrationTests
             var mouseResult = mouse.Start();
             AssertStartOkOrExpected(kbResult);
             AssertStartOkOrExpected(mouseResult);
-            Thread.Sleep(200);
+            Task.Delay(200).GetAwaiter().GetResult();
             kb.Stop();
             mouse.Stop();
         }
@@ -65,7 +66,7 @@ namespace EventHook.IntegrationTests
                 return;
             }
 
-            Thread.Sleep(100);
+            Task.Delay(100).GetAwaiter().GetResult();
             hotkeys.Unregister("it");
             hotkeys.Stop();
         }
@@ -77,7 +78,7 @@ namespace EventHook.IntegrationTests
             using var factory = new EventHookFactory();
             var clip = factory.GetClipboardWatcher();
             AssertStartOkOrExpected(clip.Start());
-            Thread.Sleep(200);
+            Task.Delay(200).GetAwaiter().GetResult();
             clip.Stop();
         }
 
@@ -143,7 +144,7 @@ namespace EventHook.IntegrationTests
             using var factory = new EventHookFactory();
             var print = factory.GetPrintWatcher();
             AssertStartOkOrExpected(print.Start());
-            Thread.Sleep(300);
+            Task.Delay(300).GetAwaiter().GetResult();
             print.Stop();
         }
 
@@ -154,7 +155,7 @@ namespace EventHook.IntegrationTests
             using var factory = new EventHookFactory();
             var apps = factory.GetApplicationWatcher();
             AssertStartOkOrExpected(apps.Start());
-            Thread.Sleep(300);
+            Task.Delay(300).GetAwaiter().GetResult();
             apps.Stop();
         }
 
@@ -164,7 +165,7 @@ namespace EventHook.IntegrationTests
         {
             using var hook = new EventHook.Hooks.WindowHookEx();
             AssertStartOkOrExpected(hook.Start());
-            Thread.Sleep(200);
+            Task.Delay(200).GetAwaiter().GetResult();
             hook.Stop();
         }
     }

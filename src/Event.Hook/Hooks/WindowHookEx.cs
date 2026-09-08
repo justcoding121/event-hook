@@ -159,7 +159,7 @@
                         hookMin: @event, hookMax: @event,
                         moduleHandle: IntPtr.Zero, callback: proc,
                         processID: 0, threadID: 0,
-                        flags: HookFlags.OutOfContext);
+            flags: HookFlags.None);
 
                     if (hookId == IntPtr.Zero)
                     {
@@ -347,7 +347,7 @@
         [Flags]
         private enum HookFlags : int
         {
-            OutOfContext = 0,
+            None = 0,
         }
 
         private enum WindowEvent
