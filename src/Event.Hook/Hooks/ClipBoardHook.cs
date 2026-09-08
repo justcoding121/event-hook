@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Windows.Forms;
 using EventHook.Hooks.Library;
 
@@ -9,22 +8,34 @@ namespace EventHook.Hooks
     internal class ClipBoardHook : Form
     {
         private IntPtr _clipboardViewerNext;
+        private bool _usingFormatListener;
 
         internal event EventHandler ClipBoardChanged = delegate { };
 
         /// <summary>
-        ///     Register this form as a Clipboard Viewer application
+        ///     Register this form as a clipboard listener (modern API, with viewer-chain fallback).
         /// </summary>
         internal void RegisterClipboardViewer()
         {
-            _clipboardViewerNext = User32.SetClipboardViewer(Handle);
+            _usingFormatListener = User32.AddClipboardFormatListener(Handle);
+            if (!_usingFormatListener)
+            {
+                _clipboardViewerNext = User32.SetClipboardViewer(Handle);
+            }
         }
 
         /// <summary>
-        ///     Remove this form from the Clipboard Viewer list
+        ///     Remove this form from clipboard notifications.
         /// </summary>
         internal void UnregisterClipboardViewer()
         {
+            if (_usingFormatListener)
+            {
+                User32.RemoveClipboardFormatListener(Handle);
+                _usingFormatListener = false;
+                return;
+            }
+
             User32.ChangeClipboardChain(Handle, _clipboardViewerNext);
         }
 
@@ -35,29 +46,17 @@ namespace EventHook.Hooks
         /// </summary>
         private void GetClipboardData()
         {
-            //
-            // Data on the clipboard uses the 
-            // IDataObject interface
-            //
-            Exception threadEx = null;
-            var staThread = new Thread(
-                delegate()
-                {
-                    try
-                    {
-                        var iData = Clipboard.GetDataObject();
-                        ClipBoardChanged(iData, new EventArgs());
-                    }
-
-                    catch (Exception ex)
-                    {
-                        threadEx = ex;
-                    }
-                });
-
-            staThread.SetApartmentState(ApartmentState.STA);
-            staThread.Start();
-            staThread.Join();
+            try
+            {
+                // Already on the STA pump thread — do not Join another STA worker
+                // from WndProc (that deadlocks OLE clipboard messages).
+                var iData = Clipboard.GetDataObject();
+                ClipBoardChanged(iData, new EventArgs());
+            }
+            catch
+            {
+                // clipboard can be locked by the writer
+            }
         }
 
 
@@ -71,6 +70,10 @@ namespace EventHook.Hooks
                 // clipboard changes. This enables a clipboard viewer 
                 // window to display the new content of the clipboard. 
                 //
+                case Msgs.WM_CLIPBOARDUPDATE:
+                    GetClipboardData();
+                    break;
+
                 case Msgs.WM_DRAWCLIPBOARD:
 
 

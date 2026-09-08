@@ -2,6 +2,8 @@ namespace EventHook
 {
     /// <summary>
     /// Why <see cref="HookStartResult"/> failed (or <see cref="None"/> on success).
+    /// Pump/run-loop startup failures throw <see cref="System.TimeoutException"/> from
+    /// <see cref="EventHookFactory"/> instead of using a value here.
     /// </summary>
     public enum HookFailureReason
     {

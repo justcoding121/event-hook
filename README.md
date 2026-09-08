@@ -95,12 +95,33 @@ OS hook callbacks only copy a lightweight snapshot and return immediately. Decod
 |---|---|
 | `PermissionDenied` | macOS Input Monitoring / Accessibility (TCC) |
 | `PrivilegeRequired` | Linux `/dev/input` not readable (add user to `input` group) |
-| `DisplayUnavailable` | No `DISPLAY` / session when required |
+| `DisplayUnavailable` | No `DISPLAY` / session when required (Linux/macOS). Not used for a missing Win32 pump. |
 | `NotSupportedOnPlatform` | Feature needs X11 on Linux Wayland-only, or wrong TFM on Windows |
 | `AlreadyInUse` | Hotkey already registered by another process |
 | `NativeFailure` | Native API failed after permissions were OK |
 
+If `EventHookFactory` cannot start its own Windows message pump (or macOS cannot start its `CFRunLoop`), construction throws `TimeoutException`. That is not a `HookStartResult` — there is no `HookFailureReason` for “pump missing.”
+
 See [examples/MAC.md](examples/MAC.md) and [examples/LINUX.md](examples/LINUX.md) for host setup.
+
+### Message pump / event loop
+
+Hooks need an OS event loop. Callers usually do **not** create one: the factory (Windows) or platform hosts (macOS / Linux) start it.
+
+| Platform | Who pumps | What you must do |
+|---|---|---|
+| Windows | `EventHookFactory` | Nothing in console/service code. Construct the factory on an STA UI thread **or** let it create a background STA WinForms loop (`EventHook.MessagePump`). |
+| macOS | Library `CFRunLoop` (`EventHook.Mac.CFRunLoop`) | Nothing. The HWND argument is ignored. |
+| Linux X11 | Library `XNextEvent` thread | Need `DISPLAY` (or Xvfb). HWND is ignored. |
+| Linux evdev | `/dev/input` reads (no X loop) | User must be in the `input` group. Clipboard / windows / hotkeys still need X11. |
+
+**Windows details**
+
+- Keyboard and mouse (`WH_KEYBOARD_LL` / `WH_MOUSE_LL`) are installed on the factory pump thread. That thread must keep pumping or Windows stops delivering.
+- Clipboard (`WM_CLIPBOARDUPDATE`), hotkeys (`WM_HOTKEY`), and application/shell hooks are HWND messages on the same pump.
+- `WindowHookEx` does **not** use the factory pump. Call `Start()` from a thread that already pumps messages (your UI thread).
+- Hosted COM / Office add-ins: construct the factory on the STA UI thread, or pass that window’s HWND. A provided HWND must keep pumping. EventHook registers hotkeys on that handle but does **not** subclass it — if you pass a host HWND, **your** `WndProc` must dispatch `WM_HOTKEY` or the watcher will report `IsRunning` and still never fire.
+- Prefer the default `new EventHookFactory()` (library-owned pump) unless you are hosting and will forward messages.
 
 ### Application window filter (Windows)
 

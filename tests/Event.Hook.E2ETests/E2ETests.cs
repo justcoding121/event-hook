@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using EventHook.Hooks;
 using Xunit;
 
+[assembly: CollectionBehavior(DisableTestParallelization = true)]
+
 namespace EventHook.E2ETests
 {
     public class HookE2ETests

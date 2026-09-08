@@ -19,6 +19,7 @@ namespace EventHook.Helpers
         private readonly Lazy<MessageHandler> messageHandler;
         private readonly Lazy<TaskScheduler> scheduler;
         private readonly IntPtr? providedHandle;
+        private ApplicationContext pumpContext;
         private bool hasUIThread;
         private bool disposed;
 
@@ -46,12 +47,16 @@ namespace EventHook.Helpers
 
                 var thread = new Thread(() =>
                 {
-                    Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
+                    // WinForms loop (not WPF Dispatcher): WM_HOTKEY and clipboard
+                    // listener messages are delivered to NativeWindow / Form HWNDs.
+                    SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
+                    pumpContext = new ApplicationContext();
+                    SynchronizationContext.Current.Post(_ =>
                     {
                         current = TaskScheduler.FromCurrentSynchronizationContext();
                         ready.Set();
-                    }), DispatcherPriority.Normal);
-                    Dispatcher.Run();
+                    }, null);
+                    Application.Run(pumpContext);
                 })
                 {
                     IsBackground = true,
@@ -115,7 +120,7 @@ namespace EventHook.Helpers
                             messageHandler.Value.DestroyHandle();
                             if (!hasUIThread)
                             {
-                                Dispatcher.CurrentDispatcher.BeginInvokeShutdown(DispatcherPriority.Normal);
+                                pumpContext?.ExitThread();
                             }
                         },
                         CancellationToken.None,

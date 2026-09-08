@@ -11,6 +11,8 @@
 
     /// <summary>
     /// Track events across all windows. Call <see cref="Start"/> before events fire.
+    /// Unlike factory watchers, this type is not installed on <see cref="EventHookFactory"/>'s pump:
+    /// <see cref="Start"/> must run on a thread that already pumps messages (your UI thread).
     /// </summary>
     public sealed class WindowHookEx : IDisposable
     {

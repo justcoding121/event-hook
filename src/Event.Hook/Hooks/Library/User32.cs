@@ -24,6 +24,14 @@ namespace EventHook.Hooks.Library
         [DllImport("User32.dll", CharSet = CharSet.Auto)]
         internal static extern bool ChangeClipboardChain(IntPtr hWndRemove, IntPtr hWndNewNext);
 
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool AddClipboardFormatListener(IntPtr hwnd);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool RemoveClipboardFormatListener(IntPtr hwnd);
+
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         internal static extern IntPtr SendMessage(IntPtr hwnd, int wMsg, IntPtr wParam, IntPtr lParam);
 

@@ -28,6 +28,8 @@ namespace EventHook
 
     /// <summary>
     /// Global hotkey watcher using RegisterHotKey / WM_HOTKEY on the shared message pump.
+    /// <see cref="Start"/> succeeds only after the factory pump is up; <see cref="IsRunning"/> does not
+    /// mean a host-provided HWND is dispatching <c>WM_HOTKEY</c> — that window must pump those messages.
     /// </summary>
     public class HotkeyWatcher : IDisposable
     {

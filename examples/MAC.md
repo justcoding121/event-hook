@@ -20,3 +20,7 @@ dotnet run --project examples/Event.Hook.ConsoleApp.Example -f net10.0
 ```
 
 Each watcher prints a `HookStartResult`. A `PermissionDenied` message names the missing TCC service.
+
+## Event loop
+
+No Win32 message pump and no HWND. EventHook starts a private `CFRunLoop` (`EventHook.Mac.CFRunLoop`) for CGEvent taps, Carbon hotkeys, and Accessibility observers. If that loop fails to start, factory/host construction throws `TimeoutException` rather than returning `HookStartResult`.

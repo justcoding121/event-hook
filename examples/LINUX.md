@@ -14,6 +14,8 @@ xvfb-run -a dotnet run --project examples/Event.Hook.ConsoleApp.Example -f net10
 
 Requires `DISPLAY`. Keyboard and mouse use the XRecord extension (`libxtst6`); clipboard, windows, and hotkeys use X11 APIs.
 
+No Win32 message pump and no HWND. EventHook runs its own `XNextEvent` thread for X11. Missing `DISPLAY` / `WAYLAND_DISPLAY` → `DisplayUnavailable`. Native Wayland-only sessions return `NotSupportedOnPlatform` for clipboard, windows, and hotkeys.
+
 On Ubuntu 24.04 the CUPS library package is `libcups2t64` (provides `libcups.so.2`). Older releases use `libcups2`.
 
 ## Wayland / no X11
