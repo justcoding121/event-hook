@@ -360,6 +360,16 @@ namespace EventHook.Tests
             Assert.True(EventHook.Platforms.Mac.MacKeyCodeMap.TryToMacKeyCode(EventKey.F12, out var mac));
             Assert.True(mac > 0);
         }
+
+        [Theory]
+        [InlineData(0, true)]
+        [InlineData(1, true)]
+        [InlineData(2, false)]
+        [InlineData(99, false)]
+        public void MacAppFilter_tracks_regular_and_accessory(int policy, bool expected)
+        {
+            Assert.Equal(expected, EventHook.Platforms.Mac.MacAppFilter.ShouldTrack(policy));
+        }
     }
 
     public class LinuxSessionTests

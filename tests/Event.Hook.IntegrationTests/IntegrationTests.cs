@@ -161,6 +161,61 @@ namespace EventHook.IntegrationTests
 
         [Fact]
         [Trait("Category", "Integration")]
+        public void ApplicationWatcher_sees_launched_macos_app()
+        {
+            if (!OperatingSystem.IsMacOS())
+            {
+                return;
+            }
+
+            using var factory = new EventHookFactory();
+            var apps = factory.GetApplicationWatcher();
+            var saw = new ManualResetEventSlim(false);
+            string seenName = null;
+            apps.OnApplicationWindowChange += (_, e) =>
+            {
+                if (e.Event != ApplicationEvents.Launched && e.Event != ApplicationEvents.Activated)
+                {
+                    return;
+                }
+
+                if (string.Equals(e.ApplicationData.AppName, "Stickies", StringComparison.OrdinalIgnoreCase))
+                {
+                    seenName = e.ApplicationData.AppName;
+                    saw.Set();
+                }
+            };
+
+            var start = apps.Start();
+            AssertStartOkOrExpected(start);
+            if (!start.Success)
+            {
+                return;
+            }
+
+            Task.Delay(600).GetAwaiter().GetResult();
+            var open = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = "open",
+                Arguments = "-n -a Stickies",
+                UseShellExecute = false
+            });
+            open?.WaitForExit(5000);
+            var got = saw.Wait(TimeSpan.FromSeconds(8));
+            var quit = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = "osascript",
+                UseShellExecute = false
+            };
+            quit.ArgumentList.Add("-e");
+            quit.ArgumentList.Add("tell application \"Stickies\" to quit");
+            System.Diagnostics.Process.Start(quit)?.WaitForExit(4000);
+            apps.Stop();
+            Assert.True(got, "Expected ApplicationWatcher to see Stickies launch/activate, got name=" + seenName);
+        }
+
+        [Fact]
+        [Trait("Category", "Integration")]
         public void WindowHookEx_start_stop()
         {
             using var hook = new EventHook.Hooks.WindowHookEx();

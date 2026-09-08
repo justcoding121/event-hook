@@ -295,6 +295,13 @@ namespace EventHook.Platforms.Mac.Native
         internal static extern IntPtr objc_msgSend_IntPtr(IntPtr receiver, IntPtr selector, IntPtr arg1);
 
         [DllImport(ObjC, EntryPoint = "objc_msgSend")]
+        internal static extern IntPtr objc_msgSend_int(IntPtr receiver, IntPtr selector, int arg1);
+
+        [DllImport(ObjC, EntryPoint = "objc_msgSend")]
+        [return: MarshalAs(UnmanagedType.I1)]
+        internal static extern bool objc_msgSend_bool(IntPtr receiver, IntPtr selector);
+
+        [DllImport(ObjC, EntryPoint = "objc_msgSend")]
         internal static extern IntPtr objc_msgSend_IntPtr_IntPtr(IntPtr receiver, IntPtr selector, IntPtr arg1, IntPtr arg2);
 
         [DllImport(ObjC, EntryPoint = "objc_msgSend")]
@@ -351,5 +358,10 @@ namespace EventHook.Platforms.Mac.Native
         internal static extern void cupsFreeJobs(int num_jobs, IntPtr jobs);
 
         internal const int CUPS_WHICHJOBS_ACTIVE = 0;
+
+        [DllImport("/usr/lib/libproc.dylib")]
+        internal static extern int proc_listpids(uint type, uint typeinfo, int[] buffer, int buffersize);
+
+        internal const uint PROC_ALL_PIDS = 1;
     }
 }

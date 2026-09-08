@@ -63,14 +63,30 @@ namespace EventHook.Platforms.Mac
     }
 
     /// <summary>
-    /// NSWorkspace launch / terminate / activate via runningApplications polling (no Accessibility).
-    /// Notification-center selectors need an ObjC subclass; polling keeps the portable P/Invoke surface reliable.
+    /// Which <c>NSRunningApplication.activationPolicy</c> values ApplicationWatcher tracks.
+    /// </summary>
+    internal static class MacAppFilter
+    {
+        internal const int PolicyRegular = 0;
+        internal const int PolicyAccessory = 1;
+        internal const int PolicyProhibited = 2;
+
+        internal static bool ShouldTrack(int activationPolicy) =>
+            activationPolicy == PolicyRegular || activationPolicy == PolicyAccessory;
+    }
+
+    /// <summary>
+    /// Launch / terminate / activate via <c>proc_listpids</c> + <c>NSRunningApplication</c> by PID.
+    /// <c>NSWorkspace.runningApplications</c> stays stale in console / non-AppKit hosts (dotnet, CI, agents).
     /// </summary>
     internal sealed class MacApplication : IDisposable
     {
+        private const int PidCapacity = 4096;
+
         private Action<MacAppSnapshot> onEvent;
         private Timer timer;
         private readonly Dictionary<int, (string Name, string Path)> known = new Dictionary<int, (string, string)>();
+        private readonly int[] pidScratch = new int[PidCapacity];
         private int lastActivePid = -1;
         private bool disposed;
         private bool primed;
@@ -126,40 +142,59 @@ namespace EventHook.Platforms.Mac
         {
             try
             {
-                var workspace = MacNative.objc_msgSend(MacObjC.GetClass("NSWorkspace"), MacObjC.Sel("sharedWorkspace"));
-                if (workspace == IntPtr.Zero)
+                var cls = MacObjC.GetClass("NSRunningApplication");
+                if (cls == IntPtr.Zero)
                 {
                     return;
                 }
 
-                var apps = MacNative.objc_msgSend(workspace, MacObjC.Sel("runningApplications"));
-                if (apps == IntPtr.Zero)
+                var written = MacNative.proc_listpids(MacNative.PROC_ALL_PIDS, 0, pidScratch, pidScratch.Length * sizeof(int));
+                if (written <= 0)
                 {
                     return;
                 }
 
-                var count = (int)MacNative.objc_msgSend_nint(apps, MacObjC.Sel("count"));
+                var pidCount = written / sizeof(int);
                 var seen = new HashSet<int>();
-                var front = MacNative.objc_msgSend(workspace, MacObjC.Sel("frontmostApplication"));
-                var frontPid = front != IntPtr.Zero
-                    ? (int)MacNative.objc_msgSend_nint(front, MacObjC.Sel("processIdentifier"))
-                    : -1;
+                var activePid = -1;
+                var selByPid = MacObjC.Sel("runningApplicationWithProcessIdentifier:");
+                var selPolicy = MacObjC.Sel("activationPolicy");
+                var selName = MacObjC.Sel("localizedName");
+                var selBundle = MacObjC.Sel("bundleURL");
+                var selPath = MacObjC.Sel("path");
+                var selActive = MacObjC.Sel("isActive");
 
-                for (var i = 0; i < count; i++)
+                for (var i = 0; i < pidCount; i++)
                 {
-                    var app = MacNative.objc_msgSend_IntPtr(apps, MacObjC.Sel("objectAtIndex:"), new IntPtr(i));
+                    var pid = pidScratch[i];
+                    if (pid <= 0)
+                    {
+                        continue;
+                    }
+
+                    var app = MacNative.objc_msgSend_int(cls, selByPid, pid);
                     if (app == IntPtr.Zero)
                     {
                         continue;
                     }
 
-                    var pid = (int)MacNative.objc_msgSend_nint(app, MacObjC.Sel("processIdentifier"));
+                    var policy = (int)MacNative.objc_msgSend_nint(app, selPolicy);
+                    if (!MacAppFilter.ShouldTrack(policy))
+                    {
+                        continue;
+                    }
+
                     seen.Add(pid);
-                    var name = MacObjC.NSStringToString(MacNative.objc_msgSend(app, MacObjC.Sel("localizedName"))) ?? string.Empty;
-                    var url = MacNative.objc_msgSend(app, MacObjC.Sel("bundleURL"));
+                    var name = MacObjC.NSStringToString(MacNative.objc_msgSend(app, selName)) ?? string.Empty;
+                    var url = MacNative.objc_msgSend(app, selBundle);
                     var path = url != IntPtr.Zero
-                        ? MacObjC.NSStringToString(MacNative.objc_msgSend(url, MacObjC.Sel("path"))) ?? string.Empty
+                        ? MacObjC.NSStringToString(MacNative.objc_msgSend(url, selPath)) ?? string.Empty
                         : string.Empty;
+
+                    if (MacNative.objc_msgSend_bool(app, selActive))
+                    {
+                        activePid = pid;
+                    }
 
                     if (!known.ContainsKey(pid))
                     {
@@ -189,19 +224,19 @@ namespace EventHook.Platforms.Mac
                         Emit(2, pid, info.Name, info.Path);
                     }
 
-                    if (frontPid > 0 && frontPid != lastActivePid)
+                    if (activePid > 0 && activePid != lastActivePid)
                     {
-                        if (known.TryGetValue(frontPid, out var info))
+                        if (known.TryGetValue(activePid, out var info))
                         {
-                            Emit(1, frontPid, info.Name, info.Path);
+                            Emit(1, activePid, info.Name, info.Path);
                         }
 
-                        lastActivePid = frontPid;
+                        lastActivePid = activePid;
                     }
                 }
                 else
                 {
-                    lastActivePid = frontPid;
+                    lastActivePid = activePid;
                     primed = true;
                 }
             }
