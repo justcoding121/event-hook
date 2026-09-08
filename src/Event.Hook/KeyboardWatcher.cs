@@ -21,9 +21,9 @@ namespace EventHook
 
     public class KeyData
     {
-        public KeyEvent EventType;
-        public string Keyname;
-        public string UnicodeCharacter;
+        public KeyEvent EventType { get; set; }
+        public string Keyname { get; set; }
+        public string UnicodeCharacter { get; set; }
     }
 
     public enum KeyEvent

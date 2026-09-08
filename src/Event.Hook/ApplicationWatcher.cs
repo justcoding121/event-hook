@@ -25,8 +25,8 @@ namespace EventHook
 
     public class WindowData
     {
-        public int EventType;
-        public IntPtr HWnd;
+        public int EventType { get; set; }
+        public IntPtr HWnd { get; set; }
         public string AppPath { get; set; }
         public string AppName { get; set; }
         public string AppTitle { get; set; }
