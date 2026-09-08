@@ -130,7 +130,7 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "EventHook.EventHookFactory",
-      "Summary": "<p sourcefile=\"obj/api/EventHook.EventHookFactory.yml\" sourcestartlinenumber=\"1\">Factory for watchers that share one message pump / synchronization context.\nDispose only after all watchers are stopped.</p>\n"
+      "Summary": "<p sourcefile=\"obj/api/EventHook.EventHookFactory.yml\" sourcestartlinenumber=\"1\">Factory for watchers that share one message pump / synchronization context.\nOn Windows, a live STA pump is required for keyboard, mouse, clipboard, hotkey, and application hooks.\nDispose only after all watchers are stopped.</p>\n"
     },
     {
       "type": "ManagedReference",
@@ -200,7 +200,7 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "EventHook.HookFailureReason",
-      "Summary": "<p sourcefile=\"obj/api/EventHook.HookFailureReason.yml\" sourcestartlinenumber=\"1\">Why <xref href=\"EventHook.HookStartResult\" data-throw-if-not-resolved=\"false\"></xref> failed (or <xref href=\"EventHook.HookFailureReason.None\" data-throw-if-not-resolved=\"false\"></xref> on success).</p>\n"
+      "Summary": "<p sourcefile=\"obj/api/EventHook.HookFailureReason.yml\" sourcestartlinenumber=\"1\">Why <xref href=\"EventHook.HookStartResult\" data-throw-if-not-resolved=\"false\"></xref> failed (or <xref href=\"EventHook.HookFailureReason.None\" data-throw-if-not-resolved=\"false\"></xref> on success).\nPump/run-loop startup failures throw <xref href=\"System.TimeoutException\" data-throw-if-not-resolved=\"false\"></xref> from\n<xref href=\"EventHook.EventHookFactory\" data-throw-if-not-resolved=\"false\"></xref> instead of using a value here.</p>\n"
     },
     {
       "type": "ManagedReference",
@@ -270,7 +270,7 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "EventHook.Hooks.WindowHookEx",
-      "Summary": "<p sourcefile=\"obj/api/EventHook.Hooks.WindowHookEx.yml\" sourcestartlinenumber=\"1\">Track events across all windows. Call <xref href=\"EventHook.Hooks.WindowHookEx.Start\" data-throw-if-not-resolved=\"false\"></xref> before events fire.</p>\n"
+      "Summary": "<p sourcefile=\"obj/api/EventHook.Hooks.WindowHookEx.yml\" sourcestartlinenumber=\"1\">Track events across all windows. Call <xref href=\"EventHook.Hooks.WindowHookEx.Start\" data-throw-if-not-resolved=\"false\"></xref> before events fire.\nUnlike factory watchers, this type is not installed on <xref href=\"EventHook.EventHookFactory\" data-throw-if-not-resolved=\"false\"></xref>'s pump:\n<xref href=\"EventHook.Hooks.WindowHookEx.Start\" data-throw-if-not-resolved=\"false\"></xref> must run on a thread that already pumps messages (your UI thread).</p>\n"
     },
     {
       "type": "ManagedReference",
@@ -326,7 +326,7 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "EventHook.HotkeyWatcher",
-      "Summary": "<p sourcefile=\"obj/api/EventHook.HotkeyWatcher.yml\" sourcestartlinenumber=\"1\">Global hotkey watcher using RegisterHotKey / WM_HOTKEY on the shared message pump.</p>\n"
+      "Summary": "<p sourcefile=\"obj/api/EventHook.HotkeyWatcher.yml\" sourcestartlinenumber=\"1\">Global hotkey watcher using RegisterHotKey / WM_HOTKEY on the shared message pump.\n<xref href=\"EventHook.HotkeyWatcher.Start\" data-throw-if-not-resolved=\"false\"></xref> succeeds only after the factory pump is up; <xref href=\"EventHook.HotkeyWatcher.IsRunning\" data-throw-if-not-resolved=\"false\"></xref> does not\nmean a host-provided HWND is dispatching <code>WM_HOTKEY</code> — that window must pump those messages.</p>\n"
     },
     {
       "type": "ManagedReference",

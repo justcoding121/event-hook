@@ -122,6 +122,7 @@ WM_PASTE itself is application-local and is not hooked.</p>
     <dl class="jumplist">
       <dt><a class="xref" href="EventHook.EventHookFactory.html">EventHookFactory</a></dt>
       <dd><p>Factory for watchers that share one message pump / synchronization context.
+On Windows, a live STA pump is required for keyboard, mouse, clipboard, hotkey, and application hooks.
 Dispose only after all watchers are stopped.</p>
 </dd>
     </dl>
@@ -132,7 +133,9 @@ Dispose only after all watchers are stopped.</p>
     </dl>
     <dl class="jumplist">
       <dt><a class="xref" href="EventHook.HotkeyWatcher.html">HotkeyWatcher</a></dt>
-      <dd><p>Global hotkey watcher using RegisterHotKey / WM_HOTKEY on the shared message pump.</p>
+      <dd><p>Global hotkey watcher using RegisterHotKey / WM_HOTKEY on the shared message pump.
+<a class="xref" href="EventHook.HotkeyWatcher.html#EventHook_HotkeyWatcher_Start">Start()</a> succeeds only after the factory pump is up; <a class="xref" href="EventHook.HotkeyWatcher.html#EventHook_HotkeyWatcher_IsRunning">IsRunning</a> does not
+mean a host-provided HWND is dispatching <code>WM_HOTKEY</code> — that window must pump those messages.</p>
 </dd>
     </dl>
     <dl class="jumplist">
@@ -207,7 +210,9 @@ Enums
     </dl>
     <dl class="jumplist">
       <dt><a class="xref" href="EventHook.HookFailureReason.html">HookFailureReason</a></dt>
-      <dd><p>Why <a class="xref" href="EventHook.HookStartResult.html">HookStartResult</a> failed (or <a class="xref" href="EventHook.HookFailureReason.html#EventHook_HookFailureReason_None">None</a> on success).</p>
+      <dd><p>Why <a class="xref" href="EventHook.HookStartResult.html">HookStartResult</a> failed (or <a class="xref" href="EventHook.HookFailureReason.html#EventHook_HookFailureReason_None">None</a> on success).
+Pump/run-loop startup failures throw <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a> from
+<a class="xref" href="EventHook.EventHookFactory.html">EventHookFactory</a> instead of using a value here.</p>
 </dd>
     </dl>
     <dl class="jumplist">

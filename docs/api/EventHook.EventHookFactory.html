@@ -6,7 +6,7 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <meta name="title" content="Class EventHookFactory | EventHook ">
       
-      <meta name="description" content="Factory for watchers that share one message pump / synchronization context. Dispose only after all watchers are stopped.">
+      <meta name="description" content="Factory for watchers that share one message pump / synchronization context. On Windows, a live STA pump is required for keyboard, mouse, clipboard, hotkey, and application hooks. Dispose only after all watchers are stopped.">
       <link rel="icon" href="../favicon.ico">
       <link rel="stylesheet" href="../public/docfx.min.css">
       <link rel="stylesheet" href="../public/main.css">
@@ -89,7 +89,7 @@
 
 
   <h1 id="EventHook_EventHookFactory" data-uid="EventHook.EventHookFactory" class="text-break">
-Class EventHookFactory  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/EventHookFactory.cs/#L10"><i class="bi bi-code-slash"></i></a>
+Class EventHookFactory  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/EventHookFactory.cs/#L17"><i class="bi bi-code-slash"></i></a>
   </h1>
 
   <div class="facts text-secondary">
@@ -98,6 +98,7 @@ Class EventHookFactory  <a class="header-action link-secondary" title="View sour
   </div>
 
   <div class="markdown summary"><p>Factory for watchers that share one message pump / synchronization context.
+On Windows, a live STA pump is required for keyboard, mouse, clipboard, hotkey, and application hooks.
 Dispose only after all watchers are stopped.</p>
 </div>
   <div class="markdown conceptual"></div>
@@ -154,6 +155,12 @@ Dispose only after all watchers are stopped.</p>
 
 
 
+  <h2 id="EventHook_EventHookFactory_remarks">Remarks</h2>
+  <div class="markdown level0 remarks"><p>Windows: reuses the current WinForms/WPF UI thread when one exists; otherwise starts a background
+STA WinForms loop. Construction throws <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a> if that pump does not start.
+macOS and Linux ignore a provided HWND and run their own CFRunLoop / X11 loops.
+<a class="xref" href="EventHook.Hooks.WindowHookEx.html">WindowHookEx</a> is not owned by this factory — call its Start() on a pumping thread.</p>
+</div>
 
 
   <h2 class="section" id="constructors">Constructors
@@ -164,10 +171,11 @@ Dispose only after all watchers are stopped.</p>
 
   <h3 id="EventHook_EventHookFactory__ctor" data-uid="EventHook.EventHookFactory.#ctor">
   EventHookFactory()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/EventHookFactory.cs/#L18"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/EventHookFactory.cs/#L26"><i class="bi bi-code-slash"></i></a>
   </h3>
 
-  <div class="markdown level1 summary"><p>Create a factory that owns a background STA message pump when no UI thread is present.</p>
+  <div class="markdown level1 summary"><p>Create a factory that owns a background STA message pump when no UI thread is present.
+On Windows, prefer this overload unless a host window will dispatch <code>WM_HOTKEY</code> itself.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
 
@@ -191,10 +199,12 @@ Dispose only after all watchers are stopped.</p>
 
   <h3 id="EventHook_EventHookFactory__ctor_System_Nullable_System_IntPtr__" data-uid="EventHook.EventHookFactory.#ctor(System.Nullable{System.IntPtr})">
   EventHookFactory(nint?)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/EventHookFactory.cs/#L27"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/EventHookFactory.cs/#L38"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Create a factory that uses an existing window handle for shell/hotkey messages (hosted scenarios).
+The handle must belong to a thread that pumps messages. EventHook does not subclass a provided
+HWND, so the host must dispatch <code>WM_HOTKEY</code> for <a class="xref" href="EventHook.HotkeyWatcher.html">HotkeyWatcher</a>.
 On non-Windows TFMs the handle is ignored.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -206,7 +216,8 @@ On non-Windows TFMs the handle is ignored.</p>
   <h4 class="section">Parameters</h4>
   <dl class="parameters">
     <dt><code>messagePumpHandle</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.intptr">nint</a>?</dt>
-    <dd></dd>
+    <dd><p>Existing message-pump HWND, or null to own a background pump.</p>
+</dd>
   </dl>
 
 
@@ -228,7 +239,7 @@ On non-Windows TFMs the handle is ignored.</p>
 
   <h3 id="EventHook_EventHookFactory_Dispose" data-uid="EventHook.EventHookFactory.Dispose">
   Dispose()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/EventHookFactory.cs/#L32"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/EventHookFactory.cs/#L43"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</p>
@@ -255,7 +266,7 @@ On non-Windows TFMs the handle is ignored.</p>
 
   <h3 id="EventHook_EventHookFactory_Dispose_System_Boolean_" data-uid="EventHook.EventHookFactory.Dispose(System.Boolean)">
   Dispose(bool)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/EventHookFactory.cs/#L38"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/EventHookFactory.cs/#L49"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"></div>
@@ -286,7 +297,7 @@ On non-Windows TFMs the handle is ignored.</p>
 
   <h3 id="EventHook_EventHookFactory_GetApplicationWatcher" data-uid="EventHook.EventHookFactory.GetApplicationWatcher">
   GetApplicationWatcher()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/EventHookFactory.cs/#L52"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/EventHookFactory.cs/#L63"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"></div>
@@ -317,7 +328,7 @@ On non-Windows TFMs the handle is ignored.</p>
 
   <h3 id="EventHook_EventHookFactory_GetClipboardWatcher" data-uid="EventHook.EventHookFactory.GetClipboardWatcher">
   GetClipboardWatcher()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/EventHookFactory.cs/#L58"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/EventHookFactory.cs/#L69"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"></div>
@@ -348,7 +359,7 @@ On non-Windows TFMs the handle is ignored.</p>
 
   <h3 id="EventHook_EventHookFactory_GetHotkeyWatcher" data-uid="EventHook.EventHookFactory.GetHotkeyWatcher">
   GetHotkeyWatcher()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/EventHookFactory.cs/#L62"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/EventHookFactory.cs/#L73"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"></div>
@@ -379,7 +390,7 @@ On non-Windows TFMs the handle is ignored.</p>
 
   <h3 id="EventHook_EventHookFactory_GetKeyboardWatcher" data-uid="EventHook.EventHookFactory.GetKeyboardWatcher">
   GetKeyboardWatcher()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/EventHookFactory.cs/#L54"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/EventHookFactory.cs/#L65"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"></div>
@@ -410,7 +421,7 @@ On non-Windows TFMs the handle is ignored.</p>
 
   <h3 id="EventHook_EventHookFactory_GetMouseWatcher" data-uid="EventHook.EventHookFactory.GetMouseWatcher">
   GetMouseWatcher()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/EventHookFactory.cs/#L56"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/EventHookFactory.cs/#L67"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"></div>
@@ -441,7 +452,7 @@ On non-Windows TFMs the handle is ignored.</p>
 
   <h3 id="EventHook_EventHookFactory_GetPrintWatcher" data-uid="EventHook.EventHookFactory.GetPrintWatcher">
   GetPrintWatcher()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/EventHookFactory.cs/#L60"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/EventHookFactory.cs/#L71"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"></div>

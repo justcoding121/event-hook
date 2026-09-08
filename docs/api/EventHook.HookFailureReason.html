@@ -6,7 +6,7 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <meta name="title" content="Enum HookFailureReason | EventHook ">
       
-      <meta name="description" content="Why  failed (or  on success).">
+      <meta name="description" content="Why  failed (or  on success). Pump/run-loop startup failures throw  from  instead of using a value here.">
       <link rel="icon" href="../favicon.ico">
       <link rel="stylesheet" href="../public/docfx.min.css">
       <link rel="stylesheet" href="../public/main.css">
@@ -90,7 +90,7 @@
 
 
   <h1 id="EventHook_HookFailureReason" data-uid="EventHook.HookFailureReason" class="text-break">
-Enum HookFailureReason  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/HookFailureReason.cs/#L6"><i class="bi bi-code-slash"></i></a>
+Enum HookFailureReason  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/HookFailureReason.cs/#L8"><i class="bi bi-code-slash"></i></a>
   </h1>
 
   <div class="facts text-secondary">
@@ -98,7 +98,9 @@ Enum HookFailureReason  <a class="header-action link-secondary" title="View sour
   <dl><dt>Assembly</dt><dd>EventHook.dll</dd></dl>
   </div>
 
-  <div class="markdown summary"><p>Why <a class="xref" href="EventHook.HookStartResult.html">HookStartResult</a> failed (or <a class="xref" href="EventHook.HookFailureReason.html#EventHook_HookFailureReason_None">None</a> on success).</p>
+  <div class="markdown summary"><p>Why <a class="xref" href="EventHook.HookStartResult.html">HookStartResult</a> failed (or <a class="xref" href="EventHook.HookFailureReason.html#EventHook_HookFailureReason_None">None</a> on success).
+Pump/run-loop startup failures throw <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a> from
+<a class="xref" href="EventHook.EventHookFactory.html">EventHookFactory</a> instead of using a value here.</p>
 </div>
   <div class="markdown conceptual"></div>
 
