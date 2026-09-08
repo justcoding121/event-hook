@@ -16,7 +16,7 @@
       <meta name="docfx:rel" content="../">
       
       
-      <meta name="docfx:docurl" content="https://github.com/justcoding121/windows-user-action-hook/new/develop/apiSpec/new?filename=EventHook_KeyboardWatcher.md&amp;value=---%0Auid%3A%20EventHook.KeyboardWatcher%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
+      <meta name="docfx:docurl" content="https://github.com/justcoding121/event-hook/new/develop/apiSpec/new?filename=EventHook_KeyboardWatcher.md&amp;value=---%0Auid%3A%20EventHook.KeyboardWatcher%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
       <meta name="loc:inThisArticle" content="In this article">
       <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
       <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
@@ -89,7 +89,7 @@
 
 
   <h1 id="EventHook_KeyboardWatcher" data-uid="EventHook.KeyboardWatcher" class="text-break">
-Class KeyboardWatcher  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/windows-user-action-hook/blob/develop/src/EventHook/KeyboardWatcher.cs/#L31"><i class="bi bi-code-slash"></i></a>
+Class KeyboardWatcher  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/KeyboardWatcher.cs/#L39"><i class="bi bi-code-slash"></i></a>
   </h1>
 
   <div class="facts text-secondary">
@@ -156,6 +156,42 @@ Global hooks typically do not receive input inside remote desktop sessions.</p>
 
 
 
+  <h2 class="section" id="properties">Properties
+</h2>
+
+
+  <a id="EventHook_KeyboardWatcher_IsRunning_" data-uid="EventHook.KeyboardWatcher.IsRunning*"></a>
+
+  <h3 id="EventHook_KeyboardWatcher_IsRunning" data-uid="EventHook.KeyboardWatcher.IsRunning">
+  IsRunning
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/KeyboardWatcher.cs/#L69"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>True only after a successful <a class="xref" href="EventHook.KeyboardWatcher.html#EventHook_KeyboardWatcher_Start">Start()</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsRunning { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
   <h2 class="section" id="methods">Methods
 </h2>
 
@@ -164,7 +200,7 @@ Global hooks typically do not receive input inside remote desktop sessions.</p>
 
   <h3 id="EventHook_KeyboardWatcher_Dispose" data-uid="EventHook.KeyboardWatcher.Dispose">
   Dispose()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/windows-user-action-hook/blob/develop/src/EventHook/KeyboardWatcher.cs/#L99"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/KeyboardWatcher.cs/#L223"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</p>
@@ -191,17 +227,22 @@ Global hooks typically do not receive input inside remote desktop sessions.</p>
 
   <h3 id="EventHook_KeyboardWatcher_Start" data-uid="EventHook.KeyboardWatcher.Start">
   Start()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/windows-user-action-hook/blob/develop/src/EventHook/KeyboardWatcher.cs/#L48"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/KeyboardWatcher.cs/#L80"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Start()</code></pre>
+    <pre><code class="lang-csharp hljs">public HookStartResult Start()</code></pre>
   </div>
 
 
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="EventHook.HookStartResult.html">HookStartResult</a></dt>
+    <dd></dd>
+  </dl>
 
 
 
@@ -217,7 +258,7 @@ Global hooks typically do not receive input inside remote desktop sessions.</p>
 
   <h3 id="EventHook_KeyboardWatcher_Stop" data-uid="EventHook.KeyboardWatcher.Stop">
   Stop()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/windows-user-action-hook/blob/develop/src/EventHook/KeyboardWatcher.cs/#L73"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/KeyboardWatcher.cs/#L171"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"></div>
@@ -246,7 +287,7 @@ Global hooks typically do not receive input inside remote desktop sessions.</p>
 
   <h3 id="EventHook_KeyboardWatcher_OnKeyInput" data-uid="EventHook.KeyboardWatcher.OnKeyInput">
   OnKeyInput
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/windows-user-action-hook/blob/develop/src/EventHook/KeyboardWatcher.cs/#L46"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/KeyboardWatcher.cs/#L63"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"></div>

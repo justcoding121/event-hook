@@ -6,7 +6,7 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <meta name="title" content="Class WindowHookEx | EventHook ">
       
-      <meta name="description" content="Track events across all windows">
+      <meta name="description" content="Track events across all windows. Call  before events fire.">
       <link rel="icon" href="../favicon.ico">
       <link rel="stylesheet" href="../public/docfx.min.css">
       <link rel="stylesheet" href="../public/main.css">
@@ -16,7 +16,7 @@
       <meta name="docfx:rel" content="../">
       
       
-      <meta name="docfx:docurl" content="https://github.com/justcoding121/windows-user-action-hook/new/develop/apiSpec/new?filename=EventHook_Hooks_WindowHookEx.md&amp;value=---%0Auid%3A%20EventHook.Hooks.WindowHookEx%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
+      <meta name="docfx:docurl" content="https://github.com/justcoding121/event-hook/new/develop/apiSpec/new?filename=EventHook_Hooks_WindowHookEx.md&amp;value=---%0Auid%3A%20EventHook.Hooks.WindowHookEx%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
       <meta name="loc:inThisArticle" content="In this article">
       <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
       <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
@@ -89,7 +89,7 @@
 
 
   <h1 id="EventHook_Hooks_WindowHookEx" data-uid="EventHook.Hooks.WindowHookEx" class="text-break">
-Class WindowHookEx  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/windows-user-action-hook/blob/develop/src/EventHook/Hooks/WindowHookEx.cs/#L12"><i class="bi bi-code-slash"></i></a>
+Class WindowHookEx  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/Hooks/WindowHookEx.cs/#L15"><i class="bi bi-code-slash"></i></a>
   </h1>
 
   <div class="facts text-secondary">
@@ -97,7 +97,7 @@ Class WindowHookEx  <a class="header-action link-secondary" title="View source" 
   <dl><dt>Assembly</dt><dd>EventHook.dll</dd></dl>
   </div>
 
-  <div class="markdown summary"><p>Track events across all windows</p>
+  <div class="markdown summary"><p>Track events across all windows. Call <a class="xref" href="EventHook.Hooks.WindowHookEx.html#EventHook_Hooks_WindowHookEx_Start">Start()</a> before events fire.</p>
 </div>
   <div class="markdown conceptual"></div>
 
@@ -160,10 +160,10 @@ Class WindowHookEx  <a class="header-action link-secondary" title="View source" 
 
   <h3 id="EventHook_Hooks_WindowHookEx__ctor" data-uid="EventHook.Hooks.WindowHookEx.#ctor">
   WindowHookEx()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/windows-user-action-hook/blob/develop/src/EventHook/Hooks/WindowHookEx.cs/#L20"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/Hooks/WindowHookEx.cs/#L33"><i class="bi bi-code-slash"></i></a>
   </h3>
 
-  <div class="markdown level1 summary"><p>Must be called from UI thread</p>
+  <div class="markdown level1 summary"><p>Create a window event watcher. Call <a class="xref" href="EventHook.Hooks.WindowHookEx.html#EventHook_Hooks_WindowHookEx_Start">Start()</a> from a UI / message-pump thread.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
 
@@ -183,6 +183,42 @@ Class WindowHookEx  <a class="header-action link-secondary" title="View source" 
 
 
 
+  <h2 class="section" id="properties">Properties
+</h2>
+
+
+  <a id="EventHook_Hooks_WindowHookEx_IsRunning_" data-uid="EventHook.Hooks.WindowHookEx.IsRunning*"></a>
+
+  <h3 id="EventHook_Hooks_WindowHookEx_IsRunning" data-uid="EventHook.Hooks.WindowHookEx.IsRunning">
+  IsRunning
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/Hooks/WindowHookEx.cs/#L41"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>True only after a successful <a class="xref" href="EventHook.Hooks.WindowHookEx.html#EventHook_Hooks_WindowHookEx_Start">Start()</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsRunning { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
   <h2 class="section" id="methods">Methods
 </h2>
 
@@ -191,7 +227,7 @@ Class WindowHookEx  <a class="header-action link-secondary" title="View source" 
 
   <h3 id="EventHook_Hooks_WindowHookEx_Dispose" data-uid="EventHook.Hooks.WindowHookEx.Dispose">
   Dispose()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/windows-user-action-hook/blob/develop/src/EventHook/Hooks/WindowHookEx.cs/#L139"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/Hooks/WindowHookEx.cs/#L208"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</p>
@@ -218,7 +254,7 @@ Class WindowHookEx  <a class="header-action link-secondary" title="View source" 
 
   <h3 id="EventHook_Hooks_WindowHookEx_Finalize" data-uid="EventHook.Hooks.WindowHookEx.Finalize">
   ~WindowHookEx()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/windows-user-action-hook/blob/develop/src/EventHook/Hooks/WindowHookEx.cs/#L145"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/Hooks/WindowHookEx.cs/#L221"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"></div>
@@ -240,6 +276,65 @@ Class WindowHookEx  <a class="header-action link-secondary" title="View source" 
 
 
 
+  <a id="EventHook_Hooks_WindowHookEx_Start_" data-uid="EventHook.Hooks.WindowHookEx.Start*"></a>
+
+  <h3 id="EventHook_Hooks_WindowHookEx_Start" data-uid="EventHook.Hooks.WindowHookEx.Start">
+  Start()
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/Hooks/WindowHookEx.cs/#L139"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Install all window event hooks. Events only fire after a successful start.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public HookStartResult Start()</code></pre>
+  </div>
+
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="EventHook.HookStartResult.html">HookStartResult</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="EventHook_Hooks_WindowHookEx_Stop_" data-uid="EventHook.Hooks.WindowHookEx.Stop*"></a>
+
+  <h3 id="EventHook_Hooks_WindowHookEx_Stop" data-uid="EventHook.Hooks.WindowHookEx.Stop">
+  Stop()
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/Hooks/WindowHookEx.cs/#L187"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Uninstall hooks and stop raising events.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Stop()</code></pre>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
   <h2 class="section" id="events">Events
 </h2>
 
@@ -247,10 +342,10 @@ Class WindowHookEx  <a class="header-action link-secondary" title="View source" 
 
   <h3 id="EventHook_Hooks_WindowHookEx_Activated" data-uid="EventHook.Hooks.WindowHookEx.Activated">
   Activated
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/windows-user-action-hook/blob/develop/src/EventHook/Hooks/WindowHookEx.cs/#L28"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/Hooks/WindowHookEx.cs/#L55"><i class="bi bi-code-slash"></i></a>
   </h3>
 
-  <div class="markdown level1 summary"><p>Occurs when a window is about to be activated</p>
+  <div class="markdown level1 summary"><p>Occurs when a window is about to be activated.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
 
@@ -278,10 +373,10 @@ Class WindowHookEx  <a class="header-action link-secondary" title="View source" 
 
   <h3 id="EventHook_Hooks_WindowHookEx_Minimized" data-uid="EventHook.Hooks.WindowHookEx.Minimized">
   Minimized
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/windows-user-action-hook/blob/develop/src/EventHook/Hooks/WindowHookEx.cs/#L37"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/Hooks/WindowHookEx.cs/#L76"><i class="bi bi-code-slash"></i></a>
   </h3>
 
-  <div class="markdown level1 summary"><p>Occurs when a window is about to be minimized</p>
+  <div class="markdown level1 summary"><p>Occurs when a window is about to be minimized.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
 
@@ -309,10 +404,10 @@ Class WindowHookEx  <a class="header-action link-secondary" title="View source" 
 
   <h3 id="EventHook_Hooks_WindowHookEx_TextChanged" data-uid="EventHook.Hooks.WindowHookEx.TextChanged">
   TextChanged
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/windows-user-action-hook/blob/develop/src/EventHook/Hooks/WindowHookEx.cs/#L55"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/Hooks/WindowHookEx.cs/#L118"><i class="bi bi-code-slash"></i></a>
   </h3>
 
-  <div class="markdown level1 summary"><p>Occurs when window's text is changed</p>
+  <div class="markdown level1 summary"><p>Occurs when window's text is changed.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
 
@@ -340,10 +435,10 @@ Class WindowHookEx  <a class="header-action link-secondary" title="View source" 
 
   <h3 id="EventHook_Hooks_WindowHookEx_Unminimized" data-uid="EventHook.Hooks.WindowHookEx.Unminimized">
   Unminimized
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/windows-user-action-hook/blob/develop/src/EventHook/Hooks/WindowHookEx.cs/#L46"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/Hooks/WindowHookEx.cs/#L97"><i class="bi bi-code-slash"></i></a>
   </h3>
 
-  <div class="markdown level1 summary"><p>Occurs when a window is about to be restored from minimized state</p>
+  <div class="markdown level1 summary"><p>Occurs when a window is about to be restored from minimized state.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
 

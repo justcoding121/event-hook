@@ -16,7 +16,7 @@
       <meta name="docfx:rel" content="../">
       
       
-      <meta name="docfx:docurl" content="https://github.com/justcoding121/windows-user-action-hook/new/develop/apiSpec/new?filename=EventHook_HotkeyWatcher.md&amp;value=---%0Auid%3A%20EventHook.HotkeyWatcher%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
+      <meta name="docfx:docurl" content="https://github.com/justcoding121/event-hook/new/develop/apiSpec/new?filename=EventHook_HotkeyWatcher.md&amp;value=---%0Auid%3A%20EventHook.HotkeyWatcher%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
       <meta name="loc:inThisArticle" content="In this article">
       <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
       <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
@@ -89,7 +89,7 @@
 
 
   <h1 id="EventHook_HotkeyWatcher" data-uid="EventHook.HotkeyWatcher" class="text-break">
-Class HotkeyWatcher  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/windows-user-action-hook/blob/develop/src/EventHook/HotkeyWatcher.cs/#L21"><i class="bi bi-code-slash"></i></a>
+Class HotkeyWatcher  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/HotkeyWatcher.cs/#L32"><i class="bi bi-code-slash"></i></a>
   </h1>
 
   <div class="facts text-secondary">
@@ -155,6 +155,42 @@ Class HotkeyWatcher  <a class="header-action link-secondary" title="View source"
 
 
 
+  <h2 class="section" id="properties">Properties
+</h2>
+
+
+  <a id="EventHook_HotkeyWatcher_IsRunning_" data-uid="EventHook.HotkeyWatcher.IsRunning*"></a>
+
+  <h3 id="EventHook_HotkeyWatcher_IsRunning" data-uid="EventHook.HotkeyWatcher.IsRunning">
+  IsRunning
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/HotkeyWatcher.cs/#L68"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>True only after a successful <a class="xref" href="EventHook.HotkeyWatcher.html#EventHook_HotkeyWatcher_Start">Start()</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsRunning { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
   <h2 class="section" id="methods">Methods
 </h2>
 
@@ -163,7 +199,7 @@ Class HotkeyWatcher  <a class="header-action link-secondary" title="View source"
 
   <h3 id="EventHook_HotkeyWatcher_Dispose" data-uid="EventHook.HotkeyWatcher.Dispose">
   Dispose()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/windows-user-action-hook/blob/develop/src/EventHook/HotkeyWatcher.cs/#L135"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/HotkeyWatcher.cs/#L387"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</p>
@@ -188,9 +224,9 @@ Class HotkeyWatcher  <a class="header-action link-secondary" title="View source"
 
   <a id="EventHook_HotkeyWatcher_Register_" data-uid="EventHook.HotkeyWatcher.Register*"></a>
 
-  <h3 id="EventHook_HotkeyWatcher_Register_System_Object_System_Windows_Forms_Keys_" data-uid="EventHook.HotkeyWatcher.Register(System.Object,System.Windows.Forms.Keys)">
-  Register(object, Keys)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/windows-user-action-hook/blob/develop/src/EventHook/HotkeyWatcher.cs/#L41"><i class="bi bi-code-slash"></i></a>
+  <h3 id="EventHook_HotkeyWatcher_Register_System_Object_EventHook_Hotkey_" data-uid="EventHook.HotkeyWatcher.Register(System.Object,EventHook.Hotkey)">
+  Register(object, Hotkey)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/HotkeyWatcher.cs/#L82"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Register a hotkey. The same <code class="paramref">id</code> is returned in <a class="xref" href="EventHook.HotkeyWatcher.html#EventHook_HotkeyWatcher_OnHotkeyPressed">OnHotkeyPressed</a>.</p>
@@ -198,17 +234,22 @@ Class HotkeyWatcher  <a class="header-action link-secondary" title="View source"
   <div class="markdown level1 conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Register(object id, Keys keys)</code></pre>
+    <pre><code class="lang-csharp hljs">public HookStartResult Register(object id, Hotkey hotkey)</code></pre>
   </div>
 
   <h4 class="section">Parameters</h4>
   <dl class="parameters">
     <dt><code>id</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></dt>
     <dd></dd>
-    <dt><code>keys</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.windows.forms.keys">Keys</a></dt>
+    <dt><code>hotkey</code> <a class="xref" href="EventHook.Hotkey.html">Hotkey</a></dt>
     <dd></dd>
   </dl>
 
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="EventHook.HookStartResult.html">HookStartResult</a></dt>
+    <dd></dd>
+  </dl>
 
 
 
@@ -222,9 +263,9 @@ Class HotkeyWatcher  <a class="header-action link-secondary" title="View source"
 
   <a id="EventHook_HotkeyWatcher_Register_" data-uid="EventHook.HotkeyWatcher.Register*"></a>
 
-  <h3 id="EventHook_HotkeyWatcher_Register__1___0_System_Windows_Forms_Keys_" data-uid="EventHook.HotkeyWatcher.Register``1(``0,System.Windows.Forms.Keys)">
-  Register&lt;T&gt;(T, Keys)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/windows-user-action-hook/blob/develop/src/EventHook/HotkeyWatcher.cs/#L72"><i class="bi bi-code-slash"></i></a>
+  <h3 id="EventHook_HotkeyWatcher_Register__1___0_EventHook_Hotkey_" data-uid="EventHook.HotkeyWatcher.Register``1(``0,EventHook.Hotkey)">
+  Register&lt;T&gt;(T, Hotkey)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/HotkeyWatcher.cs/#L172"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Register a hotkey with a typed identifier.</p>
@@ -232,17 +273,22 @@ Class HotkeyWatcher  <a class="header-action link-secondary" title="View source"
   <div class="markdown level1 conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Register&lt;T&gt;(T id, Keys keys)</code></pre>
+    <pre><code class="lang-csharp hljs">public HookStartResult Register&lt;T&gt;(T id, Hotkey hotkey)</code></pre>
   </div>
 
   <h4 class="section">Parameters</h4>
   <dl class="parameters">
     <dt><code>id</code> <span class="xref">T</span></dt>
     <dd></dd>
-    <dt><code>keys</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.windows.forms.keys">Keys</a></dt>
+    <dt><code>hotkey</code> <a class="xref" href="EventHook.Hotkey.html">Hotkey</a></dt>
     <dd></dd>
   </dl>
 
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="EventHook.HookStartResult.html">HookStartResult</a></dt>
+    <dd></dd>
+  </dl>
 
   <h4 class="section">Type Parameters</h4>
   <dl class="parameters">
@@ -263,17 +309,22 @@ Class HotkeyWatcher  <a class="header-action link-secondary" title="View source"
 
   <h3 id="EventHook_HotkeyWatcher_Start" data-uid="EventHook.HotkeyWatcher.Start">
   Start()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/windows-user-action-hook/blob/develop/src/EventHook/HotkeyWatcher.cs/#L105"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/HotkeyWatcher.cs/#L238"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Start()</code></pre>
+    <pre><code class="lang-csharp hljs">public HookStartResult Start()</code></pre>
   </div>
 
 
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="EventHook.HookStartResult.html">HookStartResult</a></dt>
+    <dd></dd>
+  </dl>
 
 
 
@@ -289,7 +340,7 @@ Class HotkeyWatcher  <a class="header-action link-secondary" title="View source"
 
   <h3 id="EventHook_HotkeyWatcher_Stop" data-uid="EventHook.HotkeyWatcher.Stop">
   Stop()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/windows-user-action-hook/blob/develop/src/EventHook/HotkeyWatcher.cs/#L107"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/HotkeyWatcher.cs/#L329"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"></div>
@@ -315,10 +366,10 @@ Class HotkeyWatcher  <a class="header-action link-secondary" title="View source"
 
   <h3 id="EventHook_HotkeyWatcher_Unregister_System_Object_" data-uid="EventHook.HotkeyWatcher.Unregister(System.Object)">
   Unregister(object)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/windows-user-action-hook/blob/develop/src/EventHook/HotkeyWatcher.cs/#L77"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/HotkeyWatcher.cs/#L177"><i class="bi bi-code-slash"></i></a>
   </h3>
 
-  <div class="markdown level1 summary"><p>Unregister by the same id used in <a class="xref" href="EventHook.HotkeyWatcher.html#EventHook_HotkeyWatcher_Register_System_Object_System_Windows_Forms_Keys_">Register(object, Keys)</a>.</p>
+  <div class="markdown level1 summary"><p>Unregister by the same id used in <a class="xref" href="EventHook.HotkeyWatcher.html#EventHook_HotkeyWatcher_Register_System_Object_EventHook_Hotkey_">Register(object, Hotkey)</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
 
@@ -350,7 +401,7 @@ Class HotkeyWatcher  <a class="header-action link-secondary" title="View source"
 
   <h3 id="EventHook_HotkeyWatcher_OnHotkeyPressed" data-uid="EventHook.HotkeyWatcher.OnHotkeyPressed">
   OnHotkeyPressed
-  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/windows-user-action-hook/blob/develop/src/EventHook/HotkeyWatcher.cs/#L36"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/justcoding121/event-hook/blob/develop/src/Event.Hook/HotkeyWatcher.cs/#L62"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"></div>

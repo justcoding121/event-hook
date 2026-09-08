@@ -16,7 +16,7 @@
       <meta name="docfx:rel" content="">
       
       
-      <meta name="docfx:docurl" content="https://github.com/justcoding121/windows-user-action-hook/blob/develop/.github/index.md/#L1">
+      <meta name="docfx:docurl" content="https://github.com/justcoding121/event-hook/blob/develop/.github/index.md/#L1">
       <meta name="loc:inThisArticle" content="In this article">
       <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
       <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
@@ -73,7 +73,7 @@
         <article data-uid="">
 <h1 id="eventhook">EventHook</h1>
 
-<p>A .NET 10 Windows library for global keyboard, mouse, clipboard, application, print, and hotkey events.</p>
+<p>A .NET 10 library for global keyboard, mouse, clipboard, application, print, and hotkey events on Windows, macOS, and Linux.</p>
 <h2 id="install">Install</h2>
 <pre><code class="lang-bash">dotnet add package EventHook
 </code></pre>
@@ -81,11 +81,18 @@
 <pre><code class="lang-csharp">using (var factory = new EventHookFactory())
 {
     var keyboard = factory.GetKeyboardWatcher();
-    keyboard.Start();
-    keyboard.OnKeyInput += (_, e) =&gt; Console.WriteLine(e.KeyData.Keyname);
+    var result = keyboard.Start();
+    if (result.Success)
+    {
+        keyboard.OnKeyInput += (_, e) =&gt; Console.WriteLine(e.KeyData.Keyname);
+    }
+    else
+    {
+        Console.WriteLine(result);
+    }
 }
 </code></pre>
-<p>See the <a href="https://github.com/justcoding121/windows-user-action-hook">GitHub README</a> for full samples.</p>
+<p>See the <a href="https://github.com/justcoding121/event-hook">GitHub README</a> for full samples.</p>
 
 </article>
 
