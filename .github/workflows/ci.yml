@@ -295,7 +295,7 @@ jobs:
 
       - name: Pack Beta
         if: github.ref == 'refs/heads/beta'
-        run: dotnet pack src/Event.Hook/Event.Hook.csproj -c Release --version-suffix beta -o artifacts
+        run: dotnet pack src/Event.Hook/Event.Hook.csproj -c Release --version-suffix beta.2 -o artifacts
 
       - name: Pack Stable
         if: github.ref == 'refs/heads/stable' || startsWith(github.ref, 'refs/tags/v3')

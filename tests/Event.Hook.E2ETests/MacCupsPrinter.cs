@@ -108,7 +108,20 @@ namespace EventHook.E2ETests
                 return -1;
             }
 
-            proc.WaitForExit(8000);
+            if (!proc.WaitForExit(8000))
+            {
+                try
+                {
+                    proc.Kill(entireProcessTree: true);
+                }
+                catch
+                {
+                    // best-effort
+                }
+
+                return -1;
+            }
+
             return proc.ExitCode;
         }
     }

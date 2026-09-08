@@ -154,7 +154,7 @@ using var factory = new EventHookFactory(hostMainWindowHandle);
 | Branch | NuGet | Notes |
 |---|---|---|
 | `develop` | (no publish) | CI on Windows + macOS + Linux; SonarCloud + DocFX on develop push only |
-| `beta` | `{VersionPrefix}-beta` | Same CI, then publish prerelease |
+| `beta` | `{VersionPrefix}-beta.2` | Same CI, then publish prerelease (`3.0.0-beta` already shipped) |
 | `stable` / tag `v*` | `{VersionPrefix}` | Same CI, then stable release + GitHub Pages docs |
 
 Publishing uses NuGet Trusted Publishing (`NUGET_USER` on the `nuget-publish` environment).
