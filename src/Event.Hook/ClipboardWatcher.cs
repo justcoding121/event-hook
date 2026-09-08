@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using EventHook.Helpers;
@@ -8,9 +7,6 @@ using EventHook.Helpers;
 using System.Threading.Channels;
 using System.Windows.Forms;
 using EventHook.Hooks;
-#else
-using System.Threading.Channels;
-using EventHook.Platforms.Mac;
 #endif
 
 namespace EventHook
@@ -52,10 +48,6 @@ namespace EventHook
         private ClipBoardHook clip;
         private EventOffload<object> offload;
         private CancellationTokenSource taskCancellationTokenSource;
-#else
-        private MacClipboard macClipboard;
-        private EventOffload<MacClipboardSnapshot> offload;
-        private CancellationTokenSource taskCancellationTokenSource;
 #endif
 
         internal ClipboardWatcher(SyncFactory factory)
@@ -63,7 +55,7 @@ namespace EventHook
             this.factory = factory;
         }
 
-#pragma warning disable CS0067
+#pragma warning disable CS0067 // Raised only on Windows implementation
         public event EventHandler<ClipboardEventArgs> OnClipboardModified;
 #pragma warning restore CS0067
 
@@ -118,11 +110,6 @@ namespace EventHook
                     return PlatformSupport.WindowsOnlyTfm();
                 }
 
-                if (OperatingSystem.IsMacOS())
-                {
-                    return StartMac();
-                }
-
                 return PlatformSupport.NotSupportedYet("Clipboard", PlatformSupport.CurrentOsName);
 #endif
             }
@@ -157,11 +144,6 @@ namespace EventHook
                 offload?.Dispose();
                 offload = null;
 #else
-                if (macClipboard != null)
-                {
-                    StopMac();
-                }
-
                 isRunning = false;
 #endif
             }
@@ -209,6 +191,7 @@ namespace EventHook
         {
             try
             {
+                // Enqueue the data object reference only; classify on the consumer.
                 offload?.TryWrite(sender);
             }
             catch
@@ -247,6 +230,9 @@ namespace EventHook
             }
         }
 
+        /// <summary>
+        /// Classify clipboard content. Windows-only (WinForms data formats).
+        /// </summary>
         internal static bool TryClassify(IDataObject iData, out ClipboardContentTypes format, out object data)
         {
             format = ClipboardContentTypes.Other;
@@ -332,79 +318,6 @@ namespace EventHook
             catch
             {
                 // swallow
-            }
-        }
-#else
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private HookStartResult StartMac()
-        {
-            taskCancellationTokenSource = new CancellationTokenSource();
-            offload = new EventOffload<MacClipboardSnapshot>();
-            macClipboard = new MacClipboard();
-            var installResult = macClipboard.Start(snap => offload?.TryWrite(snap));
-            if (!installResult.Success)
-            {
-                macClipboard.Dispose();
-                macClipboard = null;
-                offload?.Dispose();
-                offload = null;
-                taskCancellationTokenSource.Dispose();
-                taskCancellationTokenSource = null;
-                return installResult;
-            }
-
-            Task.Factory.StartNew(ClipConsumerMacAsync, TaskCreationOptions.LongRunning);
-            isRunning = true;
-            return HookStartResult.Ok();
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private void StopMac()
-        {
-            macClipboard?.Stop();
-            macClipboard?.Dispose();
-            macClipboard = null;
-            offload?.Complete();
-            taskCancellationTokenSource?.Cancel();
-            taskCancellationTokenSource?.Dispose();
-            taskCancellationTokenSource = null;
-            offload?.Dispose();
-            offload = null;
-        }
-
-        private async Task ClipConsumerMacAsync()
-        {
-            var token = taskCancellationTokenSource.Token;
-            while (!token.IsCancellationRequested)
-            {
-                try
-                {
-                    _ = await offload.ReadAsync(token).ConfigureAwait(false);
-                }
-                catch (OperationCanceledException)
-                {
-                    break;
-                }
-                catch (ChannelClosedException)
-                {
-                    break;
-                }
-                catch (InvalidOperationException)
-                {
-                    break;
-                }
-
-                try
-                {
-                    if (MacClipboard.TryRead(out var format, out var data))
-                    {
-                        OnClipboardModified?.Invoke(this, new ClipboardEventArgs { Data = data, DataFormat = format });
-                    }
-                }
-                catch
-                {
-                    // swallow
-                }
             }
         }
 #endif

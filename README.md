@@ -1,6 +1,6 @@
-# Windows User Action Hook (EventHook)
+# EventHook
 
-[![CI](https://github.com/justcoding121/windows-user-action-hook/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/justcoding121/windows-user-action-hook/actions/workflows/ci.yml)
+[![CI](https://github.com/justcoding121/event-hook/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/justcoding121/event-hook/actions/workflows/ci.yml)
 [![NuGet](https://img.shields.io/nuget/v/EventHook.svg)](https://www.nuget.org/packages/EventHook)
 
 ## Code Quality
@@ -17,11 +17,9 @@
 [![Duplicated Lines](https://sonarcloud.io/api/project_badges/measure?project=justcoding121_windows-user-action-hook&metric=duplicated_lines_density)](https://sonarcloud.io/summary/overall?id=justcoding121_windows-user-action-hook&branch=develop)
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=justcoding121_windows-user-action-hook&metric=sqale_index)](https://sonarcloud.io/summary/overall?id=justcoding121_windows-user-action-hook&branch=develop)
 
-A .NET library to subscribe to Windows global user actions: keyboard, mouse, clipboard, application windows, print jobs, and hotkeys.
+A .NET library to subscribe to global user actions across **Windows**, **macOS**, and **Linux**: keyboard, mouse, clipboard, application windows, print jobs, and hotkeys.
 
-**Requires:** .NET 10 on Windows (`net10.0-windows`). AnyCPU — works on x86, x64, and ARM64 Windows when P/Invoke pointer sizes are correct (v2 fixes these).
-
-* [API Documentation](docs/api/EventHook.html) (generated DocFX site on `develop`)
+* [API Documentation](https://justcoding121.github.io/event-hook/) (DocFX site on `develop`)
 
 ## Install
 
@@ -29,59 +27,90 @@ A .NET library to subscribe to Windows global user actions: keyboard, mouse, cli
 dotnet add package EventHook
 ```
 
+| Platform | Target framework |
+|---|---|
+| Windows | `net10.0-windows` |
+| macOS / Linux | `net10.0` |
+
+Windows applications must target `net10.0-windows`. The portable `net10.0` package is for macOS and Linux.
+
 ## Sample
 
 ```csharp
 using System;
-using System.Windows.Forms;
 
 using (var eventHookFactory = new EventHookFactory())
 {
     var keyboardWatcher = eventHookFactory.GetKeyboardWatcher();
-    keyboardWatcher.Start();
-    keyboardWatcher.OnKeyInput += (s, e) =>
-        Console.WriteLine($"Key {e.KeyData.EventType} of {e.KeyData.Keyname}");
+    var kb = keyboardWatcher.Start();
+    if (!kb.Success)
+    {
+        Console.WriteLine(kb); // PermissionDenied / PrivilegeRequired / etc.
+    }
+    else
+    {
+        keyboardWatcher.OnKeyInput += (s, e) =>
+            Console.WriteLine($"Key {e.KeyData.EventType} of {e.KeyData.Keyname}");
+    }
 
     var mouseWatcher = eventHookFactory.GetMouseWatcher();
-    mouseWatcher.IncludeMouseMove = false; // #28
-    mouseWatcher.Start();
+    mouseWatcher.IncludeMouseMove = false; // default is false
+    mouseWatcher.Start().ThrowIfFailed();
     mouseWatcher.OnMouseInput += (s, e) =>
         Console.WriteLine($"Mouse {e.Message} at {e.Point.x},{e.Point.y}");
 
     var clipboardWatcher = eventHookFactory.GetClipboardWatcher();
-    clipboardWatcher.Start();
+    clipboardWatcher.Start().ThrowIfFailed();
     clipboardWatcher.OnClipboardModified += (s, e) =>
         Console.WriteLine($"Clipboard {e.DataFormat}: {e.Data}");
 
     var applicationWatcher = eventHookFactory.GetApplicationWatcher();
-    applicationWatcher.Start();
+    applicationWatcher.Start().ThrowIfFailed();
     applicationWatcher.OnApplicationWindowChange += (s, e) =>
         Console.WriteLine($"{e.ApplicationData.AppName} was {e.Event}");
 
     var printWatcher = eventHookFactory.GetPrintWatcher();
-    printWatcher.Start();
+    printWatcher.Start().ThrowIfFailed();
     printWatcher.OnPrintEvent += (s, e) =>
         Console.WriteLine($"Printer {e.EventData.PrinterName} pages={e.EventData.Pages}");
 
     var hotkeyWatcher = eventHookFactory.GetHotkeyWatcher();
-    hotkeyWatcher.Start();
-    hotkeyWatcher.Register("demo", Keys.Control | Keys.Alt | Keys.H);
+    hotkeyWatcher.Start().ThrowIfFailed();
+    hotkeyWatcher.Register("demo", new Hotkey(KeyModifiers.Control | KeyModifiers.Alt, EventKey.H))
+        .ThrowIfFailed();
     hotkeyWatcher.OnHotkeyPressed += (s, e) =>
-        Console.WriteLine($"Hotkey {e.Id} ({e.Keys})");
+        Console.WriteLine($"Hotkey {e.Id} ({e.Hotkey})");
 
     Console.ReadLine();
 }
 ```
 
-### Application window filter
+OS hook callbacks only copy a lightweight snapshot and return immediately. Decoding and user event handlers run on a dedicated offload path so input is never blocked.
+
+### Permissions and failures
+
+`Start()` / `Register()` return `HookStartResult`. Check `Success`, or call `ThrowIfFailed()`. `IsRunning` is true only after a successful install.
+
+| Reason | Typical cause |
+|---|---|
+| `PermissionDenied` | macOS Input Monitoring / Accessibility (TCC) |
+| `PrivilegeRequired` | Linux `/dev/input` not readable (add user to `input` group) |
+| `DisplayUnavailable` | No `DISPLAY` / session when required |
+| `NotSupportedOnPlatform` | Feature needs X11 on Linux Wayland-only, or wrong TFM on Windows |
+| `AlreadyInUse` | Hotkey already registered by another process |
+| `NativeFailure` | Native API failed after permissions were OK |
+
+See [examples/MAC.md](examples/MAC.md) and [examples/LINUX.md](examples/LINUX.md) for host setup.
+
+### Application window filter (Windows)
 
 ```csharp
-EventHook.Helpers.AppWindowFilter.IncludeWindowsWithoutSysMenu = true; // games without WS_SYSMENU
-EventHook.Helpers.AppWindowFilter.IncludeDialogs = true;               // MessageBox / #32770
-EventHook.Helpers.AppWindowFilter.CustomFilter = hwnd => true;         // optional
+EventHook.Helpers.AppWindowFilter.IncludeWindowsWithoutSysMenu = true;
+EventHook.Helpers.AppWindowFilter.IncludeDialogs = true;
+EventHook.Helpers.AppWindowFilter.CustomFilter = hwnd => true;
 ```
 
-### Hosted apps (COM / Office add-ins)
+### Hosted apps (COM / Office add-ins on Windows)
 
 Prefer constructing the factory on an STA UI thread, or pass an existing message-pump HWND:
 
@@ -89,34 +118,28 @@ Prefer constructing the factory on an STA UI thread, or pass an existing message
 using var factory = new EventHookFactory(hostMainWindowHandle);
 ```
 
-### VB.NET
-
-See `examples/EventHook.VB.Example`. Context-menu paste is observed via the clipboard watcher (global); `WM_PASTE` itself is application-local.
-
-### Print to PDF
-
-`PrintWatcher` enumerates local and connected queues, including virtual printers such as **Microsoft Print to PDF**. Print a document to that queue to verify `OnPrintEvent`.
-
 ## Development
 
-- Visual Studio 2022 / .NET 10 SDK
-- `dotnet build src/EventHook.sln -c Release`
-- `dotnet test tests/EventHook.Tests`
-- `dotnet test tests/EventHook.IntegrationTests`
-- Docs: `dotnet tool restore` then `docfx .github/docfx.json` (writes API HTML under `docs/`, same as titanium-web-proxy)
+- .NET 10 SDK
+- Windows: `dotnet build src/Event.Hook.sln -c Release`
+- Portable (macOS/Linux CI): build the library, tests, and console example projects (not the full Windows-only solution)
+- `dotnet test tests/Event.Hook.Tests`
+- `dotnet test tests/Event.Hook.IntegrationTests`
+- `dotnet test tests/Event.Hook.E2ETests --filter Category=E2E`
+- Docs: `dotnet tool restore` then `docfx .github/docfx.json`
 
 ### Release branches
 
 | Branch | NuGet | Notes |
 |---|---|---|
-| `develop` | (no publish) | CI build + tests + DocFX |
-| `beta` | `{VersionPrefix}-beta` from [EventHook.csproj](src/EventHook/EventHook.csproj) | Merge `develop` → `beta` to publish prerelease |
-| `stable` / tag `v*` | `{VersionPrefix}` from csproj | Stable release + GitHub Pages docs |
+| `develop` | (no publish) | CI on Windows + macOS + Linux; SonarCloud + DocFX on develop push only |
+| `beta` | `{VersionPrefix}-beta` | Same CI, then publish prerelease |
+| `stable` / tag `v*` | `{VersionPrefix}` | Same CI, then stable release + GitHub Pages docs |
 
-Publishing uses NuGet Trusted Publishing (`NUGET_USER` on the `nuget-publish` environment), same pattern as titanium-web-proxy.
+Publishing uses NuGet Trusted Publishing (`NUGET_USER` on the `nuget-publish` environment).
 
-## Version 2.0 notes
+## Version 3.0 notes
 
-Breaking: targets `net10.0-windows` only (no longer .NET Framework 4.5).
+Breaking: multi-platform (`net10.0-windows` + `net10.0`), `Start()`/`Register()` return `HookStartResult`, portable `Hotkey` replaces WinForms `Keys`, `IncludeMouseMove` defaults to `false`, non-blocking OS hook offload.
 
-Highlights: HotkeyWatcher, mouse-move filter, clipboard images/files, dialog/MsgBox tracking, PDF/virtual printers, x64/ARM64 P/Invoke fixes, reliable Stop/Dispose, GitHub Actions CI + DocFX.
+Repository renamed from `windows-user-action-hook` to [event-hook](https://github.com/justcoding121/event-hook). Solution/projects use `Event.Hook.*`; NuGet package id remains `EventHook`.

@@ -3,7 +3,7 @@
     {
       "src": [
         {
-          "files": [ "EventHook/EventHook.csproj" ],
+          "files": [ "Event.Hook/Event.Hook.csproj" ],
           "src": "../src/"
         }
       ],

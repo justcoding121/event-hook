@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using EventHook.Helpers;
@@ -9,9 +8,6 @@ using EventHook.Helpers;
 using System.Threading.Channels;
 using EventHook.Hooks;
 using EventHook.Hooks.Library;
-#else
-using System.Threading.Channels;
-using EventHook.Platforms.Mac;
 #endif
 
 namespace EventHook
@@ -74,10 +70,6 @@ namespace EventHook
             internal IntPtr HWnd { get; }
             internal int EventType { get; }
         }
-#else
-        private MacApplication macApp;
-        private EventOffload<MacAppSnapshot> offload;
-        private CancellationTokenSource taskCancellationTokenSource;
 #endif
 
         internal ApplicationWatcher(SyncFactory factory)
@@ -85,7 +77,7 @@ namespace EventHook
             this.factory = factory;
         }
 
-#pragma warning disable CS0067
+#pragma warning disable CS0067 // Raised only on Windows implementation
         public event EventHandler<ApplicationEventArgs> OnApplicationWindowChange;
 #pragma warning restore CS0067
 
@@ -150,11 +142,6 @@ namespace EventHook
                     return PlatformSupport.WindowsOnlyTfm();
                 }
 
-                if (OperatingSystem.IsMacOS())
-                {
-                    return StartMac();
-                }
-
                 return PlatformSupport.NotSupportedYet("Application", PlatformSupport.CurrentOsName);
 #endif
             }
@@ -204,11 +191,6 @@ namespace EventHook
                 offload?.Dispose();
                 offload = null;
 #else
-                if (macApp != null)
-                {
-                    StopMac();
-                }
-
                 isRunning = false;
 #endif
             }
@@ -409,94 +391,6 @@ namespace EventHook
             catch
             {
                 // swallow
-            }
-        }
-#else
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private HookStartResult StartMac()
-        {
-            taskCancellationTokenSource = new CancellationTokenSource();
-            offload = new EventOffload<MacAppSnapshot>();
-            macApp = new MacApplication();
-            var installResult = macApp.Start(snap => offload?.TryWrite(snap));
-            if (!installResult.Success)
-            {
-                macApp.Dispose();
-                macApp = null;
-                offload?.Dispose();
-                offload = null;
-                taskCancellationTokenSource.Dispose();
-                taskCancellationTokenSource = null;
-                return installResult;
-            }
-
-            Task.Factory.StartNew(AppConsumerMac, TaskCreationOptions.LongRunning);
-            isRunning = true;
-            return HookStartResult.Ok();
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private void StopMac()
-        {
-            macApp?.Stop();
-            macApp?.Dispose();
-            macApp = null;
-            offload?.Complete();
-            taskCancellationTokenSource?.Cancel();
-            taskCancellationTokenSource?.Dispose();
-            taskCancellationTokenSource = null;
-            offload?.Dispose();
-            offload = null;
-        }
-
-        private async Task AppConsumerMac()
-        {
-            var token = taskCancellationTokenSource.Token;
-            while (!token.IsCancellationRequested)
-            {
-                MacAppSnapshot snap;
-                try
-                {
-                    snap = await offload.ReadAsync(token).ConfigureAwait(false);
-                }
-                catch (OperationCanceledException)
-                {
-                    break;
-                }
-                catch (ChannelClosedException)
-                {
-                    break;
-                }
-                catch (InvalidOperationException)
-                {
-                    break;
-                }
-
-                var appEvent = snap.EventKind switch
-                {
-                    0 => ApplicationEvents.Launched,
-                    1 => ApplicationEvents.Activated,
-                    _ => ApplicationEvents.Closed
-                };
-
-                var wnd = new WindowData
-                {
-                    EventType = snap.EventKind,
-                    HWnd = new IntPtr(snap.Pid),
-                    AppName = snap.GetName(),
-                    AppTitle = snap.GetName(),
-                    AppPath = snap.GetPath()
-                };
-
-                try
-                {
-                    OnApplicationWindowChange?.Invoke(this,
-                        new ApplicationEventArgs { ApplicationData = wnd, Event = appEvent });
-                }
-                catch
-                {
-                    // swallow
-                }
             }
         }
 #endif

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using EventHook.Helpers;
@@ -7,9 +6,6 @@ using EventHook.Hooks;
 
 #if WINDOWS
 using System.Threading.Channels;
-#else
-using System.Threading.Channels;
-using EventHook.Platforms.Mac;
 #endif
 
 namespace EventHook
@@ -40,10 +36,6 @@ namespace EventHook
         private MouseHook mouseHook;
         private EventOffload<MouseSnapshot> offload;
         private CancellationTokenSource taskCancellationTokenSource;
-#else
-        private EventOffload<MacMouseSnapshot> offload;
-        private CancellationTokenSource taskCancellationTokenSource;
-        private bool macActive;
 #endif
 
         internal MouseWatcher(SyncFactory factory)
@@ -51,7 +43,7 @@ namespace EventHook
             this.factory = factory;
         }
 
-#pragma warning disable CS0067
+#pragma warning disable CS0067 // Raised only on Windows implementation
         public event EventHandler<MouseEventArgs> OnMouseInput;
 #pragma warning restore CS0067
 
@@ -120,11 +112,6 @@ namespace EventHook
                     return PlatformSupport.WindowsOnlyTfm();
                 }
 
-                if (OperatingSystem.IsMacOS())
-                {
-                    return StartMac();
-                }
-
                 return PlatformSupport.NotSupportedYet("Mouse", PlatformSupport.CurrentOsName);
 #endif
             }
@@ -158,11 +145,6 @@ namespace EventHook
                 offload?.Dispose();
                 offload = null;
 #else
-                if (macActive)
-                {
-                    StopMac();
-                }
-
                 isRunning = false;
 #endif
             }
@@ -186,93 +168,6 @@ namespace EventHook
             while (!token.IsCancellationRequested)
             {
                 MouseSnapshot snapshot;
-                try
-                {
-                    snapshot = await offload.ReadAsync(token).ConfigureAwait(false);
-                }
-                catch (OperationCanceledException)
-                {
-                    break;
-                }
-                catch (ChannelClosedException)
-                {
-                    break;
-                }
-                catch (InvalidOperationException)
-                {
-                    break;
-                }
-
-                try
-                {
-                    OnMouseInput?.Invoke(this, new MouseEventArgs
-                    {
-                        Message = snapshot.Message,
-                        Point = snapshot.Point,
-                        MouseData = snapshot.MouseData
-                    });
-                }
-                catch
-                {
-                    // swallow
-                }
-            }
-        }
-#else
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private HookStartResult StartMac()
-        {
-            taskCancellationTokenSource = new CancellationTokenSource();
-            offload = new EventOffload<MacMouseSnapshot>(
-                capacity: 1024,
-                isCoalesceCandidate: s => s.Message == MouseMessages.WM_MOUSEMOVE,
-                coalesce: (_, newer) => newer);
-
-            var includeMove = IncludeMouseMove;
-            var installResult = MacKeyboardMouseHub.Shared.StartMouse(snapshot =>
-            {
-                if (!MouseMessageFilter.ShouldRaise(snapshot.Message, includeMove))
-                {
-                    return;
-                }
-
-                offload?.TryWrite(snapshot);
-            }, includeMove);
-
-            if (!installResult.Success)
-            {
-                offload?.Dispose();
-                offload = null;
-                taskCancellationTokenSource.Dispose();
-                taskCancellationTokenSource = null;
-                return installResult;
-            }
-
-            macActive = true;
-            Task.Factory.StartNew(ConsumeMacAsync, TaskCreationOptions.LongRunning);
-            isRunning = true;
-            return HookStartResult.Ok();
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private void StopMac()
-        {
-            MacKeyboardMouseHub.Shared.StopMouse();
-            macActive = false;
-            offload?.Complete();
-            taskCancellationTokenSource?.Cancel();
-            taskCancellationTokenSource?.Dispose();
-            taskCancellationTokenSource = null;
-            offload?.Dispose();
-            offload = null;
-        }
-
-        private async Task ConsumeMacAsync()
-        {
-            var token = taskCancellationTokenSource.Token;
-            while (!token.IsCancellationRequested)
-            {
-                MacMouseSnapshot snapshot;
                 try
                 {
                     snapshot = await offload.ReadAsync(token).ConfigureAwait(false);

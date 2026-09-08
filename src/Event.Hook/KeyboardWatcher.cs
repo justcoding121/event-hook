@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using EventHook.Helpers;
@@ -7,9 +6,6 @@ using EventHook.Helpers;
 #if WINDOWS
 using System.Threading.Channels;
 using EventHook.Hooks;
-#else
-using System.Threading.Channels;
-using EventHook.Platforms.Mac;
 #endif
 
 namespace EventHook
@@ -47,10 +43,6 @@ namespace EventHook
         private KeyboardHook keyboardHook;
         private EventOffload<KeyboardSnapshot> offload;
         private CancellationTokenSource taskCancellationTokenSource;
-#else
-        private EventOffload<MacKeySnapshot> offload;
-        private CancellationTokenSource taskCancellationTokenSource;
-        private bool macActive;
 #endif
 
         internal KeyboardWatcher(SyncFactory factory)
@@ -58,7 +50,7 @@ namespace EventHook
             this.factory = factory;
         }
 
-#pragma warning disable CS0067
+#pragma warning disable CS0067 // Raised only on Windows implementation
         public event EventHandler<KeyInputEventArgs> OnKeyInput;
 #pragma warning restore CS0067
 
@@ -119,16 +111,6 @@ namespace EventHook
                     return PlatformSupport.WindowsOnlyTfm();
                 }
 
-                if (OperatingSystem.IsMacOS())
-                {
-                    return StartMac();
-                }
-
-                if (OperatingSystem.IsLinux())
-                {
-                    return PlatformSupport.NotSupportedYet("Keyboard", PlatformSupport.CurrentOsName);
-                }
-
                 return PlatformSupport.NotSupportedYet("Keyboard", PlatformSupport.CurrentOsName);
 #endif
             }
@@ -162,11 +144,6 @@ namespace EventHook
                 offload?.Dispose();
                 offload = null;
 #else
-                if (macActive)
-                {
-                    StopMac();
-                }
-
                 isRunning = false;
 #endif
             }
@@ -221,85 +198,6 @@ namespace EventHook
                 catch
                 {
                     // swallow user callback exceptions
-                }
-            }
-        }
-#else
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private HookStartResult StartMac()
-        {
-            taskCancellationTokenSource = new CancellationTokenSource();
-            offload = new EventOffload<MacKeySnapshot>();
-
-            var installResult = MacKeyboardMouseHub.Shared.StartKeyboard(snapshot =>
-            {
-                offload?.TryWrite(snapshot);
-            });
-
-            if (!installResult.Success)
-            {
-                offload?.Dispose();
-                offload = null;
-                taskCancellationTokenSource.Dispose();
-                taskCancellationTokenSource = null;
-                return installResult;
-            }
-
-            macActive = true;
-            Task.Factory.StartNew(ConsumeMacKeyAsync, TaskCreationOptions.LongRunning);
-            isRunning = true;
-            return HookStartResult.Ok();
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private void StopMac()
-        {
-            MacKeyboardMouseHub.Shared.StopKeyboard();
-            macActive = false;
-            offload?.Complete();
-            taskCancellationTokenSource?.Cancel();
-            taskCancellationTokenSource?.Dispose();
-            taskCancellationTokenSource = null;
-            offload?.Dispose();
-            offload = null;
-        }
-
-        private async Task ConsumeMacKeyAsync()
-        {
-            var token = taskCancellationTokenSource.Token;
-            while (!token.IsCancellationRequested)
-            {
-                MacKeySnapshot snapshot;
-                try
-                {
-                    snapshot = await offload.ReadAsync(token).ConfigureAwait(false);
-                }
-                catch (OperationCanceledException)
-                {
-                    break;
-                }
-                catch (ChannelClosedException)
-                {
-                    break;
-                }
-                catch (InvalidOperationException)
-                {
-                    break;
-                }
-
-                try
-                {
-                    var keyData = new KeyData
-                    {
-                        UnicodeCharacter = snapshot.EventType == 0 ? snapshot.GetUnicode() : string.Empty,
-                        Keyname = VirtualKeyNames.GetName(snapshot.VkCode),
-                        EventType = (KeyEvent)snapshot.EventType
-                    };
-                    OnKeyInput?.Invoke(this, new KeyInputEventArgs { KeyData = keyData });
-                }
-                catch
-                {
-                    // swallow
                 }
             }
         }

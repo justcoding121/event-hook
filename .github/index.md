@@ -1,6 +1,6 @@
 # EventHook
 
-A .NET 10 Windows library for global keyboard, mouse, clipboard, application, print, and hotkey events.
+A .NET 10 library for global keyboard, mouse, clipboard, application, print, and hotkey events on Windows, macOS, and Linux.
 
 ## Install
 
@@ -14,9 +14,16 @@ dotnet add package EventHook
 using (var factory = new EventHookFactory())
 {
     var keyboard = factory.GetKeyboardWatcher();
-    keyboard.Start();
-    keyboard.OnKeyInput += (_, e) => Console.WriteLine(e.KeyData.Keyname);
+    var result = keyboard.Start();
+    if (result.Success)
+    {
+        keyboard.OnKeyInput += (_, e) => Console.WriteLine(e.KeyData.Keyname);
+    }
+    else
+    {
+        Console.WriteLine(result);
+    }
 }
 ```
 
-See the [GitHub README](https://github.com/justcoding121/windows-user-action-hook) for full samples.
+See the [GitHub README](https://github.com/justcoding121/event-hook) for full samples.
