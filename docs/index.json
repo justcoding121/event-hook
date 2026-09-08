@@ -112,7 +112,7 @@
   "api/EventHook.KeyData.html": {
     "href": "api/EventHook.KeyData.html",
     "title": "Class KeyData | EventHook",
-    "summary": "Class KeyData Namespace EventHook Assembly EventHook.dll public class KeyData Inheritance object KeyData Inherited Members object.Equals(object) object.Equals(object, object) object.GetHashCode() object.GetType() object.MemberwiseClone() object.ReferenceEquals(object, object) object.ToString() Fields EventType public KeyEvent EventType Field Value KeyEvent Keyname public string Keyname Field Value string UnicodeCharacter public string UnicodeCharacter Field Value string"
+    "summary": "Class KeyData Namespace EventHook Assembly EventHook.dll public class KeyData Inheritance object KeyData Inherited Members object.Equals(object) object.Equals(object, object) object.GetHashCode() object.GetType() object.MemberwiseClone() object.ReferenceEquals(object, object) object.ToString() Properties EventType public KeyEvent EventType { get; set; } Property Value KeyEvent Keyname public string Keyname { get; set; } Property Value string UnicodeCharacter public string UnicodeCharacter { get; set; } Property Value string"
   },
   "api/EventHook.KeyEvent.html": {
     "href": "api/EventHook.KeyEvent.html",
@@ -162,7 +162,7 @@
   "api/EventHook.WindowData.html": {
     "href": "api/EventHook.WindowData.html",
     "title": "Class WindowData | EventHook",
-    "summary": "Class WindowData Namespace EventHook Assembly EventHook.dll public class WindowData Inheritance object WindowData Inherited Members object.Equals(object) object.Equals(object, object) object.GetHashCode() object.GetType() object.MemberwiseClone() object.ReferenceEquals(object, object) object.ToString() Fields EventType public int EventType Field Value int HWnd public nint HWnd Field Value nint Properties AppName public string AppName { get; set; } Property Value string AppPath public string AppPath { get; set; } Property Value string AppTitle public string AppTitle { get; set; } Property Value string"
+    "summary": "Class WindowData Namespace EventHook Assembly EventHook.dll public class WindowData Inheritance object WindowData Inherited Members object.Equals(object) object.Equals(object, object) object.GetHashCode() object.GetType() object.MemberwiseClone() object.ReferenceEquals(object, object) object.ToString() Properties AppName public string AppName { get; set; } Property Value string AppPath public string AppPath { get; set; } Property Value string AppTitle public string AppTitle { get; set; } Property Value string EventType public int EventType { get; set; } Property Value int HWnd public nint HWnd { get; set; } Property Value nint"
   },
   "api/EventHook.html": {
     "href": "api/EventHook.html",

@@ -1647,19 +1647,40 @@ references:
 - uid: EventHook.KeyData.EventType
   name: EventType
   href: api/EventHook.KeyData.html#EventHook_KeyData_EventType
-  commentId: F:EventHook.KeyData.EventType
+  commentId: P:EventHook.KeyData.EventType
+  fullName: EventHook.KeyData.EventType
+  nameWithType: KeyData.EventType
+- uid: EventHook.KeyData.EventType*
+  name: EventType
+  href: api/EventHook.KeyData.html#EventHook_KeyData_EventType_
+  commentId: Overload:EventHook.KeyData.EventType
+  isSpec: "True"
   fullName: EventHook.KeyData.EventType
   nameWithType: KeyData.EventType
 - uid: EventHook.KeyData.Keyname
   name: Keyname
   href: api/EventHook.KeyData.html#EventHook_KeyData_Keyname
-  commentId: F:EventHook.KeyData.Keyname
+  commentId: P:EventHook.KeyData.Keyname
+  fullName: EventHook.KeyData.Keyname
+  nameWithType: KeyData.Keyname
+- uid: EventHook.KeyData.Keyname*
+  name: Keyname
+  href: api/EventHook.KeyData.html#EventHook_KeyData_Keyname_
+  commentId: Overload:EventHook.KeyData.Keyname
+  isSpec: "True"
   fullName: EventHook.KeyData.Keyname
   nameWithType: KeyData.Keyname
 - uid: EventHook.KeyData.UnicodeCharacter
   name: UnicodeCharacter
   href: api/EventHook.KeyData.html#EventHook_KeyData_UnicodeCharacter
-  commentId: F:EventHook.KeyData.UnicodeCharacter
+  commentId: P:EventHook.KeyData.UnicodeCharacter
+  fullName: EventHook.KeyData.UnicodeCharacter
+  nameWithType: KeyData.UnicodeCharacter
+- uid: EventHook.KeyData.UnicodeCharacter*
+  name: UnicodeCharacter
+  href: api/EventHook.KeyData.html#EventHook_KeyData_UnicodeCharacter_
+  commentId: Overload:EventHook.KeyData.UnicodeCharacter
+  isSpec: "True"
   fullName: EventHook.KeyData.UnicodeCharacter
   nameWithType: KeyData.UnicodeCharacter
 - uid: EventHook.KeyEvent
@@ -2150,12 +2171,26 @@ references:
 - uid: EventHook.WindowData.EventType
   name: EventType
   href: api/EventHook.WindowData.html#EventHook_WindowData_EventType
-  commentId: F:EventHook.WindowData.EventType
+  commentId: P:EventHook.WindowData.EventType
+  fullName: EventHook.WindowData.EventType
+  nameWithType: WindowData.EventType
+- uid: EventHook.WindowData.EventType*
+  name: EventType
+  href: api/EventHook.WindowData.html#EventHook_WindowData_EventType_
+  commentId: Overload:EventHook.WindowData.EventType
+  isSpec: "True"
   fullName: EventHook.WindowData.EventType
   nameWithType: WindowData.EventType
 - uid: EventHook.WindowData.HWnd
   name: HWnd
   href: api/EventHook.WindowData.html#EventHook_WindowData_HWnd
-  commentId: F:EventHook.WindowData.HWnd
+  commentId: P:EventHook.WindowData.HWnd
+  fullName: EventHook.WindowData.HWnd
+  nameWithType: WindowData.HWnd
+- uid: EventHook.WindowData.HWnd*
+  name: HWnd
+  href: api/EventHook.WindowData.html#EventHook_WindowData_HWnd_
+  commentId: Overload:EventHook.WindowData.HWnd
+  isSpec: "True"
   fullName: EventHook.WindowData.HWnd
   nameWithType: WindowData.HWnd
