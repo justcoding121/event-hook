@@ -142,6 +142,18 @@ namespace EventHook.Tests
         }
     }
 
+    public class PlatformSupportSharedTests
+    {
+        [Fact]
+        public void NotSupportedYet_and_os_name()
+        {
+            var result = PlatformSupport.NotSupportedYet("FeatureX", "OSY");
+            Assert.False(result.Success);
+            Assert.Contains("FeatureX", result.Message);
+            Assert.Contains("OSY", result.Message);
+            Assert.False(string.IsNullOrWhiteSpace(PlatformSupport.CurrentOsName));
+        }
+
         [Fact]
         public void WindowsOnlyTfm_message()
         {
