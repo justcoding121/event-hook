@@ -468,7 +468,7 @@ namespace EventHook.Platforms.Mac
             }
 
             var title = string.Empty;
-            var minimized = false;
+            var isMinimized = false;
             IntPtr element = IntPtr.Zero;
             if (activePid > 0)
             {
@@ -480,7 +480,7 @@ namespace EventHook.Platforms.Mac
                     {
                         element = window;
                         title = CopyAxString(window, attrTitle) ?? string.Empty;
-                        minimized = CopyAxBool(window, attrMinimized);
+                        isMinimized = CopyAxBool(window, attrMinimized);
                     }
 
                     MacNative.CFRelease(appEl);
@@ -491,7 +491,7 @@ namespace EventHook.Platforms.Mac
             {
                 lastActivePid = activePid;
                 lastTitle = title;
-                lastMinimized = minimized;
+                lastMinimized = isMinimized;
                 pollPrimed = true;
                 return;
             }
@@ -505,16 +505,16 @@ namespace EventHook.Platforms.Mac
                 offload?.TryWrite(new WindowEventItem(WindowEventKind.TextChanged, element));
             }
 
-            if (activePid > 0 && minimized != lastMinimized)
+            if (activePid > 0 && isMinimized != lastMinimized)
             {
                 offload?.TryWrite(new WindowEventItem(
-                    minimized ? WindowEventKind.Minimized : WindowEventKind.Unminimized,
+                    isMinimized ? WindowEventKind.Minimized : WindowEventKind.Unminimized,
                     element));
             }
 
             lastActivePid = activePid;
             lastTitle = title;
-            lastMinimized = minimized;
+            lastMinimized = isMinimized;
         }
 
         private static string CopyAxString(IntPtr element, IntPtr attribute)

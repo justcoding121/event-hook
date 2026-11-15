@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using EventHook.Helpers;
 using EventHook.Hooks;
@@ -159,7 +160,7 @@ namespace EventHook.E2ETests
                     failures.Add("WindowHookEx start failed: " + windowStartError.Message);
                 }
 
-                Thread.Sleep(400);
+                Task.Delay(400).GetAwaiter().GetResult();
 
                 if (!WindowsInject.TryFakeKey(WindowsInject.VkF24))
                 {
@@ -209,7 +210,7 @@ namespace EventHook.E2ETests
                 else
                 {
                     keyboard.Stop();
-                    Thread.Sleep(250);
+                    Task.Delay(250).GetAwaiter().GetResult();
                     WindowsInject.TryFakeHotkeyCtrlAltShift((ushort)'J');
                     var target = form as CaptureTargetForm;
                     var rawSaw = target != null && target.RawHotkey.Wait(TimeSpan.FromSeconds(2));
@@ -246,7 +247,7 @@ namespace EventHook.E2ETests
                     form.Activate();
                     form.WindowState = FormWindowState.Minimized;
                 }));
-                Thread.Sleep(400);
+                Task.Delay(400).GetAwaiter().GetResult();
                 form.BeginInvoke(new Action(() =>
                 {
                     form.WindowState = FormWindowState.Normal;

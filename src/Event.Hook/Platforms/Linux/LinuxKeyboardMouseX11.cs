@@ -285,7 +285,7 @@ namespace EventHook.Platforms.Linux
                 }
 
                 var ev = Marshal.PtrToStructure<LinuxX11Native.XRecordWireEvent>(data.data);
-                var eventType = (int)(ev.type & 0x7F);
+                var eventType = ev.type & 0x7F;
                 switch (eventType)
                 {
                     case LinuxX11Native.KeyPress:
