@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using EventHook.Helpers;
 using EventHook.Platforms.Linux;
 using EventHook.Platforms.Mac;
@@ -11,7 +12,7 @@ namespace EventHook.Hooks
     /// </summary>
     public sealed class WindowHookEx : IDisposable
     {
-        private readonly object gate = new object();
+        private readonly Lock gate = new Lock();
         private MacWindowHookExBackend mac;
         private LinuxWindowHookExBackend linux;
         private bool disposed;

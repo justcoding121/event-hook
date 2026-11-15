@@ -14,7 +14,7 @@ namespace EventHook.Platforms.Mac
     /// </summary>
     internal sealed class MacWindowHookExBackend : IDisposable
     {
-        private readonly object gate = new object();
+        private readonly Lock gate = new Lock();
         private readonly Dictionary<int, AppObserver> observers = new Dictionary<int, AppObserver>();
         private readonly int[] pidScratch = new int[4096];
         private EventOffload<WindowEventItem> offload;

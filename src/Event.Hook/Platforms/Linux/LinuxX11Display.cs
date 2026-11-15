@@ -15,7 +15,7 @@ namespace EventHook.Platforms.Linux
         private readonly ConcurrentQueue<Action> work = new ConcurrentQueue<Action>();
         private readonly AutoResetEvent workSignal = new AutoResetEvent(false);
         private readonly List<Action<LinuxX11Native.XEvent>> handlers = new List<Action<LinuxX11Native.XEvent>>();
-        private readonly object handlersLock = new object();
+        private readonly Lock handlersLock = new Lock();
         private Thread thread;
         private IntPtr display;
         private IntPtr root;

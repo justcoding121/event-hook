@@ -36,7 +36,7 @@ namespace EventHook
     /// </summary>
     public class PrintWatcher : IDisposable
     {
-        private readonly object accesslock = new object();
+        private readonly Lock accesslock = new Lock();
 #if WINDOWS
         private readonly SyncFactory factory;
 #endif

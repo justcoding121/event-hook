@@ -18,7 +18,7 @@
     {
         private readonly WinEventProc proc;
         private readonly SortedDictionary<WindowEvent, IntPtr> hooks = new SortedDictionary<WindowEvent, IntPtr>();
-        private readonly object gate = new object();
+        private readonly Lock gate = new Lock();
         private EventOffload<WindowEventItem> offload;
         private CancellationTokenSource taskCancellationTokenSource;
         private bool isRunning;

@@ -11,7 +11,7 @@ namespace EventHook.Platforms.Mac
     /// </summary>
     internal sealed class MacRunLoopHost : IDisposable
     {
-        private static readonly object Gate = new object();
+        private static readonly Lock Gate = new Lock();
         private static MacRunLoopHost instance;
 
         private readonly ConcurrentQueue<Action> work = new ConcurrentQueue<Action>();

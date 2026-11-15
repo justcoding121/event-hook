@@ -20,7 +20,7 @@ namespace EventHook.Platforms.Linux
         private const int KindUnminimized = 2;
         private const int KindTextChanged = 3;
 
-        private readonly object gate = new object();
+        private readonly Lock gate = new Lock();
         private LinuxX11Display display;
         private Action<LinuxX11Native.XEvent> handler;
         private EventOffload<(IntPtr Hwnd, int Kind)> offload;

@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
 using EventHook.Helpers;
 using EventHook.Hooks;
 using EventHook.Platforms.Mac.Native;
@@ -82,7 +83,7 @@ namespace EventHook.Platforms.Mac
     internal sealed class MacKeyboardMouse : IDisposable
     {
         private const string InputMonitoringPermission = "Input Monitoring";
-        private readonly object gate = new object();
+        private readonly Lock gate = new Lock();
         private MacNative.CGEventTapCallBack tapCallback;
         private IntPtr tap;
         private IntPtr runLoopSource;
@@ -450,7 +451,7 @@ namespace EventHook.Platforms.Mac
     /// </summary>
     internal static class MacKeyboardMouseHub
     {
-        private static readonly object Gate = new object();
+        private static readonly Lock Gate = new Lock();
         private static MacKeyboardMouse shared;
 
         internal static MacKeyboardMouse Shared

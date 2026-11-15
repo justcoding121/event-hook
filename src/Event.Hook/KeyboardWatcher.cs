@@ -38,7 +38,7 @@ namespace EventHook
     /// </summary>
     public class KeyboardWatcher : IDisposable
     {
-        private readonly object accesslock = new object();
+        private readonly Lock accesslock = new Lock();
 #if WINDOWS
         private readonly SyncFactory factory;
 #endif

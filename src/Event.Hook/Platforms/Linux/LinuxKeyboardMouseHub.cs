@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using EventHook.Hooks;
 
 namespace EventHook.Platforms.Linux
@@ -10,7 +11,7 @@ namespace EventHook.Platforms.Linux
     {
         internal static readonly LinuxKeyboardMouseHub Shared = new LinuxKeyboardMouseHub();
 
-        private readonly object gate = new object();
+        private readonly Lock gate = new Lock();
         private Action<LinuxKeySnapshot> keySink;
         private Action<MouseSnapshot> mouseSink;
         private IDisposable backend;
