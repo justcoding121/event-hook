@@ -36,7 +36,7 @@ jobs:
       - name: Install SonarScanner
         if: github.event_name == 'push' && github.ref == 'refs/heads/develop' && env.SONAR_TOKEN != ''
         shell: pwsh
-        run: dotnet tool install --tool-path .sonar/scanner dotnet-sonarscanner
+        run: dotnet tool install --tool-path .sonar/scanner dotnet-sonarscanner --version 11.3.0
 
       - name: Install coverage tool
         if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
