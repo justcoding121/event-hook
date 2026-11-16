@@ -33,9 +33,8 @@ omnisharp.json
 *.DotSettings
 *.DotSettings.user
 
-# Cursor / local agent
+# Local Cursor agent rules / config (not shared)
 .cursor/
-!.cursor/rules/
 
 # OS
 Thumbs.db
