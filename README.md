@@ -2,7 +2,7 @@
 
 A .NET library to subscribe to global user actions across **Windows**, **macOS**, and **Linux**: keyboard, mouse, clipboard, application windows, print jobs, and hotkeys.
 
-[![CI](https://github.com/justcoding121/event-hook/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/justcoding121/event-hook/actions/workflows/ci.yml)
+[![CI](https://github.com/justcoding121/event-hook/actions/workflows/ci.yml/badge.svg?branch=develop&event=push)](https://github.com/justcoding121/event-hook/actions/workflows/ci.yml?query=branch%3Adevelop+event%3Apush)
 [![NuGet](https://img.shields.io/nuget/v/EventHook.svg)](https://www.nuget.org/packages/EventHook)
 [![NuGet downloads](https://img.shields.io/nuget/dt/EventHook.svg)](https://www.nuget.org/packages/EventHook)
 
